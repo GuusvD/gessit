@@ -121,6 +121,7 @@ const common_1 = __webpack_require__("@nestjs/common");
 const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/services/communities.service.ts");
 const create_community_dto_1 = __webpack_require__("./apps/gessit-api/src/app/communities/dto/create-community.dto.ts");
 const update_community_dto_1 = __webpack_require__("./apps/gessit-api/src/app/communities/dto/update-community.dto.ts");
+const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/communities/pipes/object.id.pipe.ts");
 let CommunitiesController = class CommunitiesController {
     constructor(communityService) {
         this.communityService = communityService;
@@ -159,7 +160,7 @@ tslib_1.__decorate([
 ], CommunitiesController.prototype, "getCommunities", null);
 tslib_1.__decorate([
     (0, common_1.Get)(':id'),
-    tslib_1.__param(0, (0, common_1.Param)('id')),
+    tslib_1.__param(0, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [String]),
     tslib_1.__metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
@@ -173,7 +174,7 @@ tslib_1.__decorate([
 ], CommunitiesController.prototype, "createCommunity", null);
 tslib_1.__decorate([
     (0, common_1.Patch)(':id'),
-    tslib_1.__param(0, (0, common_1.Param)('id')),
+    tslib_1.__param(0, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [String, typeof (_f = typeof update_community_dto_1.UpdateCommunityDto !== "undefined" && update_community_dto_1.UpdateCommunityDto) === "function" ? _f : Object]),
@@ -181,7 +182,7 @@ tslib_1.__decorate([
 ], CommunitiesController.prototype, "updateCommunity", null);
 tslib_1.__decorate([
     (0, common_1.Delete)(':id'),
-    tslib_1.__param(0, (0, common_1.Param)('id')),
+    tslib_1.__param(0, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [String]),
     tslib_1.__metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
@@ -196,27 +197,84 @@ exports.CommunitiesController = CommunitiesController;
 /***/ }),
 
 /***/ "./apps/gessit-api/src/app/communities/dto/create-community.dto.ts":
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CreateCommunityDto = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const class_validator_1 = __webpack_require__("class-validator");
 class CreateCommunityDto {
 }
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    tslib_1.__metadata("design:type", String)
+], CreateCommunityDto.prototype, "name", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    tslib_1.__metadata("design:type", String)
+], CreateCommunityDto.prototype, "description", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    tslib_1.__metadata("design:type", String)
+], CreateCommunityDto.prototype, "image", void 0);
 exports.CreateCommunityDto = CreateCommunityDto;
 
 
 /***/ }),
 
 /***/ "./apps/gessit-api/src/app/communities/dto/update-community.dto.ts":
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UpdateCommunityDto = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const class_validator_1 = __webpack_require__("class-validator");
 class UpdateCommunityDto {
 }
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    tslib_1.__metadata("design:type", String)
+], UpdateCommunityDto.prototype, "name", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    tslib_1.__metadata("design:type", String)
+], UpdateCommunityDto.prototype, "description", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    tslib_1.__metadata("design:type", String)
+], UpdateCommunityDto.prototype, "image", void 0);
 exports.UpdateCommunityDto = UpdateCommunityDto;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/communities/pipes/object.id.pipe.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ObjectIdPipe = void 0;
+const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
+var ObjectId = (__webpack_require__("mongoose").Types.ObjectId);
+class ObjectIdPipe {
+    transform(value) {
+        if (!ObjectId.isValid(value)) {
+            throw new validation_exception_1.ValidationException([`ObjectId has wrong value: ${value}, ObjectId is not valid!`]);
+        }
+        return value;
+    }
+}
+exports.ObjectIdPipe = ObjectIdPipe;
 
 
 /***/ }),
@@ -369,6 +427,52 @@ exports.CommunitiesService = CommunitiesService;
 
 /***/ }),
 
+/***/ "./apps/gessit-api/src/app/shared/filters/validation.exception.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ValidationException = void 0;
+const common_1 = __webpack_require__("@nestjs/common");
+class ValidationException extends common_1.BadRequestException {
+    constructor(validationErrors) {
+        super();
+        this.validationErrors = validationErrors;
+    }
+}
+exports.ValidationException = ValidationException;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/shared/filters/validation.filter.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ValidationFilter = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
+let ValidationFilter = class ValidationFilter {
+    catch(exception, host) {
+        const ctx = host.switchToHttp(), response = ctx.getResponse();
+        return response.status(400).json({
+            statusCode: 400,
+            timeStamp: new Date(),
+            createdBy: "ValidationFilter",
+            validationErrors: exception.validationErrors
+        });
+    }
+};
+ValidationFilter = tslib_1.__decorate([
+    (0, common_1.Catch)(validation_exception_1.ValidationException)
+], ValidationFilter);
+exports.ValidationFilter = ValidationFilter;
+
+
+/***/ }),
+
 /***/ "@nestjs/common":
 /***/ ((module) => {
 
@@ -387,6 +491,13 @@ module.exports = require("@nestjs/core");
 /***/ ((module) => {
 
 module.exports = require("@nestjs/mongoose");
+
+/***/ }),
+
+/***/ "class-validator":
+/***/ ((module) => {
+
+module.exports = require("class-validator");
 
 /***/ }),
 
@@ -445,11 +556,21 @@ const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const core_1 = __webpack_require__("@nestjs/core");
 const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
+const validation_filter_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.filter.ts");
+const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
 function bootstrap() {
     return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const app = yield core_1.NestFactory.create(app_module_1.AppModule);
         const globalPrefix = 'api';
+        app.useGlobalFilters(new validation_filter_1.ValidationFilter);
         app.setGlobalPrefix(globalPrefix);
+        app.useGlobalPipes(new common_1.ValidationPipe({
+            skipMissingProperties: true,
+            exceptionFactory: (errors) => {
+                const messages = errors.map(error => `${error.property} has wrong value ${error.value}, ${Object.values(error.constraints).join(', ')}`);
+                return new validation_exception_1.ValidationException(messages);
+            }
+        }));
         const port = process.env.PORT || 3333;
         yield app.listen(port);
         common_1.Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
