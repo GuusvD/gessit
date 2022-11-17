@@ -18,7 +18,7 @@
           "apps/gessit-app/src/favicon.ico",
           "apps/gessit-app/src/assets"
         ],
-        "styles": ["apps/gessit-app/src/styles.css"],
+        "styles": ["apps/gessit-app/src/styles.css", "node_modules/bootstrap/dist/css/bootstrap.min.css"],
         "scripts": []
       },
       "configurations": {
