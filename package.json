@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node dist/apps/gessit-api/main.js",
-    "build": "nx build gessit-api --prod",
+    "build": "ng build gessit-api --prod",
     "test": "nx test"
   },
   "private": true,
