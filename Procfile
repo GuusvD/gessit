@@ -1,1 +1,1 @@
-Worker: nx run gessit-api:serve
+Worker: nx serve
