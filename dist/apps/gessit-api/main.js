@@ -578,7 +578,6 @@ function bootstrap() {
         app.useGlobalFilters(new validation_filter_1.ValidationFilter);
         app.setGlobalPrefix(globalPrefix);
         app.useGlobalPipes(new common_1.ValidationPipe({
-            skipMissingProperties: true,
             exceptionFactory: (errors) => {
                 const messages = errors.map(error => `${error.property} has wrong value ${error.value}, ${Object.values(error.constraints).join(', ')}`);
                 return new validation_exception_1.ValidationException(messages);

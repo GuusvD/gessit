@@ -11,6 +11,7 @@ import { NavComponent } from './shared/nav/nav.component';
 import { HomepageComponent } from './pages/homepage/homepage.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { CommunitiesComponent } from './pages/communities/communities.component';
+import { AboutComponent } from './pages/about/about.component';
 
 @NgModule({
   declarations: [
@@ -20,12 +21,13 @@ import { CommunitiesComponent } from './pages/communities/communities.component'
     HomepageComponent,
     FooterComponent,
     CommunitiesComponent,
+    AboutComponent,
   ],
   imports: [
     BrowserModule,
     RouterModule.forRoot(appRoutes, { initialNavigation: 'enabledBlocking' }),
     NgbModule,
-    HttpClientModule
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
