@@ -21,4 +21,8 @@ export class CommunitiesComponent implements OnInit {
   ngOnInit(): void {
 
   }
+
+  delete(id: string): void {
+    this.http.delete(`/api/community/${id}`).subscribe();
+  }
 }
