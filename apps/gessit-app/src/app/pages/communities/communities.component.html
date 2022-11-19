@@ -1,0 +1,18 @@
+<div class="component">
+    <div class="row">
+        <div *ngFor="let community of communities" class="col-3">
+            <div class="card">
+                <img class="card-img-top" src="{{ community.image }}" alt="card image">
+                <div class="card-body">
+                    <p class="card-text">
+                        {{ community.name }}
+                    </p>
+                    <hr />
+                    <p class="card-text">
+                        {{ community.description }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

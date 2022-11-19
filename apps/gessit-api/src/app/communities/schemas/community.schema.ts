@@ -18,7 +18,10 @@ export class Community {
     creationDate: Date;
 
     @Prop()
-    image: string
+    image: string;
+
+    @Prop()
+    isOpen: boolean;
 }
 
 export const CommunitySchema = SchemaFactory.createForClass(Community);
