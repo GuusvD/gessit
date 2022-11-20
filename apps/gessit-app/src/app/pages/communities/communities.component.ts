@@ -23,8 +23,10 @@ export class CommunitiesComponent implements OnInit {
 
   }
 
-  delete(id: string): void {
-    this.communityImService.delete(id);
-    this.fetch();
+  delete(id: string | undefined): void {
+    if (id) {
+      this.communityImService.delete(id);
+      this.fetch();
+    }
   }
 }
