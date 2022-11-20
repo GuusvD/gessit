@@ -1,0 +1,1 @@
+web: node dist/apps/gessit-api/main.js
