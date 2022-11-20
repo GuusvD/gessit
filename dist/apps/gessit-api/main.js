@@ -138,7 +138,7 @@ let CommunitiesController = class CommunitiesController {
     }
     createCommunity(createCommunityDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.communityService.createCommunity(createCommunityDto.name, createCommunityDto.description);
+            return yield this.communityService.createCommunity(createCommunityDto.name, createCommunityDto.description, createCommunityDto.image, createCommunityDto.isOpen);
         });
     }
     updateCommunity(id, updateCommunityDto) {
@@ -220,8 +220,16 @@ tslib_1.__decorate([
 ], CreateCommunityDto.prototype, "description", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
     tslib_1.__metadata("design:type", String)
 ], CreateCommunityDto.prototype, "image", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    tslib_1.__metadata("design:type", Boolean)
+], CreateCommunityDto.prototype, "isOpen", void 0);
 exports.CreateCommunityDto = CreateCommunityDto;
 
 
@@ -239,20 +247,20 @@ class UpdateCommunityDto {
 }
 tslib_1.__decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsDefined)(),
     tslib_1.__metadata("design:type", String)
 ], UpdateCommunityDto.prototype, "name", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsDefined)(),
     tslib_1.__metadata("design:type", String)
 ], UpdateCommunityDto.prototype, "description", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsString)(),
     tslib_1.__metadata("design:type", String)
 ], UpdateCommunityDto.prototype, "image", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    tslib_1.__metadata("design:type", Boolean)
+], UpdateCommunityDto.prototype, "isOpen", void 0);
 exports.UpdateCommunityDto = UpdateCommunityDto;
 
 
@@ -363,6 +371,10 @@ tslib_1.__decorate([
     (0, mongoose_1.Prop)(),
     tslib_1.__metadata("design:type", String)
 ], Community.prototype, "image", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", Boolean)
+], Community.prototype, "isOpen", void 0);
 Community = tslib_1.__decorate([
     (0, mongoose_1.Schema)()
 ], Community);
@@ -396,14 +408,15 @@ let CommunitiesService = class CommunitiesService {
             return this.communityRepository.find({});
         });
     }
-    createCommunity(name, description) {
+    createCommunity(name, description, image, isOpen) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return this.communityRepository.create({
                 name,
                 description,
                 ranking: 0,
                 creationDate: new Date(),
-                image: "url"
+                image,
+                isOpen
             });
         });
     }
@@ -565,7 +578,6 @@ function bootstrap() {
         app.useGlobalFilters(new validation_filter_1.ValidationFilter);
         app.setGlobalPrefix(globalPrefix);
         app.useGlobalPipes(new common_1.ValidationPipe({
-            skipMissingProperties: true,
             exceptionFactory: (errors) => {
                 const messages = errors.map(error => `${error.property} has wrong value ${error.value}, ${Object.values(error.constraints).join(', ')}`);
                 return new validation_exception_1.ValidationException(messages);

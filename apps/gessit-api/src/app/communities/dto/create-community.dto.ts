@@ -1,7 +1,8 @@
 import {
     IsString,
     IsNotEmpty,
-    IsDefined
+    IsDefined,
+    IsBoolean
 } from 'class-validator';
 
 export class CreateCommunityDto {
@@ -16,5 +17,12 @@ export class CreateCommunityDto {
     description: string;
 
     @IsString()
+    @IsNotEmpty()
+    @IsDefined()
     image: string;
+
+    @IsBoolean()
+    @IsNotEmpty()
+    @IsDefined()
+    isOpen: boolean;
 }

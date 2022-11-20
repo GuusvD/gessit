@@ -1,20 +1,18 @@
 import {
     IsString,
-    IsNotEmpty,
-    IsDefined
+    IsBoolean
 } from 'class-validator';
 
 export class UpdateCommunityDto {
     @IsString()
-    @IsNotEmpty()
-    @IsDefined()
     name: string;
 
     @IsString()
-    @IsNotEmpty()
-    @IsDefined()
     description: string;
 
     @IsString()
     image: string;
+
+    @IsBoolean()
+    isOpen: boolean;
 }

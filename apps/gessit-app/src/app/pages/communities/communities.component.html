@@ -1,0 +1,22 @@
+<div class="component">
+    <h1>Communities</h1>
+    <div class="row">
+        <div *ngFor="let community of communities" class="col-3">
+            <div class="card">
+                <img class="card-img-top" src="{{ community.image }}" alt="card image">
+                <div class="card-body">
+                    <p class="card-text">
+                        {{ community.name }}
+                    </p>
+                    <br>
+                    <p class="card-text">
+                        {{ community.description }}
+                    </p>
+                    <hr />
+                    <button type="button" class="btn btn-primary" routerLink="/detail/{{ community._id }}">Details</button>
+                    <button type="button" class="btn btn-danger" (click)="delete(community._id)"><i class="bi bi-trash3"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

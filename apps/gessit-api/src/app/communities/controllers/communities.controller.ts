@@ -21,7 +21,7 @@ export class CommunitiesController {
 
   @Post()
   async createCommunity(@Body() createCommunityDto: CreateCommunityDto): Promise<Community> {
-    return await this.communityService.createCommunity(createCommunityDto.name, createCommunityDto.description);
+    return await this.communityService.createCommunity(createCommunityDto.name, createCommunityDto.description, createCommunityDto.image, createCommunityDto.isOpen);
   }
 
   @Patch(':id')
