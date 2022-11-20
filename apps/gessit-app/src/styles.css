@@ -25,3 +25,7 @@
     width: 100%;
     object-fit: contain;
 }
+
+.about-erd {
+    width: 65%;
+}
