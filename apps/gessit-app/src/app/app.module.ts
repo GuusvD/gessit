@@ -12,6 +12,7 @@ import { HomepageComponent } from './pages/homepage/homepage.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { CommunitiesComponent } from './pages/communities/communities.component';
 import { AboutComponent } from './pages/about/about.component';
+import { DetailComponent } from './pages/detail/detail.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { AboutComponent } from './pages/about/about.component';
     FooterComponent,
     CommunitiesComponent,
     AboutComponent,
+    DetailComponent,
   ],
   imports: [
     BrowserModule,

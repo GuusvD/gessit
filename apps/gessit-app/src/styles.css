@@ -8,3 +8,13 @@
     padding: 5px;
     margin: 5px;
 }
+
+.card-img-top {
+    width: 100%;
+    height: 15vw;
+    object-fit: cover;
+}
+
+.detail-img {
+    width: 50%;
+}
