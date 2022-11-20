@@ -1,11 +1,24 @@
 <div class="component">
-    <div class="row">
-        <div class="col-6">
-            <h1>{{ community?.name }}</h1>
-            <p>{{ community?.description }}</p>
-        </div>
-        <div class="col-6">
-            <img class="detail-img" src="{{ community?.image }}">
+    <div *ngIf="community$ | async as community">
+        <div class="row">
+            <div class="col-6">
+                <div class="card">
+                    <h1>{{ community?.name }}</h1>
+                    <br>
+                    <p>{{ community?.description }}</p>
+                    <br>
+                    <hr>
+                    <p>Public community: {{ community?.isOpen }}</p>
+                    <p>Created on: {{ community?.creationDate }}</p>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-body card-detail-img">
+                        <img class="detail-img" src="{{ community.image }}">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
