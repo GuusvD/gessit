@@ -22,6 +22,30 @@ export class CommunitiesImService {
             "image": "https://icons.iconarchive.com/icons/custom-icon-design/silky-line-user/256/users-icon.png",
             "isOpen": true
         },
+        {
+            "_id": "2",
+            "name": "Drawing community",
+            "description": "This is a drawing community.",
+            "creationDate": new Date(),
+            "image": "https://icons.iconarchive.com/icons/custom-icon-design/silky-line-user/256/users-icon.png",
+            "isOpen": true
+        },
+        {
+            "_id": "3",
+            "name": "Sports community",
+            "description": "This is a sports community.",
+            "creationDate": new Date(),
+            "image": "https://icons.iconarchive.com/icons/custom-icon-design/silky-line-user/256/users-icon.png",
+            "isOpen": true
+        },
+        {
+            "_id": "4",
+            "name": "News community",
+            "description": "This is a news community.",
+            "creationDate": new Date(),
+            "image": "https://icons.iconarchive.com/icons/custom-icon-design/silky-line-user/256/users-icon.png",
+            "isOpen": true
+        }
     ];
     private id: number | undefined;
 
@@ -34,17 +58,23 @@ export class CommunitiesImService {
     }
 
     create(community: Community): Observable<any> {
-        this.community = { ...community };
-
+        this.community = new Community(undefined, undefined, undefined, undefined, undefined, undefined);
         this.id = this.communityArray.length++;
+
         this.community._id = this.id.toString();
+        this.community.name = community.name;
+        this.community.description = community.description;
+        this.community.image = community.image;
         this.community.creationDate = new Date();
-        this.community.image = "https://icons.iconarchive.com/icons/custom-icon-design/silky-line-user/256/users-icon.png";
-        this.community.isOpen = true;
 
+        if (community.isOpen == undefined) {
+            this.community.isOpen = false;
+        } else {
+            this.community.isOpen = community.isOpen;
+        }
+
+        this.communityArray.pop();
         this.communityArray.push(this.community);
-
-        console.log("Community aangemaakt");
 
         return of({
           status: 201,
@@ -52,8 +82,18 @@ export class CommunitiesImService {
         });
     }
     
-    update(community?: Community): Observable<any> {
-        // TO DO: movieList updaten
+    update(community: Community): Observable<any> {
+        this.community = new Community(undefined, undefined, undefined, undefined, undefined, undefined);
+
+        this.community.name = community.name;
+        this.community.description = community.description;
+        this.community.image = community.image;
+        this.community.isOpen = community.isOpen;
+
+        const index = this.communityArray.map(c => c._id).indexOf(community._id);
+        let oldCommunity = this.communityArray[index];
+        oldCommunity = { ...this.community };
+        this.communityArray[index] = oldCommunity;
     
         return of({
             status: 201,

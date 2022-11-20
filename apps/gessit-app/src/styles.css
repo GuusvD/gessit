@@ -16,7 +16,7 @@
 }
 
 .card-detail-img {
-    height: 255px;
+    height: 300px;
 }
 
 .detail-img {
@@ -24,4 +24,8 @@
     height: 100%;
     width: 100%;
     object-fit: contain;
+}
+
+.form-group {
+    padding: 15px;
 }
