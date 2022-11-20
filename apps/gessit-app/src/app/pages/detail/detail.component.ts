@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Community } from 'libs/data/src';
 import { Observable, Subscription } from 'rxjs';
 import { CommunitiesImService } from '../../services/communities.service';
@@ -14,18 +14,25 @@ export class DetailComponent implements OnInit {
   subscription: Subscription | undefined;
   community$: Observable<Community> | undefined;
 
-  constructor(private route: ActivatedRoute, private communityImService: CommunitiesImService) {}
+  constructor(private route: ActivatedRoute, private communitiesImService: CommunitiesImService, private router: Router) {}
 
   ngOnInit(): void {
     this.subscription = this.route.paramMap.subscribe(params => {
       this.communityId = params.get('id');
       if (this.communityId) {
-        this.community$ = this.communityImService.getById(this.communityId);
+        this.community$ = this.communitiesImService.getById(this.communityId);
       }
     });
   }
 
   ngOnDestroy(): void {
     this.subscription?.unsubscribe;
+  }
+
+  delete(id: string | undefined): void {
+    if (id) {
+      this.communitiesImService.delete(id);
+      this.router.navigate(['/communities']);
+    } 
   }
 }

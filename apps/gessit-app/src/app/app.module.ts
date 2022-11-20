@@ -13,6 +13,8 @@ import { FooterComponent } from './shared/footer/footer.component';
 import { CommunitiesComponent } from './pages/communities/communities.component';
 import { AboutComponent } from './pages/about/about.component';
 import { DetailComponent } from './pages/detail/detail.component';
+import { EditComponent } from './pages/edit/edit.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -24,12 +26,14 @@ import { DetailComponent } from './pages/detail/detail.component';
     CommunitiesComponent,
     AboutComponent,
     DetailComponent,
+    EditComponent,
   ],
   imports: [
     BrowserModule,
     RouterModule.forRoot(appRoutes, { initialNavigation: 'enabledBlocking' }),
     NgbModule,
     HttpClientModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent],
