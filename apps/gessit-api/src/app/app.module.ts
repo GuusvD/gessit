@@ -6,7 +6,7 @@ import { AppService } from './app.service';
 import { CommunitiesModule } from './communities/communities.module';
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://127.0.0.1:27017/gessit'), CommunitiesModule],
+  imports: [MongooseModule.forRoot(process.env.MONGODB_URL), CommunitiesModule],
   controllers: [AppController],
   providers: [AppService],
 })
