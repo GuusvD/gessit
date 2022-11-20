@@ -29,3 +29,7 @@
 .form-group {
     padding: 15px;
 }
+
+body {
+    background-color: #EFEFEF !important;
+}
