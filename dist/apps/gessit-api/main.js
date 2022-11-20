@@ -51,7 +51,7 @@ let AppModule = class AppModule {
 };
 AppModule = tslib_1.__decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forRoot("mongodb+srv://Gustave:Yp3QW4xmuMnEHAiR@gessit-cluster.m6gvewv.mongodb.net/?retryWrites=true&w=majority"), communities_module_1.CommunitiesModule],
+        imports: [mongoose_1.MongooseModule.forRoot(process.env['MONGODB_URL']), communities_module_1.CommunitiesModule],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })
