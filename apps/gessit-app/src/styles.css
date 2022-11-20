@@ -16,7 +16,7 @@
 }
 
 .card-detail-img {
-    height: 255px;
+    height: 300px;
 }
 
 .detail-img {
@@ -28,4 +28,11 @@
 
 .about-erd {
     width: 65%;
+
+.form-group {
+    padding: 15px;
+}
+
+body {
+    background-color: #EFEFEF !important;
 }

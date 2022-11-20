@@ -1,0 +1,69 @@
+<div class="component">
+    <div class="card">
+        <form *ngIf="community$ | async as community;" (ngSubmit)="update()" #communityForm="ngForm">
+            <div ngModelGroup="community">
+                <div class="form-group">
+                    <h1>{{ title }}</h1>
+                    <br>
+                    <label>Name</label>
+                    <input type="text" class="form-control" placeholder="Name your community" value="{{ community.name }}" name="name" #name="ngModel" [(ngModel)]="community.name" [ngClass]="{'is-invalid': name.invalid && (name.dirty || name.touched)}" required>
+                    <div *ngIf="name.invalid && name.touched" class="invalid-feedback"></div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea class="form-control" placeholder="Describe your community" rows="3" value="{{ community.description }}" name="description" #description="ngModel" [(ngModel)]="community.description" [ngClass]="{'is-invalid': description.invalid && (description.dirty || description.touched)}" required></textarea>
+                    <div *ngIf="description.invalid && description.touched" class="invalid-feedback"></div>
+                </div>
+                <div class="form-group">
+                    <label>Image</label>
+                    <input type="text" class="form-control" placeholder="Give image url" value="{{ community.image }}" name="image" #image="ngModel" [(ngModel)]="community.image" [ngClass]="{'is-invalid': image.invalid && (image.dirty || image.touched)}" required>
+                    <div *ngIf="image.invalid && image.touched" class="invalid-feedback"></div>
+                </div>
+                <div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" name="isOpen" [(ngModel)]="community.isOpen">
+                        <label class="form-check-label">
+                            Do you want your community to be public?
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" [disabled]="!communityForm.valid">Submit</button>
+                </div>
+            </div>
+        </form>
+
+        <form *ngIf="createCommunity" (ngSubmit)="create()" #communityForm="ngForm">
+            <div ngModelGroup="community">
+                <div class="form-group">
+                    <h1>{{ title }}</h1>
+                    <br>
+                    <label>Name</label>
+                    <input type="text" class="form-control" placeholder="Name your community" name="name" #name="ngModel" [(ngModel)]="community.name" [ngClass]="{'is-invalid': name.invalid && (name.dirty || name.touched)}" required>
+                    <div *ngIf="name.invalid && name.touched" class="invalid-feedback"></div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea class="form-control" placeholder="Describe your community" rows="3" name="description" #description="ngModel" [(ngModel)]="community.description" [ngClass]="{'is-invalid': description.invalid && (description.dirty || description.touched)}" required></textarea>
+                    <div *ngIf="description.invalid && description.touched" class="invalid-feedback"></div>
+                </div>
+                <div class="form-group">
+                    <label>Image</label>
+                    <input type="text" class="form-control" placeholder="Give image url" name="image" #image="ngModel" [(ngModel)]="community.image" [ngClass]="{'is-invalid': image.invalid && (image.dirty || image.touched)}" required>
+                    <div *ngIf="image.invalid && image.touched" class="invalid-feedback"></div>
+                </div>
+                <div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" name="isOpen" [(ngModel)]="community.isOpen">
+                        <label class="form-check-label">
+                            Do you want your community to be public?
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" [disabled]="!communityForm.valid">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
