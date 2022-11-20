@@ -14,13 +14,14 @@ export class CommunitiesService {
         return this.communityRepository.find({});
     }
 
-    async createCommunity(name: string, description: string): Promise<Community> {
+    async createCommunity(name: string, description: string, image: string, isOpen: boolean): Promise<Community> {
         return this.communityRepository.create({
             name,
             description,
             ranking: 0,
             creationDate: new Date(),
-            image: "url"
+            image,
+            isOpen 
         });
     }
 

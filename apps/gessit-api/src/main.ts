@@ -16,7 +16,6 @@ async function bootstrap() {
   app.useGlobalFilters(new ValidationFilter);
   app.setGlobalPrefix(globalPrefix);
   app.useGlobalPipes(new ValidationPipe({
-    skipMissingProperties: true,
     exceptionFactory: (errors: ValidationError[]) => {
       const messages = errors.map(
         error => `${error.property} has wrong value ${error.value}, ${Object.values(error.constraints).join(', ')}`

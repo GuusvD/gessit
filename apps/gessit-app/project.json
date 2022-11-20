@@ -18,7 +18,10 @@
           "apps/gessit-app/src/favicon.ico",
           "apps/gessit-app/src/assets"
         ],
-        "styles": ["apps/gessit-app/src/styles.css", "node_modules/bootstrap/dist/css/bootstrap.min.css"],
+        "styles": [
+          "apps/gessit-app/src/styles.css",
+          "node_modules/bootstrap/dist/css/bootstrap.min.css"
+        ],
         "scripts": []
       },
       "configurations": {
@@ -64,7 +67,10 @@
           "browserTarget": "gessit-app:build:development"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "options": {
+        "proxyConfig": "apps/gessit-app/proxy.conf.json"
+      }
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
