@@ -15,6 +15,13 @@
     object-fit: cover;
 }
 
+.card-detail-img {
+    height: 255px;
+}
+
 .detail-img {
-    width: 50%;
+    justify-self: center;
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
 }

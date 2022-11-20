@@ -5,4 +5,6 @@ export interface Community {
     name: string;
     description: string;
     image: string;
+    creationDate: Date;
+    isOpen: boolean;
 }
