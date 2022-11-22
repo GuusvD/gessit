@@ -12,7 +12,7 @@ import { CommunitiesImService } from '../../services/communities.service';
 export class EditComponent implements OnInit {
   title: string | undefined;
   createCommunity: boolean | undefined;
-  community = new Community(undefined, undefined, undefined, undefined, undefined, undefined);
+  community = new Community();
   subscription: Subscription | undefined;
   communityId: string | null = null;
   community$: Observable<Community> | undefined;

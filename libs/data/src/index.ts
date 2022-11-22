@@ -1,12 +1,19 @@
 export * from './lib/data.module';
 
-export class Community {
-    constructor(
-        public _id: string | undefined,
-        public name: string | undefined,
-        public description: string | undefined,
-        public image: string | undefined,
-        public creationDate: Date | undefined,
-        public isOpen: boolean | undefined
-    ) {}
+export interface ICommunity {
+    _id: string;
+    name: string;
+    description: string;
+    image: string;
+    creationDate: Date
+    isOpen: boolean
+}
+
+export class Community implements ICommunity {
+    _id: string = '';
+    name: string = '';
+    description: string = '';
+    image: string = '';
+    creationDate: Date = new Date();
+    isOpen: boolean = true;
 }
