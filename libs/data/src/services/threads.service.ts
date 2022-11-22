@@ -1,5 +1,4 @@
 import { Injectable } from "@angular/core";
-import { Observable, of } from "rxjs";
 import { Thread } from "../entities/thread";
 
 @Injectable({providedIn: 'root',})
@@ -63,16 +62,16 @@ export class ThreadsImService {
         }
     ];
 
-    getAll(): Observable<Thread[]> {
-        return of(this.threadArray);
+    getAll(): Thread[] {
+        return this.threadArray;
     }
 
-    getAllByCommunity(communityId: string): Observable<Thread[]> {
-        return of(this.threadArray.filter(thread => thread.communityId === communityId));
+    getAllByCommunity(communityId: string): Thread[] {
+        return this.threadArray.filter(thread => thread.communityId === communityId);
     }
 
-    getById(threadId: string):  Observable<Thread> {
-        return of(this.threadArray.filter(thread => thread._id === threadId)[0]);
+    getById(threadId: string): Thread {
+        return this.threadArray.filter(thread => thread._id === threadId)[0];
     }
 
     create(thread: Thread) {

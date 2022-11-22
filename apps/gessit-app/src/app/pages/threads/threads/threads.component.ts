@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Thread } from 'libs/data/src/entities/thread';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ThreadsImService } from '../../../../../../../libs/data/src/services/threads.service';
 
 @Component({
@@ -10,15 +10,15 @@ import { ThreadsImService } from '../../../../../../../libs/data/src/services/th
   styleUrls: ['./threads.component.css'],
 })
 export class ThreadsComponent implements OnInit {
-  threads$: Observable<Thread[]> | undefined;
+  threads: Thread[] | undefined;
   communityId: string | null = null;
   subscription: Subscription | undefined;
 
-  constructor(private threadImService: ThreadsImService, private route: ActivatedRoute) {}
+  constructor(private threadsImService: ThreadsImService, private route: ActivatedRoute) {}
 
   fetch() {
     if (this.communityId) {
-      this.threads$ = this.threadImService.getAllByCommunity(this.communityId);
+      this.threads = this.threadsImService.getAllByCommunity(this.communityId);
     }
   }
 
@@ -36,7 +36,7 @@ export class ThreadsComponent implements OnInit {
 
   delete(id: string | undefined): void {
     if (id) {
-      this.threadImService.delete(id);
+      this.threadsImService.delete(id);
       this.fetch();
     }
   }

@@ -36,8 +36,18 @@
 
 body {
     background-color: #EFEFEF !important;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+nav {
+    padding-left: 40px !important;
 }
 
 .clear-both {
     clear: both;
+}
+
+.card-threads-title {
+    margin-top: 15px;
 }
