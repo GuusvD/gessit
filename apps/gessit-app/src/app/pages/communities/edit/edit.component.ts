@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Community } from '@gessit/data';
+import { Community } from 'libs/data/src/entities/community';
 import { Observable, Subscription, tap } from 'rxjs';
-import { CommunitiesImService } from '../../services/communities.service';
+import { CommunitiesImService } from '../../../../../../../libs/data/src/services/communities.service';
 
 @Component({
   selector: 'gessit-edit',
@@ -12,7 +12,7 @@ import { CommunitiesImService } from '../../services/communities.service';
 export class EditComponent implements OnInit {
   title: string | undefined;
   createCommunity: boolean | undefined;
-  community = new Community(undefined, undefined, undefined, undefined, undefined, undefined);
+  community = new Community();
   subscription: Subscription | undefined;
   communityId: string | null = null;
   community$: Observable<Community> | undefined;

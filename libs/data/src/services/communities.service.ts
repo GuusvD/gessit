@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Community } from "@gessit/data";
+import { Community } from "libs/data/src/entities/community";
 import { Observable, of } from "rxjs";
 
 @Injectable({providedIn: 'root',})
@@ -7,7 +7,7 @@ export class CommunitiesImService {
     private community? : Community;
     private communityArray: Community[] = [
         {
-            "_id": "0",
+            "_id": Math.random().toString(),
             "name": "School community",
             "description": "This is a school community.",
             "creationDate": new Date(),
@@ -15,7 +15,7 @@ export class CommunitiesImService {
             "isOpen": true
         },
         {
-            "_id": "1",
+            "_id": Math.random().toString(),
             "name": "Gaming community",
             "description": "This is a gaming community.",
             "creationDate": new Date(),
@@ -23,7 +23,7 @@ export class CommunitiesImService {
             "isOpen": true
         },
         {
-            "_id": "2",
+            "_id": Math.random().toString(),
             "name": "Drawing community",
             "description": "This is a drawing community.",
             "creationDate": new Date(),
@@ -31,7 +31,7 @@ export class CommunitiesImService {
             "isOpen": true
         },
         {
-            "_id": "3",
+            "_id": Math.random().toString(),
             "name": "Sports community",
             "description": "This is a sports community.",
             "creationDate": new Date(),
@@ -39,7 +39,7 @@ export class CommunitiesImService {
             "isOpen": true
         },
         {
-            "_id": "4",
+            "_id": Math.random().toString(),
             "name": "News community",
             "description": "This is a news community.",
             "creationDate": new Date(),
@@ -58,10 +58,9 @@ export class CommunitiesImService {
     }
 
     create(community: Community): Observable<any> {
-        this.community = new Community(undefined, undefined, undefined, undefined, undefined, undefined);
-        this.id = this.communityArray.length++;
+        this.community = new Community();
 
-        this.community._id = this.id.toString();
+        this.community._id = Math.random().toString();
         this.community.name = community.name;
         this.community.description = community.description;
         this.community.image = community.image;
@@ -73,7 +72,6 @@ export class CommunitiesImService {
             this.community.isOpen = community.isOpen;
         }
 
-        this.communityArray.pop();
         this.communityArray.push(this.community);
 
         return of({
@@ -83,7 +81,7 @@ export class CommunitiesImService {
     }
     
     update(community: Community): Observable<any> {
-        this.community = new Community(undefined, undefined, undefined, undefined, undefined, undefined);
+        this.community = new Community();
 
         this.community.name = community.name;
         this.community.description = community.description;
