@@ -4,7 +4,7 @@
             <div class="card-body">
                 <h5 class="float-start">{{ thread.title }}</h5>
                 <p class="float-end">{{ thread.creationDate | date: 'dd-MM-yyyy on HH:mm' }}</p>
-                <p class="clear-both">{{ thread.content.substring(0, 100) }}</p>
+                <p class="clear-both">{{ thread.content }}</p>
                 <hr>
                 <button class="btn btn-primary float-start clear-both">Details</button>
                 <p class="float-end">{{ thread.views }} views</p>
