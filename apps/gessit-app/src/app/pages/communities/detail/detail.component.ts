@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Community } from 'libs/data/src';
+import { Community } from 'libs/data/src/entities/community';
 import { Observable, Subscription } from 'rxjs';
-import { CommunitiesImService } from '../../../services/communities.service';
+import { CommunitiesImService } from '../../../../../../../libs/data/src/services/communities.service';
 
 @Component({
   selector: 'gessit-detail',

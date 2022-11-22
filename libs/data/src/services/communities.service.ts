@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Community } from "@gessit/data";
+import { Community } from "libs/data/src/entities/community";
 import { Observable, of } from "rxjs";
 
 @Injectable({providedIn: 'root',})
