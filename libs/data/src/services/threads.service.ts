@@ -106,4 +106,12 @@ export class ThreadsImService {
     delete(threadId: string) {
         this.threadArray = this.threadArray.filter(thread => thread._id !== threadId);
     }
+
+    increaseViews(threadId: string) {
+        let thread = this.threadArray.filter(thread => thread._id === threadId)[0];
+        const index = this.threadArray.map(t => t._id).indexOf(thread._id);
+        thread.views++;
+
+        this.threadArray[index] = thread;
+    }
 }

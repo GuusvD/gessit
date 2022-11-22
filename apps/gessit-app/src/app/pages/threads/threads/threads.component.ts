@@ -34,10 +34,14 @@ export class ThreadsComponent implements OnInit {
     this.subscription?.unsubscribe;
   }
 
-  delete(id: string | undefined): void {
+  delete(id: string): void {
     if (id) {
       this.threadsImService.delete(id);
       this.fetch();
     }
+  }
+
+  increaseViews(id: string): void {
+    this.threadsImService.increaseViews(id);
   }
 }
