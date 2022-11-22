@@ -3,7 +3,7 @@ import { Observable, of } from "rxjs";
 import { Thread } from "../entities/thread";
 
 @Injectable({providedIn: 'root',})
-export class CommunitiesImService {
+export class ThreadsImService {
     private thread?: Thread;
     private threadArray: Thread[] = [
         {
@@ -65,6 +65,10 @@ export class CommunitiesImService {
 
     getAll(): Observable<Thread[]> {
         return of(this.threadArray);
+    }
+
+    getAllByCommunity(communityId: string): Observable<Thread[]> {
+        return of(this.threadArray.filter(thread => thread.communityId === communityId));
     }
 
     getById(threadId: string):  Observable<Thread> {

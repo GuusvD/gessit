@@ -37,3 +37,7 @@
 body {
     background-color: #EFEFEF !important;
 }
+
+.clear-both {
+    clear: both;
+}

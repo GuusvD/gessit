@@ -15,6 +15,7 @@ import { AboutComponent } from './pages/about/about.component';
 import { DetailComponent } from './pages/communities/detail/detail.component';
 import { EditComponent } from './pages/communities/edit/edit.component';
 import { FormsModule } from '@angular/forms';
+import { ThreadsComponent } from './pages/threads/threads/threads.component';
 
 @NgModule({
   declarations: [
@@ -27,13 +28,14 @@ import { FormsModule } from '@angular/forms';
     AboutComponent,
     DetailComponent,
     EditComponent,
+    ThreadsComponent,
   ],
   imports: [
     BrowserModule,
     RouterModule.forRoot(appRoutes, { initialNavigation: 'enabledBlocking' }),
     NgbModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
