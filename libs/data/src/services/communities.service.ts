@@ -7,7 +7,7 @@ export class CommunitiesImService {
     private community? : Community;
     private communityArray: Community[] = [
         {
-            "_id": Math.random().toString(),
+            "_id": "0",
             "name": "School community",
             "description": "This is a school community.",
             "creationDate": new Date(),
@@ -15,7 +15,7 @@ export class CommunitiesImService {
             "isOpen": true
         },
         {
-            "_id": Math.random().toString(),
+            "_id": "1",
             "name": "Gaming community",
             "description": "This is a gaming community.",
             "creationDate": new Date(),
@@ -23,7 +23,7 @@ export class CommunitiesImService {
             "isOpen": true
         },
         {
-            "_id": Math.random().toString(),
+            "_id": "2",
             "name": "Drawing community",
             "description": "This is a drawing community.",
             "creationDate": new Date(),
@@ -31,7 +31,7 @@ export class CommunitiesImService {
             "isOpen": true
         },
         {
-            "_id": Math.random().toString(),
+            "_id": "3",
             "name": "Sports community",
             "description": "This is a sports community.",
             "creationDate": new Date(),
@@ -39,7 +39,7 @@ export class CommunitiesImService {
             "isOpen": true
         },
         {
-            "_id": Math.random().toString(),
+            "_id": "4",
             "name": "News community",
             "description": "This is a news community.",
             "creationDate": new Date(),
@@ -47,7 +47,6 @@ export class CommunitiesImService {
             "isOpen": true
         }
     ];
-    private id: number | undefined;
 
     getAll(): Observable<Community[]> {
         return of(this.communityArray);
@@ -57,7 +56,7 @@ export class CommunitiesImService {
         return of(this.communityArray.filter(community => community._id === communityId)[0]);
     }
 
-    create(community: Community): Observable<any> {
+    create(community: Community) {
         this.community = new Community();
 
         this.community._id = Math.random().toString();
@@ -73,14 +72,9 @@ export class CommunitiesImService {
         }
 
         this.communityArray.push(this.community);
-
-        return of({
-          status: 201,
-          message: 'success',
-        });
     }
     
-    update(community: Community): Observable<any> {
+    update(community: Community) {
         this.community = new Community();
 
         this.community.name = community.name;
@@ -92,19 +86,9 @@ export class CommunitiesImService {
         let oldCommunity = this.communityArray[index];
         oldCommunity = { ...this.community };
         this.communityArray[index] = oldCommunity;
-    
-        return of({
-            status: 201,
-            message: 'success',
-        });
     }
 
     delete(communityId: string) {
         this.communityArray = this.communityArray.filter(community => community._id !== communityId);
-
-        return of({
-            status: 201,
-            message: 'success',
-        });
     }
 }
