@@ -7,6 +7,7 @@
                 <p class="clear-both">{{ thread.content }}</p>
                 <hr>
                 <button class="btn btn-primary float-start clear-both">Details</button>
+                <button class="btn btn-danger" (click)="delete(thread._id)"><i class="bi bi-trash3"></i></button>
                 <p class="float-end">{{ thread.views }} views</p>
             </div>
         </div>
