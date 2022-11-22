@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Community } from '@gessit/data';
 import { Observable, Subscription, tap } from 'rxjs';
-import { CommunitiesImService } from '../../services/communities.service';
+import { CommunitiesImService } from '../../../services/communities.service';
 
 @Component({
   selector: 'gessit-edit',

@@ -1,8 +1,8 @@
 import { Route } from '@angular/router';
 import { AboutComponent } from './pages/about/about.component';
-import { CommunitiesComponent } from './pages/communities/communities.component';
-import { DetailComponent } from './pages/detail/detail.component';
-import { EditComponent } from './pages/edit/edit.component';
+import { CommunitiesComponent } from './pages/communities/communities/communities.component';
+import { DetailComponent } from './pages/communities/detail/detail.component';
+import { EditComponent } from './pages/communities/edit/edit.component';
 import { HomepageComponent } from './pages/homepage/homepage.component';
 
 export const appRoutes: Route[] = [

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Community } from 'libs/data/src';
 import { Observable } from 'rxjs';
-import { CommunitiesImService } from '../../services/communities.service';
+import { CommunitiesImService } from '../../../services/communities.service';
 
 @Component({
   selector: 'gessit-communities',

@@ -10,10 +10,10 @@ import { appRoutes } from './app.routes';
 import { NavComponent } from './shared/nav/nav.component';
 import { HomepageComponent } from './pages/homepage/homepage.component';
 import { FooterComponent } from './shared/footer/footer.component';
-import { CommunitiesComponent } from './pages/communities/communities.component';
+import { CommunitiesComponent } from './pages/communities/communities/communities.component';
 import { AboutComponent } from './pages/about/about.component';
-import { DetailComponent } from './pages/detail/detail.component';
-import { EditComponent } from './pages/edit/edit.component';
+import { DetailComponent } from './pages/communities/detail/detail.component';
+import { EditComponent } from './pages/communities/edit/edit.component';
 import { FormsModule } from '@angular/forms';
 
 @NgModule({
