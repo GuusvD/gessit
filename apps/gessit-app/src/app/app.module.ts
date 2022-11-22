@@ -12,7 +12,8 @@ import { HomepageComponent } from './pages/homepage/homepage.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { CommunitiesComponent } from './pages/communities/communities/communities.component';
 import { AboutComponent } from './pages/about/about.component';
-import { DetailComponent } from './pages/communities/detail/detail.component';
+import * as CommunitiesDetailComponent from './pages/communities/detail/detail.component';
+import * as ThreadsDetailComponent from './pages/threads/detail/detail.component';
 import { EditComponent } from './pages/communities/edit/edit.component';
 import { FormsModule } from '@angular/forms';
 import { ThreadsComponent } from './pages/threads/threads/threads.component';
@@ -26,9 +27,10 @@ import { ThreadsComponent } from './pages/threads/threads/threads.component';
     FooterComponent,
     CommunitiesComponent,
     AboutComponent,
-    DetailComponent,
     EditComponent,
     ThreadsComponent,
+    CommunitiesDetailComponent.DetailComponent,
+    ThreadsDetailComponent.DetailComponent
   ],
   imports: [
     BrowserModule,

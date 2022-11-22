@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Community } from 'libs/data/src/entities/community';
+import { Thread } from 'libs/data/src/entities/thread';
+import { ThreadsImService } from 'libs/data/src/services/threads.service';
 import { Subscription } from 'rxjs';
-import { CommunitiesImService } from '../../../../../../../libs/data/src/services/communities.service';
 
 @Component({
   selector: 'gessit-detail',
@@ -10,17 +10,17 @@ import { CommunitiesImService } from '../../../../../../../libs/data/src/service
   styleUrls: ['./detail.component.css'],
 })
 export class DetailComponent implements OnInit {
-  communityId: string | null = null;
+  threadId: string | null = null;
   subscription: Subscription | undefined;
-  community: Community | undefined;
+  thread: Thread | undefined;
 
-  constructor(private route: ActivatedRoute, private communitiesImService: CommunitiesImService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private threadsImService: ThreadsImService, private router: Router) {}
 
   ngOnInit(): void {
     this.subscription = this.route.paramMap.subscribe(params => {
-      this.communityId = params.get('id');
-      if (this.communityId) {
-        this.community = this.communitiesImService.getById(this.communityId);
+      this.threadId = params.get('id');
+      if (this.threadId) {
+        this.thread = this.threadsImService.getById(this.threadId);
       }
     });
   }
@@ -31,8 +31,8 @@ export class DetailComponent implements OnInit {
 
   delete(id: string | undefined): void {
     if (id) {
-      this.communitiesImService.delete(id);
+      this.threadsImService.delete(id);
       this.router.navigate(['/communities']);
-    } 
+    }
   }
 }

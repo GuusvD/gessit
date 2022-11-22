@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import { Community } from "libs/data/src/entities/community";
-import { Observable, of } from "rxjs";
 
 @Injectable({providedIn: 'root',})
 export class CommunitiesImService {
@@ -48,12 +47,12 @@ export class CommunitiesImService {
         }
     ];
 
-    getAll(): Observable<Community[]> {
-        return of(this.communityArray);
+    getAll(): Community[] {
+        return this.communityArray;
     }
 
-    getById(communityId: string):  Observable<Community> {
-        return of(this.communityArray.filter(community => community._id === communityId)[0]);
+    getById(communityId: string):  Community {
+        return this.communityArray.filter(community => community._id === communityId)[0];
     }
 
     create(community: Community) {
