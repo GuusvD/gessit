@@ -14,7 +14,8 @@ import { CommunitiesComponent } from './pages/communities/communities/communitie
 import { AboutComponent } from './pages/about/about.component';
 import * as CommunitiesDetailComponent from './pages/communities/detail/detail.component';
 import * as ThreadsDetailComponent from './pages/threads/detail/detail.component';
-import { EditComponent } from './pages/communities/edit/edit.component';
+import * as CommunitiesEditComponent from './pages/communities/edit/edit.component';
+import * as ThreadsEditComponent from './pages/threads/edit/edit.component';
 import { FormsModule } from '@angular/forms';
 import { ThreadsComponent } from './pages/threads/threads/threads.component';
 
@@ -27,10 +28,11 @@ import { ThreadsComponent } from './pages/threads/threads/threads.component';
     FooterComponent,
     CommunitiesComponent,
     AboutComponent,
-    EditComponent,
     ThreadsComponent,
     CommunitiesDetailComponent.DetailComponent,
-    ThreadsDetailComponent.DetailComponent
+    ThreadsDetailComponent.DetailComponent,
+    CommunitiesEditComponent.EditComponent,
+    ThreadsEditComponent.EditComponent
   ],
   imports: [
     BrowserModule,

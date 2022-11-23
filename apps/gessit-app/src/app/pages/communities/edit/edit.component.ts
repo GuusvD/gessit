@@ -20,8 +20,8 @@ export class EditComponent implements OnInit {
   constructor(private route: ActivatedRoute, private communitiesImService: CommunitiesImService, private router: Router) {}
 
   ngOnInit(): void {
-    this.title = this.route.snapshot.data['title'] || undefined
-    this.createCommunity = this.route.snapshot.data['createCommunity'] || false
+    this.title = this.route.snapshot.data['title'] || undefined;
+    this.createCommunity = this.route.snapshot.data['createCommunity'] || false;
 
     if (!this.createCommunity) {
       this.subscription = this.route.paramMap.subscribe(params => {

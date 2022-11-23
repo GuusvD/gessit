@@ -1,5 +1,28 @@
 <div class="component">
     <div class="card">
-        <p>works!</p>
+        <form *ngIf="createThread" (ngSubmit)="create()" #threadForm="ngForm">
+            <div ngModelGroup="thread">
+                <div class="form-group">
+                    <h1>{{ pageTitle }}</h1>
+                    <br>
+                    <label>Title</label>
+                    <input type="text" class="form-control" placeholder="Give thread a title" name="title" #title="ngModel" [(ngModel)]="newThread.title" [ngClass]="{'is-invalid': title.invalid && (title.dirty || title.touched)}" required>
+                    <div *ngIf="title.invalid && title.touched" class="invalid-feedback"></div>
+                </div>
+                <div class="form-group">
+                    <label>Content</label>
+                    <textarea class="form-control" placeholder="Give some content" rows="3" name="content" #content="ngModel" [(ngModel)]="newThread.content" [ngClass]="{'is-invalid': content.invalid && (content.dirty || content.touched)}"></textarea>
+                    <div *ngIf="content.invalid && content.touched" class="invalid-feedback"></div>
+                </div>
+                <div class="form-group">
+                    <label>Image</label>
+                    <input type="text" class="form-control" placeholder="Give image url" name="image" #image="ngModel" [(ngModel)]="newThread.image" [ngClass]="{'is-invalid': image.invalid && (image.dirty || image.touched)}">
+                    <div *ngIf="image.invalid && image.touched" class="invalid-feedback"></div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" [disabled]="!threadForm.valid">Submit</button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
