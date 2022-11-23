@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs';
 })
 export class DetailComponent implements OnInit {
   threadId: string | null = null;
+  communityId: string | null = null;
   subscription: Subscription | undefined;
   thread: Thread | undefined;
 
@@ -19,6 +20,7 @@ export class DetailComponent implements OnInit {
   ngOnInit(): void {
     this.subscription = this.route.paramMap.subscribe(params => {
       this.threadId = params.get('id');
+      this.communityId = params.get('c-id');
       if (this.threadId) {
         this.thread = this.threadsImService.getById(this.threadId);
       }
@@ -32,7 +34,7 @@ export class DetailComponent implements OnInit {
   delete(id: string | undefined): void {
     if (id) {
       this.threadsImService.delete(id);
-      this.router.navigate(['/communities']);
+      this.router.navigate([`/communities/${this.communityId}`]);
     }
   }
 }
