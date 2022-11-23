@@ -15,12 +15,25 @@ export class EditComponent implements OnInit {
   newThread = new Thread();
   subscription: Subscription | undefined;
   communityId: string | null = null;
+  threadId: string | null = null;
+  thread: Thread | undefined;
 
   constructor(private route: ActivatedRoute, private threadsImService: ThreadsImService, private router: Router) {}
 
   ngOnInit(): void {
     this.pageTitle = this.route.snapshot.data['title'] || undefined;
     this.createThread = this.route.snapshot.data['createThread'] || false;
+
+    this.subscription = this.route.paramMap.subscribe(params => {
+      this.communityId = params.get('c-id');
+
+      if (!this.createThread) {
+        this.threadId = params.get('id');
+        if (this.threadId) {
+          this.thread = this.threadsImService.getById(this.threadId);
+        }
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -28,15 +41,16 @@ export class EditComponent implements OnInit {
   }
 
   create() {
-    this.subscription = this.route.paramMap.subscribe(params => {
-      this.communityId = params.get('id');
-      
-      if (this.communityId) {
-        this.newThread.communityId = this.communityId;
-      }
-    });
+    if (this.communityId) {
+      this.newThread.communityId = this.communityId;
+    }
 
     this.threadsImService.create(this.newThread);
     this.router.navigate([`/communities/${this.communityId}`]);
+  }
+
+  update() {
+    this.threadsImService.update(this.thread!);
+    this.router.navigate([`/communities/${this.communityId}/threads/${this.threadId}`]);
   }
 }
