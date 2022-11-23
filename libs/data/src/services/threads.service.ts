@@ -93,8 +93,14 @@ export class ThreadsImService {
     update(thread: Thread) {
         this.thread = new Thread();
 
+        this.thread._id = thread._id;
+        this.thread.communityId = thread.communityId;
         this.thread.title = thread.title;
         this.thread.content = thread.content;
+        this.thread.views = thread.views;
+        this.thread.likes = thread.likes;
+        this.thread.dislikes = thread.dislikes;
+        this.thread.creationDate = thread.creationDate;
         this.thread.image = thread.image;
 
         const index = this.threadArray.map(t => t._id).indexOf(thread._id);
