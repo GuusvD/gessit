@@ -76,6 +76,7 @@ export class CommunitiesImService {
     update(community: Community) {
         this.community = new Community();
 
+        this.community._id = community._id;
         this.community.name = community.name;
         this.community.description = community.description;
         this.community.image = community.image;
