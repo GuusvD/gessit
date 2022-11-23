@@ -40,6 +40,6 @@ export class EditComponent implements OnInit {
 
   update() {
     this.communitiesImService.update(this.community!);
-    this.router.navigate(['/communities']);
+    this.router.navigate([`/communities/${this.communityId}`]);
   }
 }
