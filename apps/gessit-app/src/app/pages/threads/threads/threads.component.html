@@ -1,6 +1,6 @@
 <div class="row">
-    <div *ngFor="let thread of threads" class="col-6">
-        <div class="card">
+    <div *ngFor="let thread of threads" class="col-6 col-thread">
+        <div class="card h-100">
             <div class="card-body">
                 <h5 class="float-start">{{ thread.title }}</h5>
                 <p class="float-end">{{ thread.creationDate | date: 'dd-MM-yyyy on HH:mm' }}</p>
