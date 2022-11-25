@@ -1,0 +1,47 @@
+<div class="component">
+    <div class="row">
+
+        <div class="col-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h1>{{ community?.name }}</h1>
+                    <br>
+                    <p>{{ community?.description }}</p>
+                    <br>
+                    <hr>
+                    <p>Public community: {{ community?.isOpen }}</p>
+                    <p>Created on: {{ community?.creationDate | date: 'dd-MM-yyyy on HH:mm' }}</p>
+                    <hr>
+                    <div class="btn-group">
+                        <div>
+                            <button class="btn btn-primary" routerLink="/communities/{{ community?._id }}/edit"><i class="bi bi-pencil"></i></button>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-danger" (click)="delete(community?._id)"><i class="bi bi-trash3"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="card h-100">
+                <div class="card-body card-detail-img">
+                    <img class="detail-img" src="{{ community?.image }}">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 card-threads-title">
+            <div class="card card-threads-title">
+                <div class="card-body">
+                    <h2 class="float-start">Threads</h2>
+                    <button class="btn btn-primary float-end" routerLink="/communities/{{ communityId }}/threads/create"><i class="bi bi-plus"></i>Create</button>
+                </div>
+            </div>
+        </div>
+
+        <gessit-threads></gessit-threads>
+
+    </div>
+</div>

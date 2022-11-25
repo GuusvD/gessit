@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Community } from "@gessit/data";
-import { Observable, of } from "rxjs";
+import { Community } from "libs/data/src/entities/community";
 
 @Injectable({providedIn: 'root',})
 export class CommunitiesImService {
@@ -47,21 +46,19 @@ export class CommunitiesImService {
             "isOpen": true
         }
     ];
-    private id: number | undefined;
 
-    getAll(): Observable<Community[]> {
-        return of(this.communityArray);
+    getAll(): Community[] {
+        return this.communityArray;
     }
 
-    getById(communityId: string):  Observable<Community> {
-        return of(this.communityArray.filter(community => community._id === communityId)[0]);
+    getById(communityId: string):  Community {
+        return this.communityArray.filter(community => community._id === communityId)[0];
     }
 
-    create(community: Community): Observable<any> {
-        this.community = new Community(undefined, undefined, undefined, undefined, undefined, undefined);
-        this.id = this.communityArray.length++;
+    create(community: Community) {
+        this.community = new Community();
 
-        this.community._id = this.id.toString();
+        this.community._id = Math.random().toString();
         this.community.name = community.name;
         this.community.description = community.description;
         this.community.image = community.image;
@@ -73,18 +70,13 @@ export class CommunitiesImService {
             this.community.isOpen = community.isOpen;
         }
 
-        this.communityArray.pop();
         this.communityArray.push(this.community);
-
-        return of({
-          status: 201,
-          message: 'success',
-        });
     }
     
-    update(community: Community): Observable<any> {
-        this.community = new Community(undefined, undefined, undefined, undefined, undefined, undefined);
+    update(community: Community) {
+        this.community = new Community();
 
+        this.community._id = community._id;
         this.community.name = community.name;
         this.community.description = community.description;
         this.community.image = community.image;
@@ -94,19 +86,9 @@ export class CommunitiesImService {
         let oldCommunity = this.communityArray[index];
         oldCommunity = { ...this.community };
         this.communityArray[index] = oldCommunity;
-    
-        return of({
-            status: 201,
-            message: 'success',
-        });
     }
 
     delete(communityId: string) {
         this.communityArray = this.communityArray.filter(community => community._id !== communityId);
-
-        return of({
-            status: 201,
-            message: 'success',
-        });
     }
 }

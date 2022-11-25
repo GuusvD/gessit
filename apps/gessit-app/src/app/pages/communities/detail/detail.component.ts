@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Community } from 'libs/data/src';
-import { Observable, Subscription } from 'rxjs';
-import { CommunitiesImService } from '../../services/communities.service';
+import { Community } from 'libs/data/src/entities/community';
+import { Subscription } from 'rxjs';
+import { CommunitiesImService } from '../../../../../../../libs/data/src/services/communities.service';
 
 @Component({
   selector: 'gessit-detail',
@@ -12,7 +12,7 @@ import { CommunitiesImService } from '../../services/communities.service';
 export class DetailComponent implements OnInit {
   communityId: string | null = null;
   subscription: Subscription | undefined;
-  community$: Observable<Community> | undefined;
+  community: Community | undefined;
 
   constructor(private route: ActivatedRoute, private communitiesImService: CommunitiesImService, private router: Router) {}
 
@@ -20,7 +20,7 @@ export class DetailComponent implements OnInit {
     this.subscription = this.route.paramMap.subscribe(params => {
       this.communityId = params.get('id');
       if (this.communityId) {
-        this.community$ = this.communitiesImService.getById(this.communityId);
+        this.community = this.communitiesImService.getById(this.communityId);
       }
     });
   }

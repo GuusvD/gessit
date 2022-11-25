@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Community } from 'libs/data/src';
-import { Observable } from 'rxjs';
-import { CommunitiesImService } from '../../services/communities.service';
+import { Community } from 'libs/data/src/entities/community';
+import { CommunitiesImService } from '../../../../../../../libs/data/src/services/communities.service';
 
 @Component({
   selector: 'gessit-communities',
@@ -9,14 +8,14 @@ import { CommunitiesImService } from '../../services/communities.service';
   styleUrls: ['./communities.component.css'],
 })
 export class CommunitiesComponent implements OnInit {
-  communities$: Observable<Community[]> | undefined;
+  communities: Community[] | undefined;
 
-  constructor(private communityImService: CommunitiesImService) {
+  constructor(private communitiesImService: CommunitiesImService) {
     this.fetch();
   }
 
   fetch() {
-    this.communities$ = this.communityImService.getAll();
+    this.communities = this.communitiesImService.getAll();
   }
 
   ngOnInit(): void {
@@ -25,7 +24,7 @@ export class CommunitiesComponent implements OnInit {
 
   delete(id: string | undefined): void {
     if (id) {
-      this.communityImService.delete(id);
+      this.communitiesImService.delete(id);
       this.fetch();
     }
   }
