@@ -14,7 +14,7 @@ export const appRoutes: Route[] = [
     { path: 'communities/create', pathMatch: 'full', component: CommunitiesEditComponent.EditComponent, data: { createCommunity: true, title: 'Create community' }},
     { path: 'communities/:id/edit', pathMatch: 'full', component: CommunitiesEditComponent.EditComponent, data: { createCommunity: false, title: 'Edit community' }},
     { path: 'communities/:id', pathMatch: 'full', component: CommunitiesDetailComponent.DetailComponent },
-    { path: 'communities/:id/threads/create', pathMatch: 'full', component: ThreadsEditComponent.EditComponent, data: { createThread: true, title: 'Create thread' }},
+    { path: 'communities/:c-id/threads/create', pathMatch: 'full', component: ThreadsEditComponent.EditComponent, data: { createThread: true, title: 'Create thread' }},
     { path: 'communities/:c-id/threads/:id/edit', pathMatch: 'full', component: ThreadsEditComponent.EditComponent, data: { createThread: false, title: 'Edit thread' }},
     { path: 'communities/:c-id/threads/:id', pathMatch: 'full', component: ThreadsDetailComponent.DetailComponent },
     { path: '**', redirectTo: 'homepage' }
