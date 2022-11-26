@@ -1,12 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { CommunitiesRepository } from "../repositories/communities.repository";
 import { Community } from "../schemas/community.schema";
+import { Types } from "mongoose";
 
 @Injectable()
 export class CommunitiesService {
     constructor(private readonly communityRepository : CommunitiesRepository) {}
 
-    async getCommunityById(id: string): Promise<Community> {
+    async getCommunityById(id: Types.ObjectId): Promise<Community> {
         return this.communityRepository.findOne({ _id: id });
     }
 
@@ -16,6 +17,7 @@ export class CommunitiesService {
 
     async createCommunity(name: string, description: string, image: string, isOpen: boolean): Promise<Community> {
         return this.communityRepository.create({
+            _id: new Types.ObjectId(),
             name,
             description,
             ranking: 0,
@@ -26,10 +28,11 @@ export class CommunitiesService {
     }
 
     async updateCommunity(id: string, community: Partial<Community>): Promise<Community> {
-        return this.communityRepository.findOneAndUpdate({ _id: id }, community);
+        community._id = new Types.ObjectId(community._id);
+        return this.communityRepository.findOneAndUpdate({ _id: new Types.ObjectId(id) }, community);
     }
 
-    async deleteCommunity(id: string): Promise<Community> {
+    async deleteCommunity(id: Types.ObjectId): Promise<Community> {
         return this.communityRepository.findOneAndDelete({ _id: id });
     }
 }

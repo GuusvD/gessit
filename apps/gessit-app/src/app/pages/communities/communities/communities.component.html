@@ -19,7 +19,7 @@
                     </p>
                     <hr />
                     <button type="button" class="btn btn-primary" routerLink="/communities/{{ community._id }}">Details</button>
-                    <button type="button" class="btn btn-danger" (click)="delete(community._id)"><i class="bi bi-trash3"></i></button>
+                    <button type="button" class="btn btn-danger" (click)="delete(community._id.toString())"><i class="bi bi-trash3"></i></button>
                 </div>
             </div>
         </div>

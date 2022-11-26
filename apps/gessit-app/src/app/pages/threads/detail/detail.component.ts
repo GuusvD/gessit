@@ -22,7 +22,7 @@ export class DetailComponent implements OnInit {
       this.threadId = params.get('id');
       this.communityId = params.get('c-id');
       if (this.threadId) {
-        this.thread = this.threadsImService.getById(this.threadId);
+        this.threadsImService.getById(this.threadId).subscribe((t) => (this.thread = t)).unsubscribe;
       }
     });
   }
