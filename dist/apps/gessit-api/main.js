@@ -11,7 +11,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const auth_service_1 = __webpack_require__("./apps/gessit-api/src/auth/auth.service.ts");
+const auth_service_1 = __webpack_require__("./apps/gessit-api/src/app/auth/auth.service.ts");
 const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
 let AppController = class AppController {
     constructor(authService) {
@@ -60,8 +60,8 @@ const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const core_1 = __webpack_require__("@nestjs/core");
 const mongoose_1 = __webpack_require__("@nestjs/mongoose");
-const auth_module_1 = __webpack_require__("./apps/gessit-api/src/auth/auth.module.ts");
-const jwt_auth_guard_1 = __webpack_require__("./apps/gessit-api/src/auth/jwt-auth.guard.ts");
+const auth_module_1 = __webpack_require__("./apps/gessit-api/src/app/auth/auth.module.ts");
+const jwt_auth_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/jwt-auth.guard.ts");
 const common_2 = __webpack_require__("@nestjs/common");
 exports.IS_PUBLIC_KEY = 'isPublic';
 const Public = () => (0, common_2.SetMetadata)(exports.IS_PUBLIC_KEY, true);
@@ -70,7 +70,7 @@ const app_controller_1 = __webpack_require__("./apps/gessit-api/src/app/app.cont
 const app_service_1 = __webpack_require__("./apps/gessit-api/src/app/app.service.ts");
 const communities_module_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.module.ts");
 const threads_module_1 = __webpack_require__("./apps/gessit-api/src/app/communities/threads.module.ts");
-const user_module_1 = __webpack_require__("./apps/gessit-api/src/user/user.module.ts");
+const user_module_1 = __webpack_require__("./apps/gessit-api/src/app/user/user.module.ts");
 let AppModule = class AppModule {
 };
 AppModule = tslib_1.__decorate([
@@ -108,6 +108,206 @@ AppService = tslib_1.__decorate([
     (0, common_1.Injectable)()
 ], AppService);
 exports.AppService = AppService;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/auth/auth.module.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AuthModule = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const auth_service_1 = __webpack_require__("./apps/gessit-api/src/app/auth/auth.service.ts");
+const local_strategy_1 = __webpack_require__("./apps/gessit-api/src/app/auth/local.strategy.ts");
+const jwt_strategy_1 = __webpack_require__("./apps/gessit-api/src/app/auth/jwt.strategy.ts");
+const user_module_1 = __webpack_require__("./apps/gessit-api/src/app/user/user.module.ts");
+const passport_1 = __webpack_require__("@nestjs/passport");
+const jwt_1 = __webpack_require__("@nestjs/jwt");
+const constant_1 = __webpack_require__("./apps/gessit-api/src/app/auth/constant.ts");
+let AuthModule = class AuthModule {
+};
+AuthModule = tslib_1.__decorate([
+    (0, common_1.Module)({
+        imports: [
+            user_module_1.UsersModule,
+            passport_1.PassportModule,
+            jwt_1.JwtModule.register({
+                secret: constant_1.jwtConstants.secret,
+                signOptions: { expiresIn: '60s' },
+            }),
+        ],
+        providers: [auth_service_1.AuthService, local_strategy_1.LocalStrategy, jwt_strategy_1.JwtStrategy],
+        exports: [auth_service_1.AuthService],
+    })
+], AuthModule);
+exports.AuthModule = AuthModule;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/auth/auth.service.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AuthService = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const user_service_1 = __webpack_require__("./apps/gessit-api/src/app/user/user.service.ts");
+const jwt_1 = __webpack_require__("@nestjs/jwt");
+let AuthService = class AuthService {
+    constructor(usersService, jwtService) {
+        this.usersService = usersService;
+        this.jwtService = jwtService;
+    }
+    validateUser(username, pass) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const user = yield this.usersService.findOne(username);
+            if (user && user.password === pass) {
+                const { password } = user, result = tslib_1.__rest(user, ["password"]);
+                return result;
+            }
+            return null;
+        });
+    }
+    login(user) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const payload = { username: user.username, sub: user.userId };
+            return {
+                access_token: this.jwtService.sign(payload),
+            };
+        });
+    }
+};
+AuthService = tslib_1.__decorate([
+    (0, common_1.Injectable)(),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof user_service_1.UsersService !== "undefined" && user_service_1.UsersService) === "function" ? _a : Object, typeof (_b = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _b : Object])
+], AuthService);
+exports.AuthService = AuthService;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/auth/constant.ts":
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.jwtConstants = void 0;
+exports.jwtConstants = {
+    secret: 'secretKey',
+};
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/auth/jwt-auth.guard.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.JwtAuthGuard = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const core_1 = __webpack_require__("@nestjs/core");
+const passport_1 = __webpack_require__("@nestjs/passport");
+const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
+let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
+    constructor(reflector) {
+        super();
+        this.reflector = reflector;
+    }
+    canActivate(context) {
+        const isPublic = this.reflector.getAllAndOverride(app_module_1.IS_PUBLIC_KEY, [
+            context.getHandler(),
+            context.getClass(),
+        ]);
+        if (isPublic) {
+            return true;
+        }
+        return super.canActivate(context);
+    }
+};
+JwtAuthGuard = tslib_1.__decorate([
+    (0, common_1.Injectable)(),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof core_1.Reflector !== "undefined" && core_1.Reflector) === "function" ? _a : Object])
+], JwtAuthGuard);
+exports.JwtAuthGuard = JwtAuthGuard;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/auth/jwt.strategy.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.JwtStrategy = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const passport_jwt_1 = __webpack_require__("passport-jwt");
+const passport_1 = __webpack_require__("@nestjs/passport");
+const common_1 = __webpack_require__("@nestjs/common");
+const constant_1 = __webpack_require__("./apps/gessit-api/src/app/auth/constant.ts");
+let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
+    constructor() {
+        super({
+            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
+            ignoreExpiration: false,
+            secretOrKey: constant_1.jwtConstants.secret,
+        });
+    }
+    validate(payload) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return { userId: payload.sub, username: payload.username };
+        });
+    }
+};
+JwtStrategy = tslib_1.__decorate([
+    (0, common_1.Injectable)(),
+    tslib_1.__metadata("design:paramtypes", [])
+], JwtStrategy);
+exports.JwtStrategy = JwtStrategy;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/auth/local.strategy.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LocalStrategy = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const passport_local_1 = __webpack_require__("passport-local");
+const passport_1 = __webpack_require__("@nestjs/passport");
+const common_1 = __webpack_require__("@nestjs/common");
+const auth_service_1 = __webpack_require__("./apps/gessit-api/src/app/auth/auth.service.ts");
+let LocalStrategy = class LocalStrategy extends (0, passport_1.PassportStrategy)(passport_local_1.Strategy) {
+    constructor(authService) {
+        super();
+        this.authService = authService;
+    }
+    validate(username, password) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const user = yield this.authService.validateUser(username, password);
+            if (!user) {
+                throw new common_1.UnauthorizedException();
+            }
+            return user;
+        });
+    }
+};
+LocalStrategy = tslib_1.__decorate([
+    (0, common_1.Injectable)(),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof auth_service_1.AuthService !== "undefined" && auth_service_1.AuthService) === "function" ? _a : Object])
+], LocalStrategy);
+exports.LocalStrategy = LocalStrategy;
 
 
 /***/ }),
@@ -858,207 +1058,7 @@ exports.ValidationFilter = ValidationFilter;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/auth/auth.module.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AuthModule = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const common_1 = __webpack_require__("@nestjs/common");
-const auth_service_1 = __webpack_require__("./apps/gessit-api/src/auth/auth.service.ts");
-const local_strategy_1 = __webpack_require__("./apps/gessit-api/src/auth/local.strategy.ts");
-const jwt_strategy_1 = __webpack_require__("./apps/gessit-api/src/auth/jwt.strategy.ts");
-const user_module_1 = __webpack_require__("./apps/gessit-api/src/user/user.module.ts");
-const passport_1 = __webpack_require__("@nestjs/passport");
-const jwt_1 = __webpack_require__("@nestjs/jwt");
-const constant_1 = __webpack_require__("./apps/gessit-api/src/auth/constant.ts");
-let AuthModule = class AuthModule {
-};
-AuthModule = tslib_1.__decorate([
-    (0, common_1.Module)({
-        imports: [
-            user_module_1.UsersModule,
-            passport_1.PassportModule,
-            jwt_1.JwtModule.register({
-                secret: constant_1.jwtConstants.secret,
-                signOptions: { expiresIn: '60s' },
-            }),
-        ],
-        providers: [auth_service_1.AuthService, local_strategy_1.LocalStrategy, jwt_strategy_1.JwtStrategy],
-        exports: [auth_service_1.AuthService],
-    })
-], AuthModule);
-exports.AuthModule = AuthModule;
-
-
-/***/ }),
-
-/***/ "./apps/gessit-api/src/auth/auth.service.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AuthService = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const common_1 = __webpack_require__("@nestjs/common");
-const user_service_1 = __webpack_require__("./apps/gessit-api/src/user/user.service.ts");
-const jwt_1 = __webpack_require__("@nestjs/jwt");
-let AuthService = class AuthService {
-    constructor(usersService, jwtService) {
-        this.usersService = usersService;
-        this.jwtService = jwtService;
-    }
-    validateUser(username, pass) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const user = yield this.usersService.findOne(username);
-            if (user && user.password === pass) {
-                const { password } = user, result = tslib_1.__rest(user, ["password"]);
-                return result;
-            }
-            return null;
-        });
-    }
-    login(user) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const payload = { username: user.username, sub: user.userId };
-            return {
-                access_token: this.jwtService.sign(payload),
-            };
-        });
-    }
-};
-AuthService = tslib_1.__decorate([
-    (0, common_1.Injectable)(),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof user_service_1.UsersService !== "undefined" && user_service_1.UsersService) === "function" ? _a : Object, typeof (_b = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _b : Object])
-], AuthService);
-exports.AuthService = AuthService;
-
-
-/***/ }),
-
-/***/ "./apps/gessit-api/src/auth/constant.ts":
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.jwtConstants = void 0;
-exports.jwtConstants = {
-    secret: 'secretKey',
-};
-
-
-/***/ }),
-
-/***/ "./apps/gessit-api/src/auth/jwt-auth.guard.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.JwtAuthGuard = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const common_1 = __webpack_require__("@nestjs/common");
-const core_1 = __webpack_require__("@nestjs/core");
-const passport_1 = __webpack_require__("@nestjs/passport");
-const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
-let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
-    constructor(reflector) {
-        super();
-        this.reflector = reflector;
-    }
-    canActivate(context) {
-        const isPublic = this.reflector.getAllAndOverride(app_module_1.IS_PUBLIC_KEY, [
-            context.getHandler(),
-            context.getClass(),
-        ]);
-        if (isPublic) {
-            return true;
-        }
-        return super.canActivate(context);
-    }
-};
-JwtAuthGuard = tslib_1.__decorate([
-    (0, common_1.Injectable)(),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof core_1.Reflector !== "undefined" && core_1.Reflector) === "function" ? _a : Object])
-], JwtAuthGuard);
-exports.JwtAuthGuard = JwtAuthGuard;
-
-
-/***/ }),
-
-/***/ "./apps/gessit-api/src/auth/jwt.strategy.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.JwtStrategy = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const passport_jwt_1 = __webpack_require__("passport-jwt");
-const passport_1 = __webpack_require__("@nestjs/passport");
-const common_1 = __webpack_require__("@nestjs/common");
-const constant_1 = __webpack_require__("./apps/gessit-api/src/auth/constant.ts");
-let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
-    constructor() {
-        super({
-            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
-            ignoreExpiration: false,
-            secretOrKey: constant_1.jwtConstants.secret,
-        });
-    }
-    validate(payload) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return { userId: payload.sub, username: payload.username };
-        });
-    }
-};
-JwtStrategy = tslib_1.__decorate([
-    (0, common_1.Injectable)(),
-    tslib_1.__metadata("design:paramtypes", [])
-], JwtStrategy);
-exports.JwtStrategy = JwtStrategy;
-
-
-/***/ }),
-
-/***/ "./apps/gessit-api/src/auth/local.strategy.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.LocalStrategy = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const passport_local_1 = __webpack_require__("passport-local");
-const passport_1 = __webpack_require__("@nestjs/passport");
-const common_1 = __webpack_require__("@nestjs/common");
-const auth_service_1 = __webpack_require__("./apps/gessit-api/src/auth/auth.service.ts");
-let LocalStrategy = class LocalStrategy extends (0, passport_1.PassportStrategy)(passport_local_1.Strategy) {
-    constructor(authService) {
-        super();
-        this.authService = authService;
-    }
-    validate(username, password) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const user = yield this.authService.validateUser(username, password);
-            if (!user) {
-                throw new common_1.UnauthorizedException();
-            }
-            return user;
-        });
-    }
-};
-LocalStrategy = tslib_1.__decorate([
-    (0, common_1.Injectable)(),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof auth_service_1.AuthService !== "undefined" && auth_service_1.AuthService) === "function" ? _a : Object])
-], LocalStrategy);
-exports.LocalStrategy = LocalStrategy;
-
-
-/***/ }),
-
-/***/ "./apps/gessit-api/src/user/user.module.ts":
+/***/ "./apps/gessit-api/src/app/user/user.module.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1066,7 +1066,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersModule = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const user_service_1 = __webpack_require__("./apps/gessit-api/src/user/user.service.ts");
+const user_service_1 = __webpack_require__("./apps/gessit-api/src/app/user/user.service.ts");
 let UsersModule = class UsersModule {
 };
 UsersModule = tslib_1.__decorate([
@@ -1080,7 +1080,7 @@ exports.UsersModule = UsersModule;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/user/user.service.ts":
+/***/ "./apps/gessit-api/src/app/user/user.service.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
