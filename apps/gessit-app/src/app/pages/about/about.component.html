@@ -11,22 +11,25 @@
             <h5>Projectbeschrijving</h5>
             <p>
                 De casus die ik heb gemaakt/gekozen is het maken van een forumapplicatie genaamd Gessit. De applicatie is
-                te vergelijken met bijvoorbeeld Reddit (vandaar de naam ;) ). Bezoekers kunnen namelijk binnen mijn site communiceren en discusseren 
+                te vergelijken met bijvoorbeeld Reddit (vandaar de naam ;) ). Bezoekers kunnen namelijk binnen mijn site communiceren en discussiëren 
                 over allerlei verschillende soorten onderwerpen. Om deze communicatie gescheiden te houden en de app geordend te 
                 laten maak ik gebruik van zogenoemde "communities" die nu al in deze ontwikkelstage van de app te zien zijn 
                 en waarop al verschillende operaties op uitgevoerd kunnen worden. Gebruikers kunnen dus in de toekomst berichten 
                 plaatsen binnen deze "communities" die ook weer gemaakt kunnen worden door de gebruikers zelf om zo discussies 
                 die over hetzelfde onderwerp gaan bij elkaar te houden, zodat de applicatie geordend blijft en het voor de 
-                gebruiker overzichtelijker word. Met deze site hoop ik het stellen van vragen en het starten van communicatie te 
-                bevorderen tussen mensen over de gehele wereld om hen zo dichter bij elkaar te brengen, zodat ze altijd hulp 
-                kunnen vragen en nieuwe connecties kunnen maken binnen mijn app.
+                gebruiker overzichtelijker word. Binnen deze "communities" kunnen ook weer "threads" aangemaakt worden om zo
+                een "community" nog verder op te delen en georganiseerd te houden. Binnen deze "threads" kunnen gebruikers in 
+                de toekomst berichten sturen en met elkaar communiceren. Op het "thread" object kunnen al verscheidene operaties
+                uitgevoerd worden binnen mijn app op dit moment. Met deze site hoop ik uiteindelijk het stellen van vragen en het 
+                starten van communicatie te bevorderen tussen mensen over de gehele wereld om hen zo dichter bij elkaar te brengen, 
+                zodat ze altijd hulp kunnen vragen en nieuwe connecties kunnen maken binnen mijn app.
 
                 <br>
                 <br>
             </p>
             <h5>Entiteitbeschrijving</h5>
             <p>
-                De entiteiten die ik tot nu toe dus heb verwerkt is het zogenoemde "community" object. Dit is eigenlijk een soort
+                Één van de entiteiten die ik tot nu toe dus heb verwerkt is het zogenoemde "community" object. Dit is eigenlijk een soort
                 van groep waar gebruikers in de toekomst lid van kunnen worden als zij bijvoorbeeld geinteresseerd zijn in een
                 bepaald onderwerp waar dan die "community" de nadruk op legt en dat deze dus vol staat met discussies en vragen over
                 dat specifieke onderwerp waar een gebruiker nou juist zo geinteresseerd in is. Zo kunnen mensen makkelijk en snel meedoen
@@ -37,10 +40,25 @@
                 <br>
                 <br>
 
-                Hieronder geef ik de verschillende attributen die het "community" object tot nu toe heeft (met een in-memory database)
-                en benoem ik de datatypes ervan en geef ik een korte beschrijving:
+                Naast het "community" object heb ik ook nog een "thread" entiteit verwerkt binnen mijn applicatie. Een "thread" kan eigenlijk
+                gezien worden als een groep in een "community" waarin daadwerkelijk berichten gestuurd kunnen worden door ingelogde gebruikers.
+                Iedere gebruiker binnen een "community" kan een "thread" aanmaken en het wat inhoud geven zoals bijvoorbeeld een afbeelding of
+                een titel om onder andere een discussie te starten of een vraag te stellen aan de andere gebruikers binnen de "community". Gebruikers
+                kunnen dan in de toekomst dus binnen de aangemaakte "thread" berichten sturen als reactie op de inhoud van de "thread" om zo vragen
+                te beantwoorden of mee te doen aan discussies. Door een "community" op te delen in "threads" hou ik iedere community overzichtelijk
+                en zorg ik ervoor dat meerdere gebruikers bijvoorbeeld hun vragen kwijt kunnen in een "community", omdat er dus dankzij de "threads"
+                meerdere soort van tekstkanalen zijn waar gebruikers met elkaar kunnen chatten in de toekomst doormiddel van de "message" entiteit.
+                Deze entiteit word in de toekomst uiteraard gerealiseerd om dus de gebruikers daadwerkelijk de mogelijkheid te geven om met elkaar in
+                gesprek te gaan.
+
+                <br>
+                <br>
+
+                Hieronder geef ik de verschillende attributen die het "community" object en het "thread" object tot nu toe hebben (met een in-memory database)
+                en benoem ik de datatypes ervan en geef ik een korte beschrijving.
             </p>
 
+            <h6>Het "community" object:</h6>
             <ul>
                 <li>_id: string (de unieke identificator)</li>
                 <li>name: string (een naam)</li>
@@ -48,6 +66,19 @@
                 <li>image: string (de url)</li>
                 <li>creationDate: Date (wanneer hij gemaakt is)</li>
                 <li>isOpen: boolean (of hij publiek is)</li>
+            </ul>
+            
+            <h6>Het "thread" object:</h6>
+            <ul>
+                <li>_id: string (de unieke identificator)</li>
+                <li>communityId: string (de unieke identificator van de gelinkte community)</li>
+                <li>title: string (de titel)</li>
+                <li>content: string (de inhoud)</li>
+                <li>views: number (hoe vaak hij bekeken is)</li>
+                <li>likes: number (hoe vaak hij "geliked" is)</li>
+                <li>dislikes: number (hoe vaak hij "gedisliked" is)</li>
+                <li>creationDate: Date (wanneer hij gemaakt is)</li>
+                <li>image: string (de url)</li>
             </ul>
         </div>
         <div class="col-sm-6 col-md-4 col-lg-3">
