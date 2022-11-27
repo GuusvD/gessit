@@ -18,6 +18,50 @@ export class ThreadsImService {
         },
         {
             "_id": "1",
+            "communityId": "0",
+            "title": "What is your favorite subject?",
+            "content": "",
+            "views": 0,
+            "likes": 0,
+            "dislikes": 0,
+            "creationDate": new Date(),
+            "image": ""
+        },
+        {
+            "_id": "2",
+            "communityId": "0",
+            "title": "A picture of me in class.",
+            "content": "Me in class.",
+            "views": 0,
+            "likes": 0,
+            "dislikes": 0,
+            "creationDate": new Date(),
+            "image": "https://tophat.com/wp-content/uploads/BLOG_how-to-motivate-students.jpg"
+        },
+        {
+            "_id": "3",
+            "communityId": "0",
+            "title": "What are the best schools in the world?",
+            "content": "Which schools are considered the best?",
+            "views": 0,
+            "likes": 0,
+            "dislikes": 0,
+            "creationDate": new Date(),
+            "image": "https://www.cjg043.nl/wp-content/uploads/2020/07/tips-kiezen-middelbare-school.jpg"
+        },
+        {
+            "_id": "4",
+            "communityId": "0",
+            "title": "What are the average costs to go to school?",
+            "content": "Does someone know how much money it costs to go to school?",
+            "views": 0,
+            "likes": 0,
+            "dislikes": 0,
+            "creationDate": new Date(),
+            "image": ""
+        },
+        {
+            "_id": "1",
             "communityId": "1",
             "title": "How to become better at a game?",
             "content": "How do I improve at playing a game?",
