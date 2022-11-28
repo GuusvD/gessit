@@ -6,44 +6,14 @@
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const auth_service_1 = __webpack_require__("./apps/gessit-api/src/app/auth/auth.service.ts");
-const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
 let AppController = class AppController {
-    constructor(authService) {
-        this.authService = authService;
-    }
-    login(req) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.authService.login(req.body);
-        });
-    }
-    getProfile(req) {
-        return req.user;
-    }
 };
-tslib_1.__decorate([
-    (0, common_1.Post)('auth/login'),
-    (0, app_module_1.Public)(),
-    tslib_1.__param(0, (0, common_1.Request)()),
-    tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object]),
-    tslib_1.__metadata("design:returntype", Promise)
-], AppController.prototype, "login", null);
-tslib_1.__decorate([
-    (0, common_1.Get)('profile'),
-    tslib_1.__param(0, (0, common_1.Request)()),
-    tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object]),
-    tslib_1.__metadata("design:returntype", void 0)
-], AppController.prototype, "getProfile", null);
 AppController = tslib_1.__decorate([
-    (0, common_1.Controller)(),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof auth_service_1.AuthService !== "undefined" && auth_service_1.AuthService) === "function" ? _a : Object])
+    (0, common_1.Controller)()
 ], AppController);
 exports.AppController = AppController;
 
@@ -58,29 +28,29 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppModule = exports.Public = exports.IS_PUBLIC_KEY = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const core_1 = __webpack_require__("@nestjs/core");
+exports.IS_PUBLIC_KEY = 'isPublic';
+const Public = () => (0, common_1.SetMetadata)(exports.IS_PUBLIC_KEY, true);
+exports.Public = Public;
+const common_2 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("@nestjs/mongoose");
 const auth_module_1 = __webpack_require__("./apps/gessit-api/src/app/auth/auth.module.ts");
-const jwt_auth_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/jwt-auth.guard.ts");
-const common_2 = __webpack_require__("@nestjs/common");
-exports.IS_PUBLIC_KEY = 'isPublic';
-const Public = () => (0, common_2.SetMetadata)(exports.IS_PUBLIC_KEY, true);
-exports.Public = Public;
 const app_controller_1 = __webpack_require__("./apps/gessit-api/src/app/app.controller.ts");
 const app_service_1 = __webpack_require__("./apps/gessit-api/src/app/app.service.ts");
 const communities_module_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.module.ts");
 const threads_module_1 = __webpack_require__("./apps/gessit-api/src/app/threads/threads.module.ts");
-const user_module_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.module.ts");
+const users_module_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.module.ts");
+const core_1 = __webpack_require__("@nestjs/core");
+const jwt_auth_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/jwt-auth.guard.ts");
 let AppModule = class AppModule {
 };
 AppModule = tslib_1.__decorate([
-    (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forRoot('mongodb://127.0.0.1:27017/gessit'), communities_module_1.CommunitiesModule, threads_module_1.ThreadsModule, auth_module_1.AuthModule, user_module_1.UsersModule],
+    (0, common_2.Module)({
+        imports: [mongoose_1.MongooseModule.forRoot('mongodb://127.0.0.1:27017/gessit'), communities_module_1.CommunitiesModule, threads_module_1.ThreadsModule, auth_module_1.AuthModule, users_module_1.UsersModule],
         controllers: [app_controller_1.AppController],
         providers: [
             {
                 provide: core_1.APP_GUARD,
-                useClass: jwt_auth_guard_1.JwtAuthGuard,
+                useClass: jwt_auth_guard_1.JwtAuthGuard
             },
             app_service_1.AppService
         ],
@@ -112,6 +82,58 @@ exports.AppService = AppService;
 
 /***/ }),
 
+/***/ "./apps/gessit-api/src/app/auth/auth.controller.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AuthController = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
+const auth_service_1 = __webpack_require__("./apps/gessit-api/src/app/auth/auth.service.ts");
+const jwt_auth_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/jwt-auth.guard.ts");
+const local_auth_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/local-auth.guard.ts");
+let AuthController = class AuthController {
+    constructor(authService) {
+        this.authService = authService;
+    }
+    login(req) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.authService.login(req.body);
+        });
+    }
+    getProfile(req) {
+        return req.body;
+    }
+};
+tslib_1.__decorate([
+    (0, app_module_1.Public)(),
+    (0, common_1.UseGuards)(local_auth_guard_1.LocalAuthGuard),
+    (0, common_1.Post)('login'),
+    tslib_1.__param(0, (0, common_1.Request)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], AuthController.prototype, "login", null);
+tslib_1.__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('profile'),
+    tslib_1.__param(0, (0, common_1.Request)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object]),
+    tslib_1.__metadata("design:returntype", void 0)
+], AuthController.prototype, "getProfile", null);
+AuthController = tslib_1.__decorate([
+    (0, common_1.Controller)('auth'),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof auth_service_1.AuthService !== "undefined" && auth_service_1.AuthService) === "function" ? _a : Object])
+], AuthController);
+exports.AuthController = AuthController;
+
+
+/***/ }),
+
 /***/ "./apps/gessit-api/src/app/auth/auth.module.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -123,16 +145,17 @@ const common_1 = __webpack_require__("@nestjs/common");
 const auth_service_1 = __webpack_require__("./apps/gessit-api/src/app/auth/auth.service.ts");
 const local_strategy_1 = __webpack_require__("./apps/gessit-api/src/app/auth/local.strategy.ts");
 const jwt_strategy_1 = __webpack_require__("./apps/gessit-api/src/app/auth/jwt.strategy.ts");
-const user_module_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.module.ts");
+const users_module_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.module.ts");
 const passport_1 = __webpack_require__("@nestjs/passport");
 const jwt_1 = __webpack_require__("@nestjs/jwt");
 const constant_1 = __webpack_require__("./apps/gessit-api/src/app/auth/constant.ts");
+const auth_controller_1 = __webpack_require__("./apps/gessit-api/src/app/auth/auth.controller.ts");
 let AuthModule = class AuthModule {
 };
 AuthModule = tslib_1.__decorate([
     (0, common_1.Module)({
         imports: [
-            user_module_1.UsersModule,
+            users_module_1.UsersModule,
             passport_1.PassportModule,
             jwt_1.JwtModule.register({
                 secret: constant_1.jwtConstants.secret,
@@ -141,6 +164,7 @@ AuthModule = tslib_1.__decorate([
         ],
         providers: [auth_service_1.AuthService, local_strategy_1.LocalStrategy, jwt_strategy_1.JwtStrategy],
         exports: [auth_service_1.AuthService],
+        controllers: [auth_controller_1.AuthController]
     })
 ], AuthModule);
 exports.AuthModule = AuthModule;
@@ -157,7 +181,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const user_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.service.ts");
+const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.service.ts");
 const jwt_1 = __webpack_require__("@nestjs/jwt");
 let AuthService = class AuthService {
     constructor(usersService, jwtService) {
@@ -166,7 +190,7 @@ let AuthService = class AuthService {
     }
     validateUser(username, pass) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const user = yield this.usersService.findOne(username);
+            const user = yield this.usersService.getUserByEmailAddress(username);
             if (user && user.password === pass) {
                 const { password } = user, result = tslib_1.__rest(user, ["password"]);
                 return result;
@@ -185,7 +209,7 @@ let AuthService = class AuthService {
 };
 AuthService = tslib_1.__decorate([
     (0, common_1.Injectable)(),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof user_service_1.UsersService !== "undefined" && user_service_1.UsersService) === "function" ? _a : Object, typeof (_b = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _b : Object])
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _a : Object, typeof (_b = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _b : Object])
 ], AuthService);
 exports.AuthService = AuthService;
 
@@ -272,6 +296,25 @@ JwtStrategy = tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [])
 ], JwtStrategy);
 exports.JwtStrategy = JwtStrategy;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/auth/local-auth.guard.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LocalAuthGuard = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const passport_1 = __webpack_require__("@nestjs/passport");
+let LocalAuthGuard = class LocalAuthGuard extends (0, passport_1.AuthGuard)('local') {
+};
+LocalAuthGuard = tslib_1.__decorate([
+    (0, common_1.Injectable)()
+], LocalAuthGuard);
+exports.LocalAuthGuard = LocalAuthGuard;
 
 
 /***/ }),
@@ -1058,7 +1101,152 @@ exports.UpdateThreadDto = UpdateThreadDto;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/users/user.module.ts":
+/***/ "./apps/gessit-api/src/app/users/create-user.dto.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateUserDto = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const class_validator_1 = __webpack_require__("class-validator");
+class CreateUserDto {
+}
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    tslib_1.__metadata("design:type", String)
+], CreateUserDto.prototype, "name", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    tslib_1.__metadata("design:type", String)
+], CreateUserDto.prototype, "emailAddress", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    tslib_1.__metadata("design:type", String)
+], CreateUserDto.prototype, "phoneNumber", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    tslib_1.__metadata("design:type", String)
+], CreateUserDto.prototype, "password", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    tslib_1.__metadata("design:type", String)
+], CreateUserDto.prototype, "image", void 0);
+exports.CreateUserDto = CreateUserDto;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/users/user.schema.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UserSchema = exports.User = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const mongoose_1 = __webpack_require__("@nestjs/mongoose");
+const mongoose_2 = __webpack_require__("mongoose");
+let User = class User {
+};
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", typeof (_a = typeof mongoose_2.Types !== "undefined" && mongoose_2.Types.ObjectId) === "function" ? _a : Object)
+], User.prototype, "_id", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", String)
+], User.prototype, "name", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], User.prototype, "birthDate", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", String)
+], User.prototype, "emailAddress", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", String)
+], User.prototype, "phoneNumber", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", String)
+], User.prototype, "password", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], User.prototype, "registerDate", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", String)
+], User.prototype, "image", void 0);
+User = tslib_1.__decorate([
+    (0, mongoose_1.Schema)()
+], User);
+exports.User = User;
+exports.UserSchema = mongoose_1.SchemaFactory.createForClass(User);
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/users/users.controller.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a, _b, _c, _d;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UsersController = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const create_user_dto_1 = __webpack_require__("./apps/gessit-api/src/app/users/create-user.dto.ts");
+const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.service.ts");
+let UsersController = class UsersController {
+    constructor(userService) {
+        this.userService = userService;
+    }
+    getUserByEmailAddress(emailAddress) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.userService.getUserByEmailAddress(emailAddress);
+        });
+    }
+    createUser(createUserDto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.userService.createUser(createUserDto.name, createUserDto.birthDate, createUserDto.emailAddress, createUserDto.phoneNumber, createUserDto.password, createUserDto.image);
+        });
+    }
+};
+tslib_1.__decorate([
+    (0, common_1.Get)(),
+    tslib_1.__param(0, (0, common_1.Param)('emailAddress')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [String]),
+    tslib_1.__metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+], UsersController.prototype, "getUserByEmailAddress", null);
+tslib_1.__decorate([
+    (0, common_1.Post)(),
+    tslib_1.__param(0, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [typeof (_c = typeof create_user_dto_1.CreateUserDto !== "undefined" && create_user_dto_1.CreateUserDto) === "function" ? _c : Object]),
+    tslib_1.__metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+], UsersController.prototype, "createUser", null);
+UsersController = tslib_1.__decorate([
+    (0, common_1.Controller)('user'),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _a : Object])
+], UsersController);
+exports.UsersController = UsersController;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/users/users.module.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1066,13 +1254,19 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersModule = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const user_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.service.ts");
+const mongoose_1 = __webpack_require__("@nestjs/mongoose");
+const user_schema_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.schema.ts");
+const users_controller_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.controller.ts");
+const users_repository_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.repository.ts");
+const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.service.ts");
 let UsersModule = class UsersModule {
 };
 UsersModule = tslib_1.__decorate([
     (0, common_1.Module)({
-        providers: [user_service_1.UsersService],
-        exports: [user_service_1.UsersService],
+        imports: [mongoose_1.MongooseModule.forFeature([{ name: user_schema_1.User.name, schema: user_schema_1.UserSchema }])],
+        controllers: [users_controller_1.UsersController],
+        providers: [users_service_1.UsersService, users_repository_1.UsersRepository],
+        exports: [users_service_1.UsersService]
     })
 ], UsersModule);
 exports.UsersModule = UsersModule;
@@ -1080,37 +1274,88 @@ exports.UsersModule = UsersModule;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/users/user.service.ts":
+/***/ "./apps/gessit-api/src/app/users/users.repository.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UsersRepository = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const mongoose_1 = __webpack_require__("@nestjs/mongoose");
+const mongoose_2 = __webpack_require__("mongoose");
+const user_schema_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.schema.ts");
+let UsersRepository = class UsersRepository {
+    constructor(userModel) {
+        this.userModel = userModel;
+    }
+    findOne(userFilterQuery) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.userModel.findOne(userFilterQuery);
+        });
+    }
+    create(user) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const newUser = new this.userModel(user);
+            return newUser.save();
+        });
+    }
+};
+UsersRepository = tslib_1.__decorate([
+    (0, common_1.Injectable)(),
+    tslib_1.__param(0, (0, mongoose_1.InjectModel)(user_schema_1.User.name)),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object])
+], UsersRepository);
+exports.UsersRepository = UsersRepository;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/users/users.service.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
+const mongoose_1 = __webpack_require__("mongoose");
+const users_repository_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.repository.ts");
 let UsersService = class UsersService {
-    constructor() {
-        this.users = [
-            {
-                userId: 1,
-                username: 'john',
-                password: 'changeme',
-            },
-            {
-                userId: 2,
-                username: 'maria',
-                password: 'guess',
-            },
-        ];
+    constructor(userRepository) {
+        this.userRepository = userRepository;
     }
-    findOne(username) {
+    getUserByEmailAddress(emailAddress) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.users.find(user => user.username === username);
+            const user = this.userRepository.findOne({ emailAddress: emailAddress });
+            if (!user) {
+                return undefined;
+            }
+            else {
+                return user;
+            }
+        });
+    }
+    createUser(name, birthDate, emailAddress, phoneNumber, password, image) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.userRepository.create({
+                _id: new mongoose_1.Types.ObjectId(),
+                name,
+                birthDate,
+                emailAddress,
+                phoneNumber,
+                password,
+                registerDate: new Date(),
+                image
+            });
         });
     }
 };
 UsersService = tslib_1.__decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof users_repository_1.UsersRepository !== "undefined" && users_repository_1.UsersRepository) === "function" ? _a : Object])
 ], UsersService);
 exports.UsersService = UsersService;
 
