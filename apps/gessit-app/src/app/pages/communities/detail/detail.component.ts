@@ -20,7 +20,7 @@ export class DetailComponent implements OnInit {
     this.subscription = this.route.paramMap.subscribe(params => {
       this.communityId = params.get('id');
       if (this.communityId) {
-        this.community = this.communitiesImService.getById(this.communityId);
+        this.communitiesImService.getById(this.communityId).subscribe((c) => (this.community = c)).unsubscribe;
       }
     });
   }

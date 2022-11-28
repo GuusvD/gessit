@@ -30,7 +30,7 @@ export class EditComponent implements OnInit {
       if (!this.createThread) {
         this.threadId = params.get('id');
         if (this.threadId) {
-          this.thread = this.threadsImService.getById(this.threadId);
+          this.threadsImService.getById(this.threadId).subscribe((t) => (this.thread = t)).unsubscribe;
         }
       }
     });

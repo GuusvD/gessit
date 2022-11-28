@@ -1,10 +1,13 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 
 export type CommunityDocument = Community & Document;
 
 @Schema()
 export class Community {
+    @Prop()
+    _id: Types.ObjectId;
+
     @Prop()
     name: string;
 

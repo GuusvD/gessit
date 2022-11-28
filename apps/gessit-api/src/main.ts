@@ -13,6 +13,7 @@ import { ValidationException } from './app/shared/filters/validation.exception';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const globalPrefix = 'api';
+  app.enableCors();
   app.useGlobalFilters(new ValidationFilter);
   app.setGlobalPrefix(globalPrefix);
   app.useGlobalPipes(new ValidationPipe({
