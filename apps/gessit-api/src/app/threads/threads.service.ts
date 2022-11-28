@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Types } from "mongoose";
-import { ThreadsRepository } from "../repositories/threads.repository";
-import { Thread } from "../schemas/thread.schema";
+import { ThreadsRepository } from "./threads.repository";
+import { Thread } from "./thread.schema";
 
 @Injectable()
 export class ThreadsService {

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { FilterQuery, Model } from "mongoose";
-import { Community, CommunityDocument } from "../schemas/community.schema";
+import { Community, CommunityDocument } from "./community.schema";
 
 @Injectable()
 export class CommunitiesRepository {

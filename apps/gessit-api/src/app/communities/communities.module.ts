@@ -1,9 +1,9 @@
 import { MongooseModule } from "@nestjs/mongoose";
 import { Module } from "@nestjs/common";
-import { Community, CommunitySchema } from "./schemas/community.schema";
-import { CommunitiesController } from "./controllers/communities.controller";
-import { CommunitiesService } from "./services/communities.service";
-import { CommunitiesRepository } from "./repositories/communities.repository";
+import { Community, CommunitySchema } from "./community.schema";
+import { CommunitiesController } from "./communities.controller";
+import { CommunitiesService } from "./communities.service";
+import { CommunitiesRepository } from "./communities.repository";
 
 @Module({
     imports: [MongooseModule.forFeature([{ name: Community.name, schema: CommunitySchema }])],

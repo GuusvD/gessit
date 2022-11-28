@@ -11,8 +11,8 @@ export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CommunitiesModule } from './communities/communities.module';
-import { ThreadsModule } from './communities/threads.module';
-import { UsersModule } from './user/user.module';
+import { ThreadsModule } from './threads/threads.module';
+import { UsersModule } from './users/user.module';
 
 @Module({
   imports: [MongooseModule.forRoot('mongodb://127.0.0.1:27017/gessit'), CommunitiesModule, ThreadsModule, AuthModule, UsersModule],

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { CommunitiesRepository } from "../repositories/communities.repository";
-import { Community } from "../schemas/community.schema";
+import { CommunitiesRepository } from "./communities.repository";
+import { Community } from "./community.schema";
 import { Types } from "mongoose";
 
 @Injectable()

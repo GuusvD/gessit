@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { FilterQuery, Model } from "mongoose";
-import { Thread, ThreadDocument } from "../schemas/thread.schema";
+import { Thread, ThreadDocument } from "./thread.schema";
 
 @Injectable()
 export class ThreadsRepository {

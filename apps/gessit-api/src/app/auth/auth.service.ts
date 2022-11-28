@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UsersService } from '../user/user.service';
+import { UsersService } from '../users/user.service';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()

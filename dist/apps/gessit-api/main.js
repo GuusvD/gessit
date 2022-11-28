@@ -69,8 +69,8 @@ exports.Public = Public;
 const app_controller_1 = __webpack_require__("./apps/gessit-api/src/app/app.controller.ts");
 const app_service_1 = __webpack_require__("./apps/gessit-api/src/app/app.service.ts");
 const communities_module_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.module.ts");
-const threads_module_1 = __webpack_require__("./apps/gessit-api/src/app/communities/threads.module.ts");
-const user_module_1 = __webpack_require__("./apps/gessit-api/src/app/user/user.module.ts");
+const threads_module_1 = __webpack_require__("./apps/gessit-api/src/app/threads/threads.module.ts");
+const user_module_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.module.ts");
 let AppModule = class AppModule {
 };
 AppModule = tslib_1.__decorate([
@@ -123,7 +123,7 @@ const common_1 = __webpack_require__("@nestjs/common");
 const auth_service_1 = __webpack_require__("./apps/gessit-api/src/app/auth/auth.service.ts");
 const local_strategy_1 = __webpack_require__("./apps/gessit-api/src/app/auth/local.strategy.ts");
 const jwt_strategy_1 = __webpack_require__("./apps/gessit-api/src/app/auth/jwt.strategy.ts");
-const user_module_1 = __webpack_require__("./apps/gessit-api/src/app/user/user.module.ts");
+const user_module_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.module.ts");
 const passport_1 = __webpack_require__("@nestjs/passport");
 const jwt_1 = __webpack_require__("@nestjs/jwt");
 const constant_1 = __webpack_require__("./apps/gessit-api/src/app/auth/constant.ts");
@@ -157,7 +157,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const user_service_1 = __webpack_require__("./apps/gessit-api/src/app/user/user.service.ts");
+const user_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.service.ts");
 const jwt_1 = __webpack_require__("@nestjs/jwt");
 let AuthService = class AuthService {
     constructor(usersService, jwtService) {
@@ -312,34 +312,7 @@ exports.LocalStrategy = LocalStrategy;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/communities/communities.module.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CommunitiesModule = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const mongoose_1 = __webpack_require__("@nestjs/mongoose");
-const common_1 = __webpack_require__("@nestjs/common");
-const community_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/schemas/community.schema.ts");
-const communities_controller_1 = __webpack_require__("./apps/gessit-api/src/app/communities/controllers/communities.controller.ts");
-const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/services/communities.service.ts");
-const communities_repository_1 = __webpack_require__("./apps/gessit-api/src/app/communities/repositories/communities.repository.ts");
-let CommunitiesModule = class CommunitiesModule {
-};
-CommunitiesModule = tslib_1.__decorate([
-    (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: community_schema_1.Community.name, schema: community_schema_1.CommunitySchema }])],
-        controllers: [communities_controller_1.CommunitiesController],
-        providers: [communities_service_1.CommunitiesService, communities_repository_1.CommunitiesRepository]
-    })
-], CommunitiesModule);
-exports.CommunitiesModule = CommunitiesModule;
-
-
-/***/ }),
-
-/***/ "./apps/gessit-api/src/app/communities/controllers/communities.controller.ts":
+/***/ "./apps/gessit-api/src/app/communities/communities.controller.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -348,9 +321,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommunitiesController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/services/communities.service.ts");
-const create_community_dto_1 = __webpack_require__("./apps/gessit-api/src/app/communities/dto/create-community.dto.ts");
-const update_community_dto_1 = __webpack_require__("./apps/gessit-api/src/app/communities/dto/update-community.dto.ts");
+const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.service.ts");
+const create_community_dto_1 = __webpack_require__("./apps/gessit-api/src/app/communities/create-community.dto.ts");
+const update_community_dto_1 = __webpack_require__("./apps/gessit-api/src/app/communities/update-community.dto.ts");
 const mongoose_1 = __webpack_require__("mongoose");
 let CommunitiesController = class CommunitiesController {
     constructor(communityService) {
@@ -426,7 +399,399 @@ exports.CommunitiesController = CommunitiesController;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/communities/controllers/threads.controller.ts":
+/***/ "./apps/gessit-api/src/app/communities/communities.module.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CommunitiesModule = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const mongoose_1 = __webpack_require__("@nestjs/mongoose");
+const common_1 = __webpack_require__("@nestjs/common");
+const community_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/community.schema.ts");
+const communities_controller_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.controller.ts");
+const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.service.ts");
+const communities_repository_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.repository.ts");
+let CommunitiesModule = class CommunitiesModule {
+};
+CommunitiesModule = tslib_1.__decorate([
+    (0, common_1.Module)({
+        imports: [mongoose_1.MongooseModule.forFeature([{ name: community_schema_1.Community.name, schema: community_schema_1.CommunitySchema }])],
+        controllers: [communities_controller_1.CommunitiesController],
+        providers: [communities_service_1.CommunitiesService, communities_repository_1.CommunitiesRepository]
+    })
+], CommunitiesModule);
+exports.CommunitiesModule = CommunitiesModule;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/communities/communities.repository.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CommunitiesRepository = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const mongoose_1 = __webpack_require__("@nestjs/mongoose");
+const mongoose_2 = __webpack_require__("mongoose");
+const community_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/community.schema.ts");
+let CommunitiesRepository = class CommunitiesRepository {
+    constructor(communityModel) {
+        this.communityModel = communityModel;
+    }
+    findOne(communityFilterQuery) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.communityModel.findOne(communityFilterQuery);
+        });
+    }
+    find(communitiesFilterQuery) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.communityModel.find(communitiesFilterQuery);
+        });
+    }
+    create(community) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const newCommunity = new this.communityModel(community);
+            return newCommunity.save();
+        });
+    }
+    findOneAndUpdate(communityFilterQuery, community) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.communityModel.findOneAndUpdate(communityFilterQuery, community);
+        });
+    }
+    findOneAndDelete(communityFilterQuery) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.communityModel.findOneAndDelete(communityFilterQuery);
+        });
+    }
+};
+CommunitiesRepository = tslib_1.__decorate([
+    (0, common_1.Injectable)(),
+    tslib_1.__param(0, (0, mongoose_1.InjectModel)(community_schema_1.Community.name)),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object])
+], CommunitiesRepository);
+exports.CommunitiesRepository = CommunitiesRepository;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/communities/communities.service.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CommunitiesService = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const communities_repository_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.repository.ts");
+const mongoose_1 = __webpack_require__("mongoose");
+let CommunitiesService = class CommunitiesService {
+    constructor(communityRepository) {
+        this.communityRepository = communityRepository;
+    }
+    getCommunityById(id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.communityRepository.findOne({ _id: id });
+        });
+    }
+    getCommunities() {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.communityRepository.find({});
+        });
+    }
+    createCommunity(name, description, image, isOpen) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.communityRepository.create({
+                _id: new mongoose_1.Types.ObjectId(),
+                name,
+                description,
+                ranking: 0,
+                creationDate: new Date(),
+                image,
+                isOpen
+            });
+        });
+    }
+    updateCommunity(id, community) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            community._id = new mongoose_1.Types.ObjectId(community._id);
+            return this.communityRepository.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, community);
+        });
+    }
+    deleteCommunity(id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.communityRepository.findOneAndDelete({ _id: id });
+        });
+    }
+};
+CommunitiesService = tslib_1.__decorate([
+    (0, common_1.Injectable)(),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof communities_repository_1.CommunitiesRepository !== "undefined" && communities_repository_1.CommunitiesRepository) === "function" ? _a : Object])
+], CommunitiesService);
+exports.CommunitiesService = CommunitiesService;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/communities/community.schema.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CommunitySchema = exports.Community = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const mongoose_1 = __webpack_require__("@nestjs/mongoose");
+const mongoose_2 = __webpack_require__("mongoose");
+let Community = class Community {
+};
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", typeof (_a = typeof mongoose_2.Types !== "undefined" && mongoose_2.Types.ObjectId) === "function" ? _a : Object)
+], Community.prototype, "_id", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", String)
+], Community.prototype, "name", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", String)
+], Community.prototype, "description", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", typeof (_b = typeof Number !== "undefined" && Number) === "function" ? _b : Object)
+], Community.prototype, "ranking", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], Community.prototype, "creationDate", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", String)
+], Community.prototype, "image", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", Boolean)
+], Community.prototype, "isOpen", void 0);
+Community = tslib_1.__decorate([
+    (0, mongoose_1.Schema)()
+], Community);
+exports.Community = Community;
+exports.CommunitySchema = mongoose_1.SchemaFactory.createForClass(Community);
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/communities/create-community.dto.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateCommunityDto = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const class_validator_1 = __webpack_require__("class-validator");
+class CreateCommunityDto {
+}
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    tslib_1.__metadata("design:type", String)
+], CreateCommunityDto.prototype, "name", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    tslib_1.__metadata("design:type", String)
+], CreateCommunityDto.prototype, "description", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    tslib_1.__metadata("design:type", String)
+], CreateCommunityDto.prototype, "image", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    tslib_1.__metadata("design:type", Boolean)
+], CreateCommunityDto.prototype, "isOpen", void 0);
+exports.CreateCommunityDto = CreateCommunityDto;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/communities/update-community.dto.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateCommunityDto = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const class_validator_1 = __webpack_require__("class-validator");
+class UpdateCommunityDto {
+}
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    tslib_1.__metadata("design:type", String)
+], UpdateCommunityDto.prototype, "name", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    tslib_1.__metadata("design:type", String)
+], UpdateCommunityDto.prototype, "description", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    tslib_1.__metadata("design:type", String)
+], UpdateCommunityDto.prototype, "image", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    tslib_1.__metadata("design:type", Boolean)
+], UpdateCommunityDto.prototype, "isOpen", void 0);
+exports.UpdateCommunityDto = UpdateCommunityDto;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/shared/filters/validation.exception.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ValidationException = void 0;
+const common_1 = __webpack_require__("@nestjs/common");
+class ValidationException extends common_1.BadRequestException {
+    constructor(validationErrors) {
+        super();
+        this.validationErrors = validationErrors;
+    }
+}
+exports.ValidationException = ValidationException;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/shared/filters/validation.filter.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ValidationFilter = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
+let ValidationFilter = class ValidationFilter {
+    catch(exception, host) {
+        const ctx = host.switchToHttp(), response = ctx.getResponse();
+        return response.status(400).json({
+            statusCode: 400,
+            timeStamp: new Date(),
+            createdBy: "ValidationFilter",
+            validationErrors: exception.validationErrors
+        });
+    }
+};
+ValidationFilter = tslib_1.__decorate([
+    (0, common_1.Catch)(validation_exception_1.ValidationException)
+], ValidationFilter);
+exports.ValidationFilter = ValidationFilter;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/threads/create-thread.dto.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateThreadDto = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const class_validator_1 = __webpack_require__("class-validator");
+class CreateThreadDto {
+}
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    tslib_1.__metadata("design:type", String)
+], CreateThreadDto.prototype, "communityId", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    tslib_1.__metadata("design:type", String)
+], CreateThreadDto.prototype, "title", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    tslib_1.__metadata("design:type", String)
+], CreateThreadDto.prototype, "content", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    tslib_1.__metadata("design:type", String)
+], CreateThreadDto.prototype, "image", void 0);
+exports.CreateThreadDto = CreateThreadDto;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/threads/thread.schema.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ThreadSchema = exports.Thread = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const mongoose_1 = __webpack_require__("@nestjs/mongoose");
+const mongoose_2 = __webpack_require__("mongoose");
+let Thread = class Thread {
+};
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", typeof (_a = typeof mongoose_2.Types !== "undefined" && mongoose_2.Types.ObjectId) === "function" ? _a : Object)
+], Thread.prototype, "_id", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", String)
+], Thread.prototype, "communityId", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", String)
+], Thread.prototype, "title", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", String)
+], Thread.prototype, "content", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", Number)
+], Thread.prototype, "views", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", Number)
+], Thread.prototype, "likes", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", Number)
+], Thread.prototype, "dislikes", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
+], Thread.prototype, "creationDate", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", String)
+], Thread.prototype, "image", void 0);
+Thread = tslib_1.__decorate([
+    (0, mongoose_1.Schema)()
+], Thread);
+exports.Thread = Thread;
+exports.ThreadSchema = mongoose_1.SchemaFactory.createForClass(Thread);
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/threads/threads.controller.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -436,9 +801,9 @@ exports.ThreadsController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("mongoose");
-const threads_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/services/threads.service.ts");
-const update_thread_dto_1 = __webpack_require__("./apps/gessit-api/src/app/communities/dto/update-thread.dto.ts");
-const create_thread_dto_1 = __webpack_require__("./apps/gessit-api/src/app/communities/dto/create-thread.dto.ts");
+const threads_service_1 = __webpack_require__("./apps/gessit-api/src/app/threads/threads.service.ts");
+const update_thread_dto_1 = __webpack_require__("./apps/gessit-api/src/app/threads/update-thread.dto.ts");
+const create_thread_dto_1 = __webpack_require__("./apps/gessit-api/src/app/threads/create-thread.dto.ts");
 let ThreadsController = class ThreadsController {
     constructor(threadService) {
         this.threadService = threadService;
@@ -513,200 +878,34 @@ exports.ThreadsController = ThreadsController;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/communities/dto/create-community.dto.ts":
+/***/ "./apps/gessit-api/src/app/threads/threads.module.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CreateCommunityDto = void 0;
+exports.ThreadsModule = void 0;
 const tslib_1 = __webpack_require__("tslib");
-const class_validator_1 = __webpack_require__("class-validator");
-class CreateCommunityDto {
-}
-tslib_1.__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsDefined)(),
-    tslib_1.__metadata("design:type", String)
-], CreateCommunityDto.prototype, "name", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsDefined)(),
-    tslib_1.__metadata("design:type", String)
-], CreateCommunityDto.prototype, "description", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsDefined)(),
-    tslib_1.__metadata("design:type", String)
-], CreateCommunityDto.prototype, "image", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsBoolean)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsDefined)(),
-    tslib_1.__metadata("design:type", Boolean)
-], CreateCommunityDto.prototype, "isOpen", void 0);
-exports.CreateCommunityDto = CreateCommunityDto;
-
-
-/***/ }),
-
-/***/ "./apps/gessit-api/src/app/communities/dto/create-thread.dto.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CreateThreadDto = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const class_validator_1 = __webpack_require__("class-validator");
-class CreateThreadDto {
-}
-tslib_1.__decorate([
-    (0, class_validator_1.IsString)(),
-    tslib_1.__metadata("design:type", String)
-], CreateThreadDto.prototype, "communityId", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsString)(),
-    tslib_1.__metadata("design:type", String)
-], CreateThreadDto.prototype, "title", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsString)(),
-    tslib_1.__metadata("design:type", String)
-], CreateThreadDto.prototype, "content", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsString)(),
-    tslib_1.__metadata("design:type", String)
-], CreateThreadDto.prototype, "image", void 0);
-exports.CreateThreadDto = CreateThreadDto;
-
-
-/***/ }),
-
-/***/ "./apps/gessit-api/src/app/communities/dto/update-community.dto.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UpdateCommunityDto = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const class_validator_1 = __webpack_require__("class-validator");
-class UpdateCommunityDto {
-}
-tslib_1.__decorate([
-    (0, class_validator_1.IsString)(),
-    tslib_1.__metadata("design:type", String)
-], UpdateCommunityDto.prototype, "name", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsString)(),
-    tslib_1.__metadata("design:type", String)
-], UpdateCommunityDto.prototype, "description", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsString)(),
-    tslib_1.__metadata("design:type", String)
-], UpdateCommunityDto.prototype, "image", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsBoolean)(),
-    tslib_1.__metadata("design:type", Boolean)
-], UpdateCommunityDto.prototype, "isOpen", void 0);
-exports.UpdateCommunityDto = UpdateCommunityDto;
-
-
-/***/ }),
-
-/***/ "./apps/gessit-api/src/app/communities/dto/update-thread.dto.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UpdateThreadDto = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const class_validator_1 = __webpack_require__("class-validator");
-class UpdateThreadDto {
-}
-tslib_1.__decorate([
-    (0, class_validator_1.IsString)(),
-    tslib_1.__metadata("design:type", String)
-], UpdateThreadDto.prototype, "title", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsString)(),
-    tslib_1.__metadata("design:type", String)
-], UpdateThreadDto.prototype, "content", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsNumber)(),
-    tslib_1.__metadata("design:type", Number)
-], UpdateThreadDto.prototype, "views", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsNumber)(),
-    tslib_1.__metadata("design:type", Number)
-], UpdateThreadDto.prototype, "likes", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsNumber)(),
-    tslib_1.__metadata("design:type", Number)
-], UpdateThreadDto.prototype, "dislikes", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsString)(),
-    tslib_1.__metadata("design:type", String)
-], UpdateThreadDto.prototype, "image", void 0);
-exports.UpdateThreadDto = UpdateThreadDto;
-
-
-/***/ }),
-
-/***/ "./apps/gessit-api/src/app/communities/repositories/communities.repository.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CommunitiesRepository = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("@nestjs/mongoose");
-const mongoose_2 = __webpack_require__("mongoose");
-const community_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/schemas/community.schema.ts");
-let CommunitiesRepository = class CommunitiesRepository {
-    constructor(communityModel) {
-        this.communityModel = communityModel;
-    }
-    findOne(communityFilterQuery) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.communityModel.findOne(communityFilterQuery);
-        });
-    }
-    find(communitiesFilterQuery) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.communityModel.find(communitiesFilterQuery);
-        });
-    }
-    create(community) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const newCommunity = new this.communityModel(community);
-            return newCommunity.save();
-        });
-    }
-    findOneAndUpdate(communityFilterQuery, community) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.communityModel.findOneAndUpdate(communityFilterQuery, community);
-        });
-    }
-    findOneAndDelete(communityFilterQuery) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.communityModel.findOneAndDelete(communityFilterQuery);
-        });
-    }
+const common_1 = __webpack_require__("@nestjs/common");
+const thread_schema_1 = __webpack_require__("./apps/gessit-api/src/app/threads/thread.schema.ts");
+const threads_controller_1 = __webpack_require__("./apps/gessit-api/src/app/threads/threads.controller.ts");
+const threads_service_1 = __webpack_require__("./apps/gessit-api/src/app/threads/threads.service.ts");
+const threads_repository_1 = __webpack_require__("./apps/gessit-api/src/app/threads/threads.repository.ts");
+let ThreadsModule = class ThreadsModule {
 };
-CommunitiesRepository = tslib_1.__decorate([
-    (0, common_1.Injectable)(),
-    tslib_1.__param(0, (0, mongoose_1.InjectModel)(community_schema_1.Community.name)),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object])
-], CommunitiesRepository);
-exports.CommunitiesRepository = CommunitiesRepository;
+ThreadsModule = tslib_1.__decorate([
+    (0, common_1.Module)({
+        imports: [mongoose_1.MongooseModule.forFeature([{ name: thread_schema_1.Thread.name, schema: thread_schema_1.ThreadSchema }])],
+        controllers: [threads_controller_1.ThreadsController],
+        providers: [threads_service_1.ThreadsService, threads_repository_1.ThreadsRepository]
+    })
+], ThreadsModule);
+exports.ThreadsModule = ThreadsModule;
 
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/communities/repositories/threads.repository.ts":
+/***/ "./apps/gessit-api/src/app/threads/threads.repository.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -717,7 +916,7 @@ const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("@nestjs/mongoose");
 const mongoose_2 = __webpack_require__("mongoose");
-const thread_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/schemas/thread.schema.ts");
+const thread_schema_1 = __webpack_require__("./apps/gessit-api/src/app/threads/thread.schema.ts");
 let ThreadsRepository = class ThreadsRepository {
     constructor(threadModel) {
         this.threadModel = threadModel;
@@ -759,172 +958,7 @@ exports.ThreadsRepository = ThreadsRepository;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/communities/schemas/community.schema.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var _a, _b, _c;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CommunitySchema = exports.Community = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const mongoose_1 = __webpack_require__("@nestjs/mongoose");
-const mongoose_2 = __webpack_require__("mongoose");
-let Community = class Community {
-};
-tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
-    tslib_1.__metadata("design:type", typeof (_a = typeof mongoose_2.Types !== "undefined" && mongoose_2.Types.ObjectId) === "function" ? _a : Object)
-], Community.prototype, "_id", void 0);
-tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
-    tslib_1.__metadata("design:type", String)
-], Community.prototype, "name", void 0);
-tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
-    tslib_1.__metadata("design:type", String)
-], Community.prototype, "description", void 0);
-tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
-    tslib_1.__metadata("design:type", typeof (_b = typeof Number !== "undefined" && Number) === "function" ? _b : Object)
-], Community.prototype, "ranking", void 0);
-tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
-    tslib_1.__metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
-], Community.prototype, "creationDate", void 0);
-tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
-    tslib_1.__metadata("design:type", String)
-], Community.prototype, "image", void 0);
-tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
-    tslib_1.__metadata("design:type", Boolean)
-], Community.prototype, "isOpen", void 0);
-Community = tslib_1.__decorate([
-    (0, mongoose_1.Schema)()
-], Community);
-exports.Community = Community;
-exports.CommunitySchema = mongoose_1.SchemaFactory.createForClass(Community);
-
-
-/***/ }),
-
-/***/ "./apps/gessit-api/src/app/communities/schemas/thread.schema.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var _a, _b;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ThreadSchema = exports.Thread = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const mongoose_1 = __webpack_require__("@nestjs/mongoose");
-const mongoose_2 = __webpack_require__("mongoose");
-let Thread = class Thread {
-};
-tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
-    tslib_1.__metadata("design:type", typeof (_a = typeof mongoose_2.Types !== "undefined" && mongoose_2.Types.ObjectId) === "function" ? _a : Object)
-], Thread.prototype, "_id", void 0);
-tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
-    tslib_1.__metadata("design:type", String)
-], Thread.prototype, "communityId", void 0);
-tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
-    tslib_1.__metadata("design:type", String)
-], Thread.prototype, "title", void 0);
-tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
-    tslib_1.__metadata("design:type", String)
-], Thread.prototype, "content", void 0);
-tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
-    tslib_1.__metadata("design:type", Number)
-], Thread.prototype, "views", void 0);
-tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
-    tslib_1.__metadata("design:type", Number)
-], Thread.prototype, "likes", void 0);
-tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
-    tslib_1.__metadata("design:type", Number)
-], Thread.prototype, "dislikes", void 0);
-tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
-    tslib_1.__metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
-], Thread.prototype, "creationDate", void 0);
-tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
-    tslib_1.__metadata("design:type", String)
-], Thread.prototype, "image", void 0);
-Thread = tslib_1.__decorate([
-    (0, mongoose_1.Schema)()
-], Thread);
-exports.Thread = Thread;
-exports.ThreadSchema = mongoose_1.SchemaFactory.createForClass(Thread);
-
-
-/***/ }),
-
-/***/ "./apps/gessit-api/src/app/communities/services/communities.service.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.CommunitiesService = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const common_1 = __webpack_require__("@nestjs/common");
-const communities_repository_1 = __webpack_require__("./apps/gessit-api/src/app/communities/repositories/communities.repository.ts");
-const mongoose_1 = __webpack_require__("mongoose");
-let CommunitiesService = class CommunitiesService {
-    constructor(communityRepository) {
-        this.communityRepository = communityRepository;
-    }
-    getCommunityById(id) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.communityRepository.findOne({ _id: id });
-        });
-    }
-    getCommunities() {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.communityRepository.find({});
-        });
-    }
-    createCommunity(name, description, image, isOpen) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.communityRepository.create({
-                _id: new mongoose_1.Types.ObjectId(),
-                name,
-                description,
-                ranking: 0,
-                creationDate: new Date(),
-                image,
-                isOpen
-            });
-        });
-    }
-    updateCommunity(id, community) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            community._id = new mongoose_1.Types.ObjectId(community._id);
-            return this.communityRepository.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, community);
-        });
-    }
-    deleteCommunity(id) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.communityRepository.findOneAndDelete({ _id: id });
-        });
-    }
-};
-CommunitiesService = tslib_1.__decorate([
-    (0, common_1.Injectable)(),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof communities_repository_1.CommunitiesRepository !== "undefined" && communities_repository_1.CommunitiesRepository) === "function" ? _a : Object])
-], CommunitiesService);
-exports.CommunitiesService = CommunitiesService;
-
-
-/***/ }),
-
-/***/ "./apps/gessit-api/src/app/communities/services/threads.service.ts":
+/***/ "./apps/gessit-api/src/app/threads/threads.service.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -934,7 +968,7 @@ exports.ThreadsService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("mongoose");
-const threads_repository_1 = __webpack_require__("./apps/gessit-api/src/app/communities/repositories/threads.repository.ts");
+const threads_repository_1 = __webpack_require__("./apps/gessit-api/src/app/threads/threads.repository.ts");
 let ThreadsService = class ThreadsService {
     constructor(threadRepository) {
         this.threadRepository = threadRepository;
@@ -985,80 +1019,46 @@ exports.ThreadsService = ThreadsService;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/communities/threads.module.ts":
+/***/ "./apps/gessit-api/src/app/threads/update-thread.dto.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ThreadsModule = void 0;
+exports.UpdateThreadDto = void 0;
 const tslib_1 = __webpack_require__("tslib");
-const mongoose_1 = __webpack_require__("@nestjs/mongoose");
-const common_1 = __webpack_require__("@nestjs/common");
-const thread_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/schemas/thread.schema.ts");
-const threads_controller_1 = __webpack_require__("./apps/gessit-api/src/app/communities/controllers/threads.controller.ts");
-const threads_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/services/threads.service.ts");
-const threads_repository_1 = __webpack_require__("./apps/gessit-api/src/app/communities/repositories/threads.repository.ts");
-let ThreadsModule = class ThreadsModule {
-};
-ThreadsModule = tslib_1.__decorate([
-    (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: thread_schema_1.Thread.name, schema: thread_schema_1.ThreadSchema }])],
-        controllers: [threads_controller_1.ThreadsController],
-        providers: [threads_service_1.ThreadsService, threads_repository_1.ThreadsRepository]
-    })
-], ThreadsModule);
-exports.ThreadsModule = ThreadsModule;
-
-
-/***/ }),
-
-/***/ "./apps/gessit-api/src/app/shared/filters/validation.exception.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ValidationException = void 0;
-const common_1 = __webpack_require__("@nestjs/common");
-class ValidationException extends common_1.BadRequestException {
-    constructor(validationErrors) {
-        super();
-        this.validationErrors = validationErrors;
-    }
+const class_validator_1 = __webpack_require__("class-validator");
+class UpdateThreadDto {
 }
-exports.ValidationException = ValidationException;
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    tslib_1.__metadata("design:type", String)
+], UpdateThreadDto.prototype, "title", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    tslib_1.__metadata("design:type", String)
+], UpdateThreadDto.prototype, "content", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsNumber)(),
+    tslib_1.__metadata("design:type", Number)
+], UpdateThreadDto.prototype, "views", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsNumber)(),
+    tslib_1.__metadata("design:type", Number)
+], UpdateThreadDto.prototype, "likes", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsNumber)(),
+    tslib_1.__metadata("design:type", Number)
+], UpdateThreadDto.prototype, "dislikes", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    tslib_1.__metadata("design:type", String)
+], UpdateThreadDto.prototype, "image", void 0);
+exports.UpdateThreadDto = UpdateThreadDto;
 
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/shared/filters/validation.filter.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ValidationFilter = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const common_1 = __webpack_require__("@nestjs/common");
-const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
-let ValidationFilter = class ValidationFilter {
-    catch(exception, host) {
-        const ctx = host.switchToHttp(), response = ctx.getResponse();
-        return response.status(400).json({
-            statusCode: 400,
-            timeStamp: new Date(),
-            createdBy: "ValidationFilter",
-            validationErrors: exception.validationErrors
-        });
-    }
-};
-ValidationFilter = tslib_1.__decorate([
-    (0, common_1.Catch)(validation_exception_1.ValidationException)
-], ValidationFilter);
-exports.ValidationFilter = ValidationFilter;
-
-
-/***/ }),
-
-/***/ "./apps/gessit-api/src/app/user/user.module.ts":
+/***/ "./apps/gessit-api/src/app/users/user.module.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1066,7 +1066,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersModule = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const user_service_1 = __webpack_require__("./apps/gessit-api/src/app/user/user.service.ts");
+const user_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.service.ts");
 let UsersModule = class UsersModule {
 };
 UsersModule = tslib_1.__decorate([
@@ -1080,7 +1080,7 @@ exports.UsersModule = UsersModule;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/user/user.service.ts":
+/***/ "./apps/gessit-api/src/app/users/user.service.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
