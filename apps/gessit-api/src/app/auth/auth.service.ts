@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 
@@ -15,7 +15,8 @@ export class AuthService {
       const { password, ...result } = user;
       return result;
     }
-    return null;
+
+    throw new HttpException('Incorrect password or emailaddress', HttpStatus.BAD_REQUEST);
   }
 
   async login(user: any) {

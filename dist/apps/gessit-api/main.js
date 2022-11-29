@@ -201,7 +201,7 @@ let AuthService = class AuthService {
                 const { password } = user, result = tslib_1.__rest(user, ["password"]);
                 return result;
             }
-            return null;
+            throw new common_1.HttpException('Incorrect password or emailaddress', common_1.HttpStatus.BAD_REQUEST);
         });
     }
     login(user) {
