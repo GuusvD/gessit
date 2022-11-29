@@ -41,6 +41,7 @@ const threads_module_1 = __webpack_require__("./apps/gessit-api/src/app/threads/
 const users_module_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.module.ts");
 const core_1 = __webpack_require__("@nestjs/core");
 const jwt_auth_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/jwt-auth.guard.ts");
+const roles_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/roles.guard.ts");
 let AppModule = class AppModule {
 };
 AppModule = tslib_1.__decorate([
@@ -51,6 +52,10 @@ AppModule = tslib_1.__decorate([
             {
                 provide: core_1.APP_GUARD,
                 useClass: jwt_auth_guard_1.JwtAuthGuard
+            },
+            {
+                provide: core_1.APP_GUARD,
+                useClass: roles_guard_1.RolesGuard
             },
             app_service_1.AppService
         ],
@@ -92,8 +97,9 @@ exports.AuthController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
+const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
+const roles_decorator_1 = __webpack_require__("./apps/gessit-api/src/app/auth/roles.decorator.ts");
 const auth_service_1 = __webpack_require__("./apps/gessit-api/src/app/auth/auth.service.ts");
-const jwt_auth_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/jwt-auth.guard.ts");
 const local_auth_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/local-auth.guard.ts");
 let AuthController = class AuthController {
     constructor(authService) {
@@ -118,7 +124,7 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 tslib_1.__decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
     (0, common_1.Get)('profile'),
     tslib_1.__param(0, (0, common_1.Request)()),
     tslib_1.__metadata("design:type", Function),
@@ -159,7 +165,7 @@ AuthModule = tslib_1.__decorate([
             passport_1.PassportModule,
             jwt_1.JwtModule.register({
                 secret: constant_1.jwtConstants.secret,
-                signOptions: { expiresIn: '60s' },
+                signOptions: { expiresIn: '2d' },
             }),
         ],
         providers: [auth_service_1.AuthService, local_strategy_1.LocalStrategy, jwt_strategy_1.JwtStrategy],
@@ -270,6 +276,7 @@ exports.JwtAuthGuard = JwtAuthGuard;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.JwtStrategy = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -277,23 +284,26 @@ const passport_jwt_1 = __webpack_require__("passport-jwt");
 const passport_1 = __webpack_require__("@nestjs/passport");
 const common_1 = __webpack_require__("@nestjs/common");
 const constant_1 = __webpack_require__("./apps/gessit-api/src/app/auth/constant.ts");
+const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.service.ts");
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
-    constructor() {
+    constructor(usersService) {
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
             secretOrKey: constant_1.jwtConstants.secret,
         });
+        this.usersService = usersService;
     }
     validate(payload) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return { userId: payload.sub, username: payload.username };
+            const user = yield this.usersService.getUserByEmailAddress(payload.username);
+            return { userId: payload.sub, username: payload.username, roles: user.roles };
         });
     }
 };
 JwtStrategy = tslib_1.__decorate([
     (0, common_1.Injectable)(),
-    tslib_1.__metadata("design:paramtypes", [])
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _a : Object])
 ], JwtStrategy);
 exports.JwtStrategy = JwtStrategy;
 
@@ -351,6 +361,56 @@ LocalStrategy = tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof auth_service_1.AuthService !== "undefined" && auth_service_1.AuthService) === "function" ? _a : Object])
 ], LocalStrategy);
 exports.LocalStrategy = LocalStrategy;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/auth/roles.decorator.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Roles = exports.ROLES_KEY = void 0;
+const common_1 = __webpack_require__("@nestjs/common");
+exports.ROLES_KEY = 'roles';
+const Roles = (...roles) => (0, common_1.SetMetadata)(exports.ROLES_KEY, roles);
+exports.Roles = Roles;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/auth/roles.guard.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RolesGuard = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const core_1 = __webpack_require__("@nestjs/core");
+const roles_decorator_1 = __webpack_require__("./apps/gessit-api/src/app/auth/roles.decorator.ts");
+let RolesGuard = class RolesGuard {
+    constructor(reflector) {
+        this.reflector = reflector;
+    }
+    canActivate(context) {
+        const requiredRoles = this.reflector.getAllAndOverride(roles_decorator_1.ROLES_KEY, [
+            context.getHandler(),
+            context.getClass(),
+        ]);
+        if (!requiredRoles) {
+            return true;
+        }
+        const { user } = context.switchToHttp().getRequest();
+        return requiredRoles.some((role) => { var _a; return (_a = user.roles) === null || _a === void 0 ? void 0 : _a.includes(role); });
+    }
+};
+RolesGuard = tslib_1.__decorate([
+    (0, common_1.Injectable)(),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof core_1.Reflector !== "undefined" && core_1.Reflector) === "function" ? _a : Object])
+], RolesGuard);
+exports.RolesGuard = RolesGuard;
 
 
 /***/ }),
@@ -1144,6 +1204,21 @@ exports.CreateUserDto = CreateUserDto;
 
 /***/ }),
 
+/***/ "./apps/gessit-api/src/app/users/role.enum.ts":
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Role = void 0;
+var Role;
+(function (Role) {
+    Role["User"] = "user";
+    Role["Admin"] = "admin";
+})(Role = exports.Role || (exports.Role = {}));
+
+
+/***/ }),
+
 /***/ "./apps/gessit-api/src/app/users/user.schema.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -1188,6 +1263,10 @@ tslib_1.__decorate([
     (0, mongoose_1.Prop)(),
     tslib_1.__metadata("design:type", String)
 ], User.prototype, "image", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", Array)
+], User.prototype, "roles", void 0);
 User = tslib_1.__decorate([
     (0, mongoose_1.Schema)()
 ], User);
@@ -1322,6 +1401,7 @@ exports.UsersService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("mongoose");
+const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
 const users_repository_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.repository.ts");
 let UsersService = class UsersService {
     constructor(userRepository) {
@@ -1348,7 +1428,8 @@ let UsersService = class UsersService {
                 phoneNumber,
                 password,
                 registerDate: new Date(),
-                image
+                image,
+                roles: [role_enum_1.Role.User]
             });
         });
     }

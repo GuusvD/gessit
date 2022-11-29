@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types } from "mongoose";
+import { Role } from "./role.enum";
 
 export type UserDocument = User & Document;
 
@@ -28,6 +29,9 @@ export class User {
 
     @Prop()
     image: string;
+
+    @Prop()
+    roles: Role[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

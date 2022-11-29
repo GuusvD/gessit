@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Types } from 'mongoose';
+import { Role } from './role.enum';
 import { UsersRepository } from './users.repository';
 
 export type User = any;
@@ -27,7 +28,8 @@ export class UsersService {
       phoneNumber,
       password,
       registerDate: new Date(),
-      image
+      image,
+      roles: [Role.User]
     });
   }
 }
