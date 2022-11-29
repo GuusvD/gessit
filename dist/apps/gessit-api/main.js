@@ -189,6 +189,7 @@ const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.service.ts");
 const jwt_1 = __webpack_require__("@nestjs/jwt");
+const bcrypt = __webpack_require__("bcrypt");
 let AuthService = class AuthService {
     constructor(usersService, jwtService) {
         this.usersService = usersService;
@@ -197,9 +198,12 @@ let AuthService = class AuthService {
     validateUser(username, pass) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const user = yield this.usersService.getUserByEmailAddress(username);
-            if (user && user.password === pass) {
-                const { password } = user, result = tslib_1.__rest(user, ["password"]);
-                return result;
+            if (user) {
+                const result = yield bcrypt.compare(pass, user.password);
+                if (result) {
+                    const { password } = user, result = tslib_1.__rest(user, ["password"]);
+                    return result;
+                }
             }
             throw new common_1.HttpException('Incorrect password or emailaddress', common_1.HttpStatus.BAD_REQUEST);
         });
@@ -1332,6 +1336,7 @@ exports.UsersController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("mongoose");
+const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
 const create_user_dto_1 = __webpack_require__("./apps/gessit-api/src/app/users/create-user.dto.ts");
 const update_user_dto_1 = __webpack_require__("./apps/gessit-api/src/app/users/update-user.dto.ts");
 const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.service.ts");
@@ -1379,6 +1384,7 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
 ], UsersController.prototype, "getUserByEmailAddress", null);
 tslib_1.__decorate([
+    (0, app_module_1.Public)(),
     (0, common_1.Post)(),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
@@ -1502,6 +1508,7 @@ const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("mongoose");
 const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
 const users_repository_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.repository.ts");
+const bcrypt = __webpack_require__("bcrypt");
 let UsersService = class UsersService {
     constructor(userRepository) {
         this.userRepository = userRepository;
@@ -1518,6 +1525,7 @@ let UsersService = class UsersService {
     }
     createUser(name, birthDate, emailAddress, phoneNumber, password, image) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            password = yield bcrypt.hashSync(password, 10);
             return this.userRepository.create({
                 _id: new mongoose_1.Types.ObjectId(),
                 name,
@@ -1533,6 +1541,9 @@ let UsersService = class UsersService {
     }
     updateUser(id, user) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            if (user.password) {
+                user.password = yield bcrypt.hashSync(user.password, 10);
+            }
             user._id = new mongoose_1.Types.ObjectId(id);
             return this.userRepository.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, user);
         });
@@ -1584,6 +1595,13 @@ module.exports = require("@nestjs/mongoose");
 /***/ ((module) => {
 
 module.exports = require("@nestjs/passport");
+
+/***/ }),
+
+/***/ "bcrypt":
+/***/ ((module) => {
+
+module.exports = require("bcrypt");
 
 /***/ }),
 

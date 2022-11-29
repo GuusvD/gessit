@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -11,9 +12,14 @@ export class AuthService {
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.getUserByEmailAddress(username);
-    if (user && user.password === pass) {
-      const { password, ...result } = user;
-      return result;
+
+    if (user) {
+      const result = await bcrypt.compare(pass, user.password);
+
+      if (result) {
+        const { password, ...result } = user;
+        return result;
+      }
     }
 
     throw new HttpException('Incorrect password or emailaddress', HttpStatus.BAD_REQUEST);
