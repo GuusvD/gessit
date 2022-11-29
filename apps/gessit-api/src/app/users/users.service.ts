@@ -10,13 +10,11 @@ export class UsersService {
   constructor(private readonly userRepository : UsersRepository) {}
 
   async getUserByEmailAddress(emailAddress: string): Promise<User | undefined> {
-    const user = this.userRepository.findOne({ emailAddress: emailAddress });
+    return this.userRepository.findOne({ emailAddress: emailAddress });
+  }
 
-    if (!user) {
-      return undefined;
-    } else {
-      return user;
-    }
+  async getUsers(): Promise<User[]> {
+    return this.userRepository.find({});
   }
 
   async createUser(name: string, birthDate: Date, emailAddress: string, phoneNumber: string, password: string, image: string): Promise<User> {
@@ -31,5 +29,14 @@ export class UsersService {
       image,
       roles: [Role.User]
     });
+  }
+
+  async updateUser(id: string, user: Partial<User>): Promise<User> {
+    user._id = new Types.ObjectId(id);
+    return this.userRepository.findOneAndUpdate({ _id: new Types.ObjectId(id) }, user);
+  }
+
+  async deleteUser(id: Types.ObjectId): Promise<User> {
+    return this.userRepository.findOneAndDelete({ _id: id })
   }
 }

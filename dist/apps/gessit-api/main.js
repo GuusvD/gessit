@@ -1219,6 +1219,52 @@ var Role;
 
 /***/ }),
 
+/***/ "./apps/gessit-api/src/app/users/update-user.dto.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateUserDto = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const class_validator_1 = __webpack_require__("class-validator");
+class UpdateUserDto {
+}
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    tslib_1.__metadata("design:type", String)
+], UpdateUserDto.prototype, "name", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsDate)(),
+    (0, class_validator_1.IsOptional)(),
+    tslib_1.__metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], UpdateUserDto.prototype, "birthDate", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    tslib_1.__metadata("design:type", String)
+], UpdateUserDto.prototype, "emailAddress", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    tslib_1.__metadata("design:type", String)
+], UpdateUserDto.prototype, "phoneNumber", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    tslib_1.__metadata("design:type", String)
+], UpdateUserDto.prototype, "password", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    tslib_1.__metadata("design:type", String)
+], UpdateUserDto.prototype, "image", void 0);
+exports.UpdateUserDto = UpdateUserDto;
+
+
+/***/ }),
+
 /***/ "./apps/gessit-api/src/app/users/user.schema.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -1280,16 +1326,23 @@ exports.UserSchema = mongoose_1.SchemaFactory.createForClass(User);
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d;
+var _a, _b, _c, _d, _e, _f, _g, _h;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
+const mongoose_1 = __webpack_require__("mongoose");
 const create_user_dto_1 = __webpack_require__("./apps/gessit-api/src/app/users/create-user.dto.ts");
+const update_user_dto_1 = __webpack_require__("./apps/gessit-api/src/app/users/update-user.dto.ts");
 const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.service.ts");
 let UsersController = class UsersController {
     constructor(userService) {
         this.userService = userService;
+    }
+    getUsers() {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.userService.getUsers();
+        });
     }
     getUserByEmailAddress(emailAddress) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -1301,21 +1354,52 @@ let UsersController = class UsersController {
             return yield this.userService.createUser(createUserDto.name, createUserDto.birthDate, createUserDto.emailAddress, createUserDto.phoneNumber, createUserDto.password, createUserDto.image);
         });
     }
+    updateUser(id, updateUserDto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.userService.updateUser(id, updateUserDto);
+        });
+    }
+    deleteUser(id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.userService.deleteUser(new mongoose_1.Types.ObjectId(id));
+        });
+    }
 };
 tslib_1.__decorate([
     (0, common_1.Get)(),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", []),
+    tslib_1.__metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+], UsersController.prototype, "getUsers", null);
+tslib_1.__decorate([
+    (0, common_1.Get)(':emailAddress'),
     tslib_1.__param(0, (0, common_1.Param)('emailAddress')),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [String]),
-    tslib_1.__metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+    tslib_1.__metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
 ], UsersController.prototype, "getUserByEmailAddress", null);
 tslib_1.__decorate([
     (0, common_1.Post)(),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_c = typeof create_user_dto_1.CreateUserDto !== "undefined" && create_user_dto_1.CreateUserDto) === "function" ? _c : Object]),
-    tslib_1.__metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+    tslib_1.__metadata("design:paramtypes", [typeof (_d = typeof create_user_dto_1.CreateUserDto !== "undefined" && create_user_dto_1.CreateUserDto) === "function" ? _d : Object]),
+    tslib_1.__metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], UsersController.prototype, "createUser", null);
+tslib_1.__decorate([
+    (0, common_1.Patch)(':id'),
+    tslib_1.__param(0, (0, common_1.Param)('id')),
+    tslib_1.__param(1, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [String, typeof (_f = typeof update_user_dto_1.UpdateUserDto !== "undefined" && update_user_dto_1.UpdateUserDto) === "function" ? _f : Object]),
+    tslib_1.__metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+], UsersController.prototype, "updateUser", null);
+tslib_1.__decorate([
+    (0, common_1.Delete)(':id'),
+    tslib_1.__param(0, (0, common_1.Param)('id')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [String]),
+    tslib_1.__metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+], UsersController.prototype, "deleteUser", null);
 UsersController = tslib_1.__decorate([
     (0, common_1.Controller)('user'),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _a : Object])
@@ -1374,10 +1458,25 @@ let UsersRepository = class UsersRepository {
             return this.userModel.findOne(userFilterQuery);
         });
     }
+    find(userFilterQuery) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.userModel.find(userFilterQuery);
+        });
+    }
     create(user) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const newUser = new this.userModel(user);
             return newUser.save();
+        });
+    }
+    findOneAndUpdate(userFilterQuery, user) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.userModel.findOneAndUpdate(userFilterQuery, user);
+        });
+    }
+    findOneAndDelete(userFilterQuery) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.userModel.findOneAndDelete(userFilterQuery);
         });
     }
 };
@@ -1409,13 +1508,12 @@ let UsersService = class UsersService {
     }
     getUserByEmailAddress(emailAddress) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const user = this.userRepository.findOne({ emailAddress: emailAddress });
-            if (!user) {
-                return undefined;
-            }
-            else {
-                return user;
-            }
+            return this.userRepository.findOne({ emailAddress: emailAddress });
+        });
+    }
+    getUsers() {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.userRepository.find({});
         });
     }
     createUser(name, birthDate, emailAddress, phoneNumber, password, image) {
@@ -1431,6 +1529,17 @@ let UsersService = class UsersService {
                 image,
                 roles: [role_enum_1.Role.User]
             });
+        });
+    }
+    updateUser(id, user) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            user._id = new mongoose_1.Types.ObjectId(id);
+            return this.userRepository.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, user);
+        });
+    }
+    deleteUser(id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.userRepository.findOneAndDelete({ _id: id });
         });
     }
 };

@@ -1,5 +1,5 @@
 import { PipeTransform } from "@nestjs/common";
-import { ValidationException } from "../../shared/filters/validation.exception";
+import { ValidationException } from "../filters/validation.exception";
 var ObjectId = require('mongoose').Types.ObjectId;
 
 export class ObjectIdPipe implements PipeTransform<string> {
