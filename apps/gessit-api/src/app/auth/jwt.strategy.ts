@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { jwtConstants } from './constant';
 import { UsersService } from '../users/users.service';
 
@@ -16,6 +16,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: any) {
     const user = await this.usersService.getUserByEmailAddress(payload.username);
-    return { userId: payload.sub, username: payload.username, roles: user.roles };
+
+    if (user) {
+      return { userId: payload.sub, username: payload.username, roles: user.roles };
+    } else {
+      throw new HttpException('Login has expired', HttpStatus.UNAUTHORIZED);
+    }
   }
 }

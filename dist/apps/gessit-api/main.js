@@ -301,7 +301,12 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
     validate(payload) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const user = yield this.usersService.getUserByEmailAddress(payload.username);
-            return { userId: payload.sub, username: payload.username, roles: user.roles };
+            if (user) {
+                return { userId: payload.sub, username: payload.username, roles: user.roles };
+            }
+            else {
+                throw new common_1.HttpException('Login has expired', common_1.HttpStatus.UNAUTHORIZED);
+            }
         });
     }
 };
