@@ -1,6 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from "@nestjs/common";
 import { Types } from "mongoose";
+import { Roles } from "../auth/roles.decorator";
 import { CreateUserDto } from "./create-user.dto";
+import { Role } from "./role.enum";
 import { UpdateUserDto } from "./update-user.dto";
 import { User, UsersService } from "./users.service";
 
@@ -19,6 +21,7 @@ export class UsersController {
     }
 
     @Post()
+    @Roles(Role.Admin)
     async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
         return await this.userService.createUser(createUserDto.username, createUserDto.birthDate, createUserDto.emailAddress, createUserDto.phoneNumber, createUserDto.password, createUserDto.image);
     }
