@@ -9,7 +9,7 @@ export class CreateUserDto {
     @IsString()
     @IsNotEmpty()
     @IsDefined()
-    name: string;
+    username: string;
 
     //@IsDate()
     //@IsNotEmpty()

@@ -7,7 +7,7 @@ import {
 export class UpdateUserDto {
     @IsString()
     @IsOptional()
-    name: string;
+    username: string;
 
     @IsDate()
     @IsOptional()

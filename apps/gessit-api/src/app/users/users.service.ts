@@ -10,20 +10,20 @@ export type User = any;
 export class UsersService {
   constructor(private readonly userRepository : UsersRepository) {}
 
-  async getUserByEmailAddress(emailAddress: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ emailAddress: emailAddress });
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return this.userRepository.findOne({ username: username });
   }
 
   async getUsers(): Promise<User[]> {
     return this.userRepository.find({});
   }
 
-  async createUser(name: string, birthDate: Date, emailAddress: string, phoneNumber: string, password: string, image: string): Promise<User> {
+  async createUser(username: string, birthDate: Date, emailAddress: string, phoneNumber: string, password: string, image: string): Promise<User> {
     password = await bcrypt.hashSync(password, 10);
 
     return this.userRepository.create({
       _id: new Types.ObjectId(),
-      name,
+      username,
       birthDate,
       emailAddress,
       phoneNumber,

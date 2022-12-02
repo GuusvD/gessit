@@ -10,7 +10,7 @@ export class User {
     _id: Types.ObjectId;
 
     @Prop()
-    name: string;
+    username: string;
 
     @Prop()
     birthDate: Date;

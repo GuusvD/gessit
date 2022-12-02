@@ -16,13 +16,12 @@ export class UsersController {
 
     @Get(':emailAddress')
     async getUserByEmailAddress(@Param('emailAddress') emailAddress: string): Promise<User> {
-        return await this.userService.getUserByEmailAddress(emailAddress);
+        return await this.userService.getUserByUsername(emailAddress);
     }
 
-    @Public()
     @Post()
     async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
-        return await this.userService.createUser(createUserDto.name, createUserDto.birthDate, createUserDto.emailAddress, createUserDto.phoneNumber, createUserDto.password, createUserDto.image);
+        return await this.userService.createUser(createUserDto.username, createUserDto.birthDate, createUserDto.emailAddress, createUserDto.phoneNumber, createUserDto.password, createUserDto.image);
     }
 
     @Patch(':id')

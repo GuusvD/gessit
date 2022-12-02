@@ -91,7 +91,7 @@ exports.AppService = AppService;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -101,6 +101,7 @@ const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.en
 const roles_decorator_1 = __webpack_require__("./apps/gessit-api/src/app/auth/roles.decorator.ts");
 const auth_service_1 = __webpack_require__("./apps/gessit-api/src/app/auth/auth.service.ts");
 const local_auth_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/local-auth.guard.ts");
+const create_user_dto_1 = __webpack_require__("./apps/gessit-api/src/app/users/create-user.dto.ts");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -108,6 +109,11 @@ let AuthController = class AuthController {
     login(req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return this.authService.login(req.body);
+        });
+    }
+    register(user) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.authService.register(user);
         });
     }
     getProfile(req) {
@@ -124,7 +130,15 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 tslib_1.__decorate([
-    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
+    (0, app_module_1.Public)(),
+    (0, common_1.Post)('register'),
+    tslib_1.__param(0, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [typeof (_b = typeof create_user_dto_1.CreateUserDto !== "undefined" && create_user_dto_1.CreateUserDto) === "function" ? _b : Object]),
+    tslib_1.__metadata("design:returntype", Promise)
+], AuthController.prototype, "register", null);
+tslib_1.__decorate([
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.User),
     (0, common_1.Get)('profile'),
     tslib_1.__param(0, (0, common_1.Request)()),
     tslib_1.__metadata("design:type", Function),
@@ -197,7 +211,7 @@ let AuthService = class AuthService {
     }
     validateUser(username, pass) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const user = yield this.usersService.getUserByEmailAddress(username);
+            const user = yield this.usersService.getUserByUsername(username);
             if (user) {
                 const result = yield bcrypt.compare(pass, user.password);
                 if (result) {
@@ -210,10 +224,17 @@ let AuthService = class AuthService {
     }
     login(user) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            console.log(user.username);
             const payload = { username: user.username, sub: user.userId };
             return {
                 access_token: this.jwtService.sign(payload),
             };
+        });
+    }
+    register(user) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const result = yield this.usersService.createUser(user.username, user.birthDate, user.emailAddress, user.phoneNumber, user.password, user.image);
+            return yield this.login(result);
         });
     }
 };
@@ -300,7 +321,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
     }
     validate(payload) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const user = yield this.usersService.getUserByEmailAddress(payload.username);
+            const user = yield this.usersService.getUserByUsername(payload.username);
             if (user) {
                 return { userId: payload.sub, username: payload.username, roles: user.roles };
             }
@@ -1185,7 +1206,7 @@ tslib_1.__decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsDefined)(),
     tslib_1.__metadata("design:type", String)
-], CreateUserDto.prototype, "name", void 0);
+], CreateUserDto.prototype, "username", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -1243,7 +1264,7 @@ tslib_1.__decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     tslib_1.__metadata("design:type", String)
-], UpdateUserDto.prototype, "name", void 0);
+], UpdateUserDto.prototype, "username", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsDate)(),
     (0, class_validator_1.IsOptional)(),
@@ -1293,7 +1314,7 @@ tslib_1.__decorate([
 tslib_1.__decorate([
     (0, mongoose_1.Prop)(),
     tslib_1.__metadata("design:type", String)
-], User.prototype, "name", void 0);
+], User.prototype, "username", void 0);
 tslib_1.__decorate([
     (0, mongoose_1.Prop)(),
     tslib_1.__metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
@@ -1341,7 +1362,6 @@ exports.UsersController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("mongoose");
-const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
 const create_user_dto_1 = __webpack_require__("./apps/gessit-api/src/app/users/create-user.dto.ts");
 const update_user_dto_1 = __webpack_require__("./apps/gessit-api/src/app/users/update-user.dto.ts");
 const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.service.ts");
@@ -1356,12 +1376,12 @@ let UsersController = class UsersController {
     }
     getUserByEmailAddress(emailAddress) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.userService.getUserByEmailAddress(emailAddress);
+            return yield this.userService.getUserByUsername(emailAddress);
         });
     }
     createUser(createUserDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.userService.createUser(createUserDto.name, createUserDto.birthDate, createUserDto.emailAddress, createUserDto.phoneNumber, createUserDto.password, createUserDto.image);
+            return yield this.userService.createUser(createUserDto.username, createUserDto.birthDate, createUserDto.emailAddress, createUserDto.phoneNumber, createUserDto.password, createUserDto.image);
         });
     }
     updateUser(id, updateUserDto) {
@@ -1389,7 +1409,6 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
 ], UsersController.prototype, "getUserByEmailAddress", null);
 tslib_1.__decorate([
-    (0, app_module_1.Public)(),
     (0, common_1.Post)(),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
@@ -1518,9 +1537,9 @@ let UsersService = class UsersService {
     constructor(userRepository) {
         this.userRepository = userRepository;
     }
-    getUserByEmailAddress(emailAddress) {
+    getUserByUsername(username) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.userRepository.findOne({ emailAddress: emailAddress });
+            return this.userRepository.findOne({ username: username });
         });
     }
     getUsers() {
@@ -1528,12 +1547,12 @@ let UsersService = class UsersService {
             return this.userRepository.find({});
         });
     }
-    createUser(name, birthDate, emailAddress, phoneNumber, password, image) {
+    createUser(username, birthDate, emailAddress, phoneNumber, password, image) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             password = yield bcrypt.hashSync(password, 10);
             return this.userRepository.create({
                 _id: new mongoose_1.Types.ObjectId(),
-                name,
+                username,
                 birthDate,
                 emailAddress,
                 phoneNumber,
