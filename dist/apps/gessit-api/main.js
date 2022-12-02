@@ -1312,7 +1312,9 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:type", typeof (_a = typeof mongoose_2.Types !== "undefined" && mongoose_2.Types.ObjectId) === "function" ? _a : Object)
 ], User.prototype, "_id", void 0);
 tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
+    (0, mongoose_1.Prop)({
+        unique: true
+    }),
     tslib_1.__metadata("design:type", String)
 ], User.prototype, "username", void 0);
 tslib_1.__decorate([
@@ -1533,6 +1535,7 @@ const mongoose_1 = __webpack_require__("mongoose");
 const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
 const users_repository_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.repository.ts");
 const bcrypt = __webpack_require__("bcrypt");
+const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
 let UsersService = class UsersService {
     constructor(userRepository) {
         this.userRepository = userRepository;
@@ -1550,6 +1553,9 @@ let UsersService = class UsersService {
     createUser(username, birthDate, emailAddress, phoneNumber, password, image) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             password = yield bcrypt.hashSync(password, 10);
+            if ((yield this.getUsers()).filter(p => p.username === username).length > 0) {
+                throw new validation_exception_1.ValidationException([`Username ${username} already in use!`]);
+            }
             return this.userRepository.create({
                 _id: new mongoose_1.Types.ObjectId(),
                 username,
@@ -1565,6 +1571,11 @@ let UsersService = class UsersService {
     }
     updateUser(id, user) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            if (user.username) {
+                if ((yield this.getUsers()).filter(p => p.username === user.username).length > 0) {
+                    throw new validation_exception_1.ValidationException([`Username ${user.username} already in use!`]);
+                }
+            }
             if (user.password) {
                 user.password = yield bcrypt.hashSync(user.password, 10);
             }

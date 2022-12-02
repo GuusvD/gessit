@@ -3,6 +3,7 @@ import { Types } from 'mongoose';
 import { Role } from './role.enum';
 import { UsersRepository } from './users.repository';
 import * as bcrypt from 'bcrypt';
+import { ValidationException } from '../shared/filters/validation.exception';
 
 export type User = any;
 
@@ -21,6 +22,10 @@ export class UsersService {
   async createUser(username: string, birthDate: Date, emailAddress: string, phoneNumber: string, password: string, image: string): Promise<User> {
     password = await bcrypt.hashSync(password, 10);
 
+    if ((await this.getUsers()).filter(p => p.username === username).length > 0) {
+      throw new ValidationException([`Username ${username} already in use!`]);
+    }
+
     return this.userRepository.create({
       _id: new Types.ObjectId(),
       username,
@@ -35,6 +40,12 @@ export class UsersService {
   }
 
   async updateUser(id: string, user: Partial<User>): Promise<User> {
+    if (user.username) {
+      if ((await this.getUsers()).filter(p => p.username === user.username).length > 0) {
+        throw new ValidationException([`Username ${user.username} already in use!`]);
+      }
+    }
+    
     if (user.password) {
       user.password = await bcrypt.hashSync(user.password, 10);
     }
