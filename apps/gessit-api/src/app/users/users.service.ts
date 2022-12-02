@@ -4,8 +4,7 @@ import { Role } from './role.enum';
 import { UsersRepository } from './users.repository';
 import * as bcrypt from 'bcrypt';
 import { ValidationException } from '../shared/filters/validation.exception';
-
-export type User = any;
+import { User } from './user.schema';
 
 @Injectable()
 export class UsersService {
@@ -23,13 +22,13 @@ export class UsersService {
     return this.userRepository.findOne({ _id: new Types.ObjectId(id) });
   }
 
-  async followUser(req, id: string) {
+  async followUser(req, id: string): Promise<User[]> {
     const user = await this.getUserById(id);
     const loggedInUser = await this.getUserById(req.user.id);
 
     if (!(loggedInUser._id.equals(user._id))) {
-      loggedInUser.following.push(user._id);
-      user.followers.push(loggedInUser._id);
+      (loggedInUser.following as any).push(user._id);
+      (user.followers as any).push(loggedInUser._id);
   
       const loggedInUserNew = await this.userRepository.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
       const userNew = await this.userRepository.findOneAndUpdate({ _id: user._id }, user);

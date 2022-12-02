@@ -4,7 +4,8 @@ import { Roles } from "../auth/roles.decorator";
 import { CreateUserDto } from "./create-user.dto";
 import { Role } from "./role.enum";
 import { UpdateUserDto } from "./update-user.dto";
-import { User, UsersService } from "./users.service";
+import { User } from "./user.schema";
+import { UsersService } from "./users.service";
 
 @Controller('user')
 export class UsersController {
@@ -26,7 +27,7 @@ export class UsersController {
     }
 
     @Post(':id/follow')
-    async followUser(@Req() req, @Param('id') id: string): Promise<User> {
+    async followUser(@Req() req, @Param('id') id: string): Promise<User[]> {
         return await this.userService.followUser(req, id);
     }
 
