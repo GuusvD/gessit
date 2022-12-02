@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from "@nestjs/common";
 import { Types } from "mongoose";
 import { Public } from "../app.module";
 import { CreateUserDto } from "./create-user.dto";
@@ -25,8 +25,8 @@ export class UsersController {
     }
 
     @Patch(':id')
-    async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
-        return await this.userService.updateUser(id, updateUserDto);
+    async updateUser(@Req() req, @Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
+        return await this.userService.updateUser(req, id, updateUserDto);
     }
 
     @Delete(':id')

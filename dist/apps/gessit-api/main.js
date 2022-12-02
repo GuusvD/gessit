@@ -322,7 +322,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const user = yield this.usersService.getUserByUsername(payload.username);
             if (user) {
-                return { userId: payload.sub, username: payload.username, roles: user.roles };
+                return { id: user._id, username: user.username, roles: user.roles };
             }
             else {
                 throw new common_1.HttpException('Login has expired', common_1.HttpStatus.UNAUTHORIZED);
@@ -1392,9 +1392,9 @@ let UsersController = class UsersController {
             return yield this.userService.createUser(createUserDto.username, createUserDto.birthDate, createUserDto.emailAddress, createUserDto.phoneNumber, createUserDto.password, createUserDto.image);
         });
     }
-    updateUser(id, updateUserDto) {
+    updateUser(req, id, updateUserDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.userService.updateUser(id, updateUserDto);
+            return yield this.userService.updateUser(req, id, updateUserDto);
         });
     }
     deleteUser(id) {
@@ -1425,10 +1425,11 @@ tslib_1.__decorate([
 ], UsersController.prototype, "createUser", null);
 tslib_1.__decorate([
     (0, common_1.Patch)(':id'),
-    tslib_1.__param(0, (0, common_1.Param)('id')),
-    tslib_1.__param(1, (0, common_1.Body)()),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Param)('id')),
+    tslib_1.__param(2, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [String, typeof (_f = typeof update_user_dto_1.UpdateUserDto !== "undefined" && update_user_dto_1.UpdateUserDto) === "function" ? _f : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, String, typeof (_f = typeof update_user_dto_1.UpdateUserDto !== "undefined" && update_user_dto_1.UpdateUserDto) === "function" ? _f : Object]),
     tslib_1.__metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], UsersController.prototype, "updateUser", null);
 tslib_1.__decorate([
@@ -1580,10 +1581,10 @@ let UsersService = class UsersService {
             });
         });
     }
-    updateUser(id, user) {
+    updateUser(req, id, user) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             if (user.username) {
-                if ((yield this.getUsers()).filter(p => p.username === user.username).length > 0) {
+                if ((yield this.getUsers()).filter(p => p.username === user.username).length > 0 && !(req.user.id.equals(new mongoose_1.Types.ObjectId(id)))) {
                     throw new validation_exception_1.ValidationException([`Username ${user.username} already in use!`]);
                 }
             }

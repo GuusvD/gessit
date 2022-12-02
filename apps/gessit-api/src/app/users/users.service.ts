@@ -46,9 +46,9 @@ export class UsersService {
     });
   }
 
-  async updateUser(id: string, user: Partial<User>): Promise<User> {
+  async updateUser(req, id: string, user: Partial<User>): Promise<User> {
     if (user.username) {
-      if ((await this.getUsers()).filter(p => p.username === user.username).length > 0) {
+      if ((await this.getUsers()).filter(p => p.username === user.username).length > 0 && !(req.user.id.equals(new Types.ObjectId(id)))) {
         throw new ValidationException([`Username ${user.username} already in use!`]);
       }
     }
