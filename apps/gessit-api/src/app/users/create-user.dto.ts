@@ -1,8 +1,8 @@
 import {
-    IsDate,
     IsDefined,
     IsNotEmpty,
-    IsString
+    IsString,
+    Matches
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -11,9 +11,9 @@ export class CreateUserDto {
     @IsDefined()
     username: string;
 
-    //@IsDate()
-    //@IsNotEmpty()
-    //@IsDefined()
+    @Matches(/^\d{4}[./-]\d{2}[./-]\d{2}$/)
+    @IsNotEmpty()
+    @IsDefined()
     birthDate: Date;
 
     @IsString()

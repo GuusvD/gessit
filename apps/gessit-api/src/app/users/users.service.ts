@@ -22,6 +22,13 @@ export class UsersService {
   async createUser(username: string, birthDate: Date, emailAddress: string, phoneNumber: string, password: string, image: string): Promise<User> {
     password = await bcrypt.hashSync(password, 10);
 
+    birthDate = new Date(birthDate);
+    birthDate.setHours(birthDate.getHours() + 1);
+
+    if (birthDate > new Date()) {
+      throw new ValidationException([`Birthdate ${birthDate} lies in the future!`]);
+    }
+
     if ((await this.getUsers()).filter(p => p.username === username).length > 0) {
       throw new ValidationException([`Username ${username} already in use!`]);
     }
@@ -43,6 +50,15 @@ export class UsersService {
     if (user.username) {
       if ((await this.getUsers()).filter(p => p.username === user.username).length > 0) {
         throw new ValidationException([`Username ${user.username} already in use!`]);
+      }
+    }
+
+    if (user.birthDate) {
+      user.birthDate = new Date(user.birthDate);
+      user.birthDate.setHours(user.birthDate.getHours() + 1);
+
+      if (user.birthDate > new Date()) {
+        throw new ValidationException([`Birthdate ${user.birthDate} lies in the future!`]);
       }
     }
     

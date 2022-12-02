@@ -1,7 +1,7 @@
 import {
-    IsDate,
     IsOptional,
-    IsString
+    IsString,
+    Matches
 } from 'class-validator';
 
 export class UpdateUserDto {
@@ -9,7 +9,7 @@ export class UpdateUserDto {
     @IsOptional()
     username: string;
 
-    @IsDate()
+    @Matches(/^\d{4}[./-]\d{2}[./-]\d{2}$/)
     @IsOptional()
     birthDate: Date;
 

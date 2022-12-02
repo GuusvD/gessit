@@ -224,7 +224,6 @@ let AuthService = class AuthService {
     }
     login(user) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            console.log(user.username);
             const payload = { username: user.username, sub: user.userId };
             return {
                 access_token: this.jwtService.sign(payload),
@@ -1195,6 +1194,7 @@ exports.UpdateThreadDto = UpdateThreadDto;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
+var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CreateUserDto = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -1207,6 +1207,12 @@ tslib_1.__decorate([
     (0, class_validator_1.IsDefined)(),
     tslib_1.__metadata("design:type", String)
 ], CreateUserDto.prototype, "username", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.Matches)(/^\d{4}[./-]\d{2}[./-]\d{2}$/),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    tslib_1.__metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
+], CreateUserDto.prototype, "birthDate", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -1266,7 +1272,7 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:type", String)
 ], UpdateUserDto.prototype, "username", void 0);
 tslib_1.__decorate([
-    (0, class_validator_1.IsDate)(),
+    (0, class_validator_1.Matches)(/^\d{4}[./-]\d{2}[./-]\d{2}$/),
     (0, class_validator_1.IsOptional)(),
     tslib_1.__metadata("design:type", typeof (_a = typeof Date !== "undefined" && Date) === "function" ? _a : Object)
 ], UpdateUserDto.prototype, "birthDate", void 0);
@@ -1553,6 +1559,11 @@ let UsersService = class UsersService {
     createUser(username, birthDate, emailAddress, phoneNumber, password, image) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             password = yield bcrypt.hashSync(password, 10);
+            birthDate = new Date(birthDate);
+            birthDate.setHours(birthDate.getHours() + 1);
+            if (birthDate > new Date()) {
+                throw new validation_exception_1.ValidationException([`Birthdate ${birthDate} lies in the future!`]);
+            }
             if ((yield this.getUsers()).filter(p => p.username === username).length > 0) {
                 throw new validation_exception_1.ValidationException([`Username ${username} already in use!`]);
             }
@@ -1574,6 +1585,13 @@ let UsersService = class UsersService {
             if (user.username) {
                 if ((yield this.getUsers()).filter(p => p.username === user.username).length > 0) {
                     throw new validation_exception_1.ValidationException([`Username ${user.username} already in use!`]);
+                }
+            }
+            if (user.birthDate) {
+                user.birthDate = new Date(user.birthDate);
+                user.birthDate.setHours(user.birthDate.getHours() + 1);
+                if (user.birthDate > new Date()) {
+                    throw new validation_exception_1.ValidationException([`Birthdate ${user.birthDate} lies in the future!`]);
                 }
             }
             if (user.password) {
