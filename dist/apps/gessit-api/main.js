@@ -1351,6 +1351,20 @@ tslib_1.__decorate([
     (0, mongoose_1.Prop)(),
     tslib_1.__metadata("design:type", Array)
 ], User.prototype, "roles", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)({
+        type: [mongoose_2.Schema.Types.ObjectId],
+        ref: 'User'
+    }),
+    tslib_1.__metadata("design:type", Array)
+], User.prototype, "following", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)({
+        type: [mongoose_2.Schema.Types.ObjectId],
+        ref: 'User'
+    }),
+    tslib_1.__metadata("design:type", Array)
+], User.prototype, "followers", void 0);
 User = tslib_1.__decorate([
     (0, mongoose_1.Schema)()
 ], User);
@@ -1364,7 +1378,7 @@ exports.UserSchema = mongoose_1.SchemaFactory.createForClass(User);
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g, _h;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -1384,9 +1398,19 @@ let UsersController = class UsersController {
             return yield this.userService.getUsers();
         });
     }
-    getUserByEmailAddress(emailAddress) {
+    getUserById(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.userService.getUserByUsername(emailAddress);
+            return yield this.userService.getUserById(id);
+        });
+    }
+    getUserByUsername(username) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.userService.getUserByUsername(username);
+        });
+    }
+    followUser(req, id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.userService.followUser(req, id);
         });
     }
     createUser(createUserDto) {
@@ -1412,19 +1436,34 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
 ], UsersController.prototype, "getUsers", null);
 tslib_1.__decorate([
-    (0, common_1.Get)(':emailAddress'),
-    tslib_1.__param(0, (0, common_1.Param)('emailAddress')),
+    (0, common_1.Get)(':id'),
+    tslib_1.__param(0, (0, common_1.Param)('id')),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [String]),
     tslib_1.__metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
-], UsersController.prototype, "getUserByEmailAddress", null);
+], UsersController.prototype, "getUserById", null);
+tslib_1.__decorate([
+    (0, common_1.Get)(':username'),
+    tslib_1.__param(0, (0, common_1.Param)('username')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [String]),
+    tslib_1.__metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+], UsersController.prototype, "getUserByUsername", null);
+tslib_1.__decorate([
+    (0, common_1.Post)(':id/follow'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Param)('id')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, String]),
+    tslib_1.__metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+], UsersController.prototype, "followUser", null);
 tslib_1.__decorate([
     (0, common_1.Post)(),
     (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_d = typeof create_user_dto_1.CreateUserDto !== "undefined" && create_user_dto_1.CreateUserDto) === "function" ? _d : Object]),
-    tslib_1.__metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+    tslib_1.__metadata("design:paramtypes", [typeof (_f = typeof create_user_dto_1.CreateUserDto !== "undefined" && create_user_dto_1.CreateUserDto) === "function" ? _f : Object]),
+    tslib_1.__metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], UsersController.prototype, "createUser", null);
 tslib_1.__decorate([
     (0, common_1.Patch)(':id'),
@@ -1432,8 +1471,8 @@ tslib_1.__decorate([
     tslib_1.__param(1, (0, common_1.Param)('id')),
     tslib_1.__param(2, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, String, typeof (_f = typeof update_user_dto_1.UpdateUserDto !== "undefined" && update_user_dto_1.UpdateUserDto) === "function" ? _f : Object]),
-    tslib_1.__metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+    tslib_1.__metadata("design:paramtypes", [Object, String, typeof (_h = typeof update_user_dto_1.UpdateUserDto !== "undefined" && update_user_dto_1.UpdateUserDto) === "function" ? _h : Object]),
+    tslib_1.__metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
 ], UsersController.prototype, "updateUser", null);
 tslib_1.__decorate([
     (0, common_1.Delete)(':id'),
@@ -1441,7 +1480,7 @@ tslib_1.__decorate([
     tslib_1.__param(1, (0, common_1.Param)('id')),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [Object, String]),
-    tslib_1.__metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+    tslib_1.__metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], UsersController.prototype, "deleteUser", null);
 UsersController = tslib_1.__decorate([
     (0, common_1.Controller)('user'),
@@ -1561,6 +1600,27 @@ let UsersService = class UsersService {
             return this.userRepository.find({});
         });
     }
+    getUserById(id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.userRepository.findOne({ _id: new mongoose_1.Types.ObjectId(id) });
+        });
+    }
+    followUser(req, id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const user = yield this.getUserById(id);
+            const loggedInUser = yield this.getUserById(req.user.id);
+            if (!(loggedInUser._id.equals(user._id))) {
+                loggedInUser.following.push(user._id);
+                user.followers.push(loggedInUser._id);
+                const loggedInUserNew = yield this.userRepository.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
+                const userNew = yield this.userRepository.findOneAndUpdate({ _id: user._id }, user);
+                return [loggedInUserNew, userNew];
+            }
+            else {
+                throw new validation_exception_1.ValidationException(['Can not follow yourself!']);
+            }
+        });
+    }
     createUser(username, birthDate, emailAddress, phoneNumber, password, image) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             password = yield bcrypt.hashSync(password, 10);
@@ -1581,7 +1641,9 @@ let UsersService = class UsersService {
                 password,
                 registerDate: new Date(),
                 image,
-                roles: [role_enum_1.Role.User]
+                roles: [role_enum_1.Role.User],
+                following: [],
+                followers: []
             });
         });
     }

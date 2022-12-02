@@ -19,6 +19,27 @@ export class UsersService {
     return this.userRepository.find({});
   }
 
+  async getUserById(id: string): Promise<User> {
+    return this.userRepository.findOne({ _id: new Types.ObjectId(id) });
+  }
+
+  async followUser(req, id: string) {
+    const user = await this.getUserById(id);
+    const loggedInUser = await this.getUserById(req.user.id);
+
+    if (!(loggedInUser._id.equals(user._id))) {
+      loggedInUser.following.push(user._id);
+      user.followers.push(loggedInUser._id);
+  
+      const loggedInUserNew = await this.userRepository.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
+      const userNew = await this.userRepository.findOneAndUpdate({ _id: user._id }, user);
+  
+      return [loggedInUserNew, userNew];
+    } else {
+      throw new ValidationException(['Can not follow yourself!']);
+    }
+  }
+
   async createUser(username: string, birthDate: Date, emailAddress: string, phoneNumber: string, password: string, image: string): Promise<User> {
     password = await bcrypt.hashSync(password, 10);
 
@@ -42,7 +63,9 @@ export class UsersService {
       password,
       registerDate: new Date(),
       image,
-      roles: [Role.User]
+      roles: [Role.User],
+      following: [],
+      followers: []
     });
   }
 

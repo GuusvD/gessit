@@ -15,9 +15,19 @@ export class UsersController {
         return await this.userService.getUsers();
     }
 
-    @Get(':emailAddress')
-    async getUserByEmailAddress(@Param('emailAddress') emailAddress: string): Promise<User> {
-        return await this.userService.getUserByUsername(emailAddress);
+    @Get(':id')
+    async getUserById(@Param('id') id: string): Promise<User> {
+        return await this.userService.getUserById(id);
+    }
+
+    @Get(':username')
+    async getUserByUsername(@Param('username') username: string): Promise<User> {
+        return await this.userService.getUserByUsername(username);
+    }
+
+    @Post(':id/follow')
+    async followUser(@Req() req, @Param('id') id: string): Promise<User> {
+        return await this.userService.followUser(req, id);
     }
 
     @Post()
