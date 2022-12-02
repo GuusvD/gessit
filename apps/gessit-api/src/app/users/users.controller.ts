@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from "@nestjs/common";
 import { Types } from "mongoose";
-import { Public } from "../app.module";
 import { CreateUserDto } from "./create-user.dto";
 import { UpdateUserDto } from "./update-user.dto";
 import { User, UsersService } from "./users.service";
@@ -30,7 +29,7 @@ export class UsersController {
     }
 
     @Delete(':id')
-    async deleteUser(@Param('id') id: string): Promise<User> {
-        return await this.userService.deleteUser(new Types.ObjectId(id));
+    async deleteUser(@Req() req, @Param('id') id: string): Promise<User> {
+        return await this.userService.deleteUser(req, new Types.ObjectId(id));
     }
 }

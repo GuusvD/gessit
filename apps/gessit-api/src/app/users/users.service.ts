@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { Role } from './role.enum';
 import { UsersRepository } from './users.repository';
@@ -47,30 +47,38 @@ export class UsersService {
   }
 
   async updateUser(req, id: string, user: Partial<User>): Promise<User> {
-    if (user.username) {
-      if ((await this.getUsers()).filter(p => p.username === user.username).length > 0 && !(req.user.id.equals(new Types.ObjectId(id)))) {
-        throw new ValidationException([`Username ${user.username} already in use!`]);
+    if (req.user.id.equals(new Types.ObjectId(id)) || req.user.roles.includes(Role.Admin)) {
+      if (user.username) {
+        if ((await this.getUsers()).filter(p => p.username === user.username && !(p._id.equals(new Types.ObjectId(id)))).length > 0) {
+          throw new ValidationException([`Username ${user.username} already in use!`]);
+        }
       }
-    }
 
-    if (user.birthDate) {
-      user.birthDate = new Date(user.birthDate);
-      user.birthDate.setHours(user.birthDate.getHours() + 1);
+      if (user.birthDate) {
+        user.birthDate = new Date(user.birthDate);
+        user.birthDate.setHours(user.birthDate.getHours() + 1);
 
-      if (user.birthDate > new Date()) {
-        throw new ValidationException([`Birthdate ${user.birthDate} lies in the future!`]);
+        if (user.birthDate > new Date()) {
+          throw new ValidationException([`Birthdate ${user.birthDate} lies in the future!`]);
+        }
       }
-    }
-    
-    if (user.password) {
-      user.password = await bcrypt.hashSync(user.password, 10);
-    }
+      
+      if (user.password) {
+        user.password = await bcrypt.hashSync(user.password, 10);
+      }
 
-    user._id = new Types.ObjectId(id);
-    return this.userRepository.findOneAndUpdate({ _id: new Types.ObjectId(id) }, user);
+      user._id = new Types.ObjectId(id);
+      return this.userRepository.findOneAndUpdate({ _id: new Types.ObjectId(id) }, user);
+    } else {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
   }
 
-  async deleteUser(id: Types.ObjectId): Promise<User> {
-    return this.userRepository.findOneAndDelete({ _id: id })
+  async deleteUser(req, id: Types.ObjectId): Promise<User> {
+    if (req.user.id.equals(new Types.ObjectId(id)) || req.user.roles.includes(Role.Admin)) {
+      return this.userRepository.findOneAndDelete({ _id: id })
+    } else {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
   }
 }

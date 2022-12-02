@@ -1397,9 +1397,9 @@ let UsersController = class UsersController {
             return yield this.userService.updateUser(req, id, updateUserDto);
         });
     }
-    deleteUser(id) {
+    deleteUser(req, id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.userService.deleteUser(new mongoose_1.Types.ObjectId(id));
+            return yield this.userService.deleteUser(req, new mongoose_1.Types.ObjectId(id));
         });
     }
 };
@@ -1434,9 +1434,10 @@ tslib_1.__decorate([
 ], UsersController.prototype, "updateUser", null);
 tslib_1.__decorate([
     (0, common_1.Delete)(':id'),
-    tslib_1.__param(0, (0, common_1.Param)('id')),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Param)('id')),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [String]),
+    tslib_1.__metadata("design:paramtypes", [Object, String]),
     tslib_1.__metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], UsersController.prototype, "deleteUser", null);
 UsersController = tslib_1.__decorate([
@@ -1583,28 +1584,38 @@ let UsersService = class UsersService {
     }
     updateUser(req, id, user) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if (user.username) {
-                if ((yield this.getUsers()).filter(p => p.username === user.username).length > 0 && !(req.user.id.equals(new mongoose_1.Types.ObjectId(id)))) {
-                    throw new validation_exception_1.ValidationException([`Username ${user.username} already in use!`]);
+            if (req.user.id.equals(new mongoose_1.Types.ObjectId(id)) || req.user.roles.includes(role_enum_1.Role.Admin)) {
+                if (user.username) {
+                    if ((yield this.getUsers()).filter(p => p.username === user.username && !(p._id.equals(new mongoose_1.Types.ObjectId(id)))).length > 0) {
+                        throw new validation_exception_1.ValidationException([`Username ${user.username} already in use!`]);
+                    }
                 }
-            }
-            if (user.birthDate) {
-                user.birthDate = new Date(user.birthDate);
-                user.birthDate.setHours(user.birthDate.getHours() + 1);
-                if (user.birthDate > new Date()) {
-                    throw new validation_exception_1.ValidationException([`Birthdate ${user.birthDate} lies in the future!`]);
+                if (user.birthDate) {
+                    user.birthDate = new Date(user.birthDate);
+                    user.birthDate.setHours(user.birthDate.getHours() + 1);
+                    if (user.birthDate > new Date()) {
+                        throw new validation_exception_1.ValidationException([`Birthdate ${user.birthDate} lies in the future!`]);
+                    }
                 }
+                if (user.password) {
+                    user.password = yield bcrypt.hashSync(user.password, 10);
+                }
+                user._id = new mongoose_1.Types.ObjectId(id);
+                return this.userRepository.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, user);
             }
-            if (user.password) {
-                user.password = yield bcrypt.hashSync(user.password, 10);
+            else {
+                throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
             }
-            user._id = new mongoose_1.Types.ObjectId(id);
-            return this.userRepository.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, user);
         });
     }
-    deleteUser(id) {
+    deleteUser(req, id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.userRepository.findOneAndDelete({ _id: id });
+            if (req.user.id.equals(new mongoose_1.Types.ObjectId(id)) || req.user.roles.includes(role_enum_1.Role.Admin)) {
+                return this.userRepository.findOneAndDelete({ _id: id });
+            }
+            else {
+                throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
+            }
         });
     }
 };
