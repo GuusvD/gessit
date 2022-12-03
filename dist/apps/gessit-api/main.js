@@ -472,9 +472,9 @@ let CommunitiesController = class CommunitiesController {
             return yield this.communityService.getCommunityById(new mongoose_1.Types.ObjectId(id));
         });
     }
-    createCommunity(createCommunityDto) {
+    createCommunity(req, createCommunityDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.communityService.createCommunity(createCommunityDto.name, createCommunityDto.description, createCommunityDto.image, createCommunityDto.isOpen);
+            return yield this.communityService.createCommunity(req, createCommunityDto);
         });
     }
     updateCommunity(id, updateCommunityDto) {
@@ -503,9 +503,10 @@ tslib_1.__decorate([
 ], CommunitiesController.prototype, "getCommunityById", null);
 tslib_1.__decorate([
     (0, common_1.Post)(),
-    tslib_1.__param(0, (0, common_1.Body)()),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_d = typeof create_community_dto_1.CreateCommunityDto !== "undefined" && create_community_dto_1.CreateCommunityDto) === "function" ? _d : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_d = typeof create_community_dto_1.CreateCommunityDto !== "undefined" && create_community_dto_1.CreateCommunityDto) === "function" ? _d : Object]),
     tslib_1.__metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], CommunitiesController.prototype, "createCommunity", null);
 tslib_1.__decorate([
@@ -545,11 +546,13 @@ const community_schema_1 = __webpack_require__("./apps/gessit-api/src/app/commun
 const communities_controller_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.controller.ts");
 const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.service.ts");
 const communities_repository_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.repository.ts");
+const themes_module_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.module.ts");
+const users_module_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.module.ts");
 let CommunitiesModule = class CommunitiesModule {
 };
 CommunitiesModule = tslib_1.__decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: community_schema_1.Community.name, schema: community_schema_1.CommunitySchema }])],
+        imports: [mongoose_1.MongooseModule.forFeature([{ name: community_schema_1.Community.name, schema: community_schema_1.CommunitySchema }]), themes_module_1.ThemesModule, users_module_1.UsersModule],
         controllers: [communities_controller_1.CommunitiesController],
         providers: [communities_service_1.CommunitiesService, communities_repository_1.CommunitiesRepository]
     })
@@ -616,16 +619,25 @@ exports.CommunitiesRepository = CommunitiesRepository;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a;
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommunitiesService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const communities_repository_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.repository.ts");
+const community_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/community.schema.ts");
 const mongoose_1 = __webpack_require__("mongoose");
+const themes_service_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.service.ts");
+const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.service.ts");
+const mongoose_2 = __webpack_require__("@nestjs/mongoose");
+const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
+const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
 let CommunitiesService = class CommunitiesService {
-    constructor(communityRepository) {
+    constructor(communityModel, communityRepository, themesService, usersService) {
+        this.communityModel = communityModel;
         this.communityRepository = communityRepository;
+        this.themesService = themesService;
+        this.usersService = usersService;
     }
     getCommunityById(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -637,23 +649,37 @@ let CommunitiesService = class CommunitiesService {
             return this.communityRepository.find({});
         });
     }
-    createCommunity(name, description, image, isOpen) {
+    createCommunity(req, createCommunityDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.communityRepository.create({
-                _id: new mongoose_1.Types.ObjectId(),
-                name,
-                description,
-                ranking: 0,
-                creationDate: new Date(),
-                image,
-                isOpen
-            });
+            if (createCommunityDto.themes) {
+                if (!(yield this.areValidObjectIds(createCommunityDto.themes))) {
+                    throw new validation_exception_1.ValidationException(['Themes attribute data must be of type ObjectId!']);
+                }
+            }
+            const themesArray = (yield this.themesService.getThemes()).filter(p => createCommunityDto.themes.includes(p._id.toString()));
+            const mergedCommunity = new this.communityModel(Object.assign(Object.assign({}, createCommunityDto), { _id: new mongoose_1.Types.ObjectId(), creationDate: new Date(), ranking: 0, themes: themesArray, owner: yield this.usersService.getUserById(req.user.id) }));
+            console.log(mergedCommunity);
+            return this.communityRepository.create(mergedCommunity);
         });
     }
-    updateCommunity(id, community) {
+    updateCommunity(id, updateCommunityDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            community._id = new mongoose_1.Types.ObjectId(community._id);
-            return this.communityRepository.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, community);
+            if (updateCommunityDto.themes) {
+                if (!(yield this.areValidObjectIds(updateCommunityDto.themes))) {
+                    throw new validation_exception_1.ValidationException(['Themes attribute data must be of type ObjectId!']);
+                }
+            }
+            let updatedObject = {};
+            if (updateCommunityDto.themes) {
+                const themes = [];
+                for (const theme of updateCommunityDto.themes) {
+                    themes.push(yield this.themesService.getThemeById(new mongoose_1.Types.ObjectId(theme)));
+                }
+                delete updateCommunityDto.themes;
+                updatedObject = { themes };
+            }
+            updatedObject = Object.assign(Object.assign({}, updateCommunityDto), updatedObject);
+            return this.communityRepository.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, updatedObject);
         });
     }
     deleteCommunity(id) {
@@ -661,10 +687,16 @@ let CommunitiesService = class CommunitiesService {
             return this.communityRepository.findOneAndDelete({ _id: id });
         });
     }
+    areValidObjectIds(value) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return value.every((id) => object_id_pipe_1.ObjectIdPipe.isValidObjectId(id));
+        });
+    }
 };
 CommunitiesService = tslib_1.__decorate([
     (0, common_1.Injectable)(),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof communities_repository_1.CommunitiesRepository !== "undefined" && communities_repository_1.CommunitiesRepository) === "function" ? _a : Object])
+    tslib_1.__param(0, (0, mongoose_2.InjectModel)(community_schema_1.Community.name)),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof mongoose_1.Model !== "undefined" && mongoose_1.Model) === "function" ? _a : Object, typeof (_b = typeof communities_repository_1.CommunitiesRepository !== "undefined" && communities_repository_1.CommunitiesRepository) === "function" ? _b : Object, typeof (_c = typeof themes_service_1.ThemesService !== "undefined" && themes_service_1.ThemesService) === "function" ? _c : Object, typeof (_d = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _d : Object])
 ], CommunitiesService);
 exports.CommunitiesService = CommunitiesService;
 
@@ -675,12 +707,13 @@ exports.CommunitiesService = CommunitiesService;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c;
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommunitySchema = exports.Community = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const mongoose_1 = __webpack_require__("@nestjs/mongoose");
 const mongoose_2 = __webpack_require__("mongoose");
+const user_schema_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.schema.ts");
 let Community = class Community {
 };
 tslib_1.__decorate([
@@ -711,6 +744,29 @@ tslib_1.__decorate([
     (0, mongoose_1.Prop)(),
     tslib_1.__metadata("design:type", Boolean)
 ], Community.prototype, "isOpen", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)({
+        default: []
+    }),
+    tslib_1.__metadata("design:type", Array)
+], Community.prototype, "themes", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)({
+        default: []
+    }),
+    tslib_1.__metadata("design:type", Array)
+], Community.prototype, "threads", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)({
+        default: [],
+        ref: 'User'
+    }),
+    tslib_1.__metadata("design:type", Array)
+], Community.prototype, "members", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", typeof (_d = typeof user_schema_1.User !== "undefined" && user_schema_1.User) === "function" ? _d : Object)
+], Community.prototype, "owner", void 0);
 Community = tslib_1.__decorate([
     (0, mongoose_1.Schema)()
 ], Community);
@@ -754,6 +810,11 @@ tslib_1.__decorate([
     (0, class_validator_1.IsDefined)(),
     tslib_1.__metadata("design:type", Boolean)
 ], CreateCommunityDto.prototype, "isOpen", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    tslib_1.__metadata("design:type", Array)
+], CreateCommunityDto.prototype, "themes", void 0);
 exports.CreateCommunityDto = CreateCommunityDto;
 
 
@@ -771,20 +832,28 @@ class UpdateCommunityDto {
 }
 tslib_1.__decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
     tslib_1.__metadata("design:type", String)
 ], UpdateCommunityDto.prototype, "name", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
     tslib_1.__metadata("design:type", String)
 ], UpdateCommunityDto.prototype, "description", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
     tslib_1.__metadata("design:type", String)
 ], UpdateCommunityDto.prototype, "image", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
     tslib_1.__metadata("design:type", Boolean)
 ], UpdateCommunityDto.prototype, "isOpen", void 0);
+tslib_1.__decorate([
+    (0, class_validator_1.IsOptional)(),
+    tslib_1.__metadata("design:type", Array)
+], UpdateCommunityDto.prototype, "themes", void 0);
 exports.UpdateCommunityDto = UpdateCommunityDto;
 
 
@@ -832,6 +901,36 @@ ValidationFilter = tslib_1.__decorate([
     (0, common_1.Catch)(validation_exception_1.ValidationException)
 ], ValidationFilter);
 exports.ValidationFilter = ValidationFilter;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ObjectIdPipe = void 0;
+const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
+var ObjectId = (__webpack_require__("mongoose").Types.ObjectId);
+class ObjectIdPipe {
+    transform(value) {
+        if (!ObjectId.isValid(value)) {
+            throw new validation_exception_1.ValidationException([`ObjectId has wrong value: ${value}, ObjectId is not valid!`]);
+        }
+        return value;
+    }
+    static isValidObjectId(value) {
+        try {
+            ObjectId.createFromHexString(value);
+            return true;
+        }
+        catch (error) {
+            return false;
+        }
+    }
+}
+exports.ObjectIdPipe = ObjectIdPipe;
 
 
 /***/ }),
@@ -992,7 +1091,8 @@ ThemesModule = tslib_1.__decorate([
     (0, common_1.Module)({
         imports: [mongoose_1.MongooseModule.forFeature([{ name: theme_schema_1.Theme.name, schema: theme_schema_1.ThemeSchema }])],
         controllers: [themes_controller_1.ThemesController],
-        providers: [themes_service_1.ThemesService, themes_repository_1.ThemesRepository]
+        providers: [themes_service_1.ThemesService, themes_repository_1.ThemesRepository],
+        exports: [themes_service_1.ThemesService]
     })
 ], ThemesModule);
 exports.ThemesModule = ThemesModule;
@@ -1885,7 +1985,7 @@ exports.UsersRepository = UsersRepository;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersService = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -1895,8 +1995,11 @@ const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.en
 const users_repository_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.repository.ts");
 const bcrypt = __webpack_require__("bcrypt");
 const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
+const user_schema_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.schema.ts");
+const mongoose_2 = __webpack_require__("@nestjs/mongoose");
 let UsersService = class UsersService {
-    constructor(userRepository) {
+    constructor(userModel, userRepository) {
+        this.userModel = userModel;
         this.userRepository = userRepository;
     }
     getUserByUsername(username) {
@@ -1967,7 +2070,7 @@ let UsersService = class UsersService {
             if ((yield this.getUsers()).filter(p => p.username === username).length > 0) {
                 throw new validation_exception_1.ValidationException([`Username ${username} already in use!`]);
             }
-            return this.userRepository.create({
+            const newUser = new this.userModel({
                 _id: new mongoose_1.Types.ObjectId(),
                 username,
                 birthDate,
@@ -1976,10 +2079,9 @@ let UsersService = class UsersService {
                 password,
                 registerDate: new Date(),
                 image,
-                roles: [role_enum_1.Role.User],
-                following: [null],
-                followers: [null]
+                roles: [role_enum_1.Role.User]
             });
+            return this.userModel.create(newUser);
         });
     }
     updateUser(req, id, user) {
@@ -2021,7 +2123,8 @@ let UsersService = class UsersService {
 };
 UsersService = tslib_1.__decorate([
     (0, common_1.Injectable)(),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof users_repository_1.UsersRepository !== "undefined" && users_repository_1.UsersRepository) === "function" ? _a : Object])
+    tslib_1.__param(0, (0, mongoose_2.InjectModel)(user_schema_1.User.name)),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof mongoose_1.Model !== "undefined" && mongoose_1.Model) === "function" ? _a : Object, typeof (_b = typeof users_repository_1.UsersRepository !== "undefined" && users_repository_1.UsersRepository) === "function" ? _b : Object])
 ], UsersService);
 exports.UsersService = UsersService;
 

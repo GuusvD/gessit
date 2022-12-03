@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from '@nestjs/common';
 import { CommunitiesService } from './communities.service';
 import { CreateCommunityDto } from './create-community.dto';
 import { Community } from './community.schema';
@@ -20,8 +20,8 @@ export class CommunitiesController {
   }
 
   @Post()
-  async createCommunity(@Body() createCommunityDto: CreateCommunityDto): Promise<Community> {
-    return await this.communityService.createCommunity(createCommunityDto.name, createCommunityDto.description, createCommunityDto.image, createCommunityDto.isOpen);
+  async createCommunity(@Req() req, @Body() createCommunityDto: CreateCommunityDto): Promise<Community> {
+    return await this.communityService.createCommunity(req, createCommunityDto);
   }
 
   @Patch(':id')

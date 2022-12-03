@@ -1,11 +1,19 @@
 import { Injectable } from "@nestjs/common";
 import { CommunitiesRepository } from "./communities.repository";
-import { Community } from "./community.schema";
-import { Types } from "mongoose";
+import { Community, CommunityDocument } from "./community.schema";
+import { Model, Types } from "mongoose";
+import { ThemesService } from "../themes/themes.service";
+import { UsersService } from "../users/users.service";
+import { UpdateCommunityDto } from "./update-community.dto";
+import { Theme } from "../themes/theme.schema";
+import { CreateCommunityDto } from "./create-community.dto";
+import { InjectModel } from "@nestjs/mongoose";
+import { ValidationException } from "../shared/filters/validation.exception";
+import { ObjectIdPipe } from "../shared/pipes/object.id.pipe";
 
 @Injectable()
 export class CommunitiesService {
-    constructor(private readonly communityRepository : CommunitiesRepository) {}
+    constructor(@InjectModel(Community.name) private communityModel: Model<CommunityDocument>, private readonly communityRepository : CommunitiesRepository, private readonly themesService : ThemesService, private readonly usersService : UsersService) {}
 
     async getCommunityById(id: Types.ObjectId): Promise<Community> {
         return this.communityRepository.findOne({ _id: id });
@@ -15,24 +23,60 @@ export class CommunitiesService {
         return this.communityRepository.find({});
     }
 
-    async createCommunity(name: string, description: string, image: string, isOpen: boolean): Promise<Community> {
-        return this.communityRepository.create({
+    async createCommunity(req, createCommunityDto: CreateCommunityDto): Promise<Community> {
+        if (createCommunityDto.themes) {
+            if (!(await this.areValidObjectIds(createCommunityDto.themes as string[]))) {
+                throw new ValidationException(['Themes attribute data must be of type ObjectId!'])
+            }
+        }
+
+        const themesArray = (await this.themesService.getThemes()).filter(p => createCommunityDto.themes.includes(p._id.toString()));
+
+        const mergedCommunity = new this.communityModel({
+            ...createCommunityDto,
             _id: new Types.ObjectId(),
-            name,
-            description,
-            ranking: 0,
             creationDate: new Date(),
-            image,
-            isOpen 
+            ranking: 0,
+            themes: themesArray,
+            owner: await this.usersService.getUserById(req.user.id)
         });
+
+        console.log(mergedCommunity)
+        
+        return this.communityRepository.create(mergedCommunity);
     }
 
-    async updateCommunity(id: string, community: Partial<Community>): Promise<Community> {
-        community._id = new Types.ObjectId(community._id);
-        return this.communityRepository.findOneAndUpdate({ _id: new Types.ObjectId(id) }, community);
+    async updateCommunity(id: string, updateCommunityDto: UpdateCommunityDto): Promise<Community> {
+        if (updateCommunityDto.themes) {
+            if (!(await this.areValidObjectIds(updateCommunityDto.themes as string[]))) {
+                throw new ValidationException(['Themes attribute data must be of type ObjectId!'])
+            }
+        }
+
+        let updatedObject = {};
+
+        if (updateCommunityDto.themes) {
+            const themes : Theme[] = [];
+
+            for (const theme of updateCommunityDto.themes) {
+                themes.push(await this.themesService.getThemeById(new Types.ObjectId(theme)));
+            }
+
+            delete updateCommunityDto.themes;
+
+            updatedObject = { themes };
+        }
+
+        updatedObject = { ...updateCommunityDto, ...updatedObject };
+
+        return this.communityRepository.findOneAndUpdate({ _id: new Types.ObjectId(id) }, updatedObject);
     }
 
     async deleteCommunity(id: Types.ObjectId): Promise<Community> {
         return this.communityRepository.findOneAndDelete({ _id: id });
+    }
+
+    async areValidObjectIds(value: string[]) {
+        return value.every((id) => ObjectIdPipe.isValidObjectId(id));
     }
 }
