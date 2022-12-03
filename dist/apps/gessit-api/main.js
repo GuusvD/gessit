@@ -42,11 +42,12 @@ const users_module_1 = __webpack_require__("./apps/gessit-api/src/app/users/user
 const core_1 = __webpack_require__("@nestjs/core");
 const jwt_auth_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/jwt-auth.guard.ts");
 const roles_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/roles.guard.ts");
+const themes_module_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.module.ts");
 let AppModule = class AppModule {
 };
 AppModule = tslib_1.__decorate([
     (0, common_2.Module)({
-        imports: [mongoose_1.MongooseModule.forRoot('mongodb://127.0.0.1:27017/gessit'), communities_module_1.CommunitiesModule, threads_module_1.ThreadsModule, auth_module_1.AuthModule, users_module_1.UsersModule],
+        imports: [mongoose_1.MongooseModule.forRoot('mongodb://127.0.0.1:27017/gessit'), communities_module_1.CommunitiesModule, threads_module_1.ThreadsModule, auth_module_1.AuthModule, users_module_1.UsersModule, themes_module_1.ThemesModule],
         controllers: [app_controller_1.AppController],
         providers: [
             {
@@ -831,6 +832,303 @@ ValidationFilter = tslib_1.__decorate([
     (0, common_1.Catch)(validation_exception_1.ValidationException)
 ], ValidationFilter);
 exports.ValidationFilter = ValidationFilter;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/themes/create-theme.dto.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateThemeDto = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const class_validator_1 = __webpack_require__("class-validator");
+class CreateThemeDto {
+}
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    tslib_1.__metadata("design:type", String)
+], CreateThemeDto.prototype, "name", void 0);
+exports.CreateThemeDto = CreateThemeDto;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/themes/theme.schema.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ThemeSchema = exports.Theme = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const mongoose_1 = __webpack_require__("@nestjs/mongoose");
+const mongoose_2 = __webpack_require__("mongoose");
+let Theme = class Theme {
+};
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", typeof (_a = typeof mongoose_2.Types !== "undefined" && mongoose_2.Types.ObjectId) === "function" ? _a : Object)
+], Theme.prototype, "_id", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", String)
+], Theme.prototype, "name", void 0);
+Theme = tslib_1.__decorate([
+    (0, mongoose_1.Schema)()
+], Theme);
+exports.Theme = Theme;
+exports.ThemeSchema = mongoose_1.SchemaFactory.createForClass(Theme);
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/themes/themes.controller.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a, _b, _c, _d, _e, _f, _g, _h;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ThemesController = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const mongoose_1 = __webpack_require__("mongoose");
+const create_theme_dto_1 = __webpack_require__("./apps/gessit-api/src/app/themes/create-theme.dto.ts");
+const themes_service_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.service.ts");
+const update_theme_dto_1 = __webpack_require__("./apps/gessit-api/src/app/themes/update-theme.dto.ts");
+let ThemesController = class ThemesController {
+    constructor(themeService) {
+        this.themeService = themeService;
+    }
+    getThemes() {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.themeService.getThemes();
+        });
+    }
+    getThemeById(id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.themeService.getThemeById(new mongoose_1.Types.ObjectId(id));
+        });
+    }
+    createTheme(createThemeDto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.themeService.createTheme(createThemeDto.name);
+        });
+    }
+    updateTheme(id, updateThemeDto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.themeService.updateTheme(id, updateThemeDto);
+        });
+    }
+    deleteTheme(id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.themeService.deleteTheme(new mongoose_1.Types.ObjectId(id));
+        });
+    }
+};
+tslib_1.__decorate([
+    (0, common_1.Get)(),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", []),
+    tslib_1.__metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+], ThemesController.prototype, "getThemes", null);
+tslib_1.__decorate([
+    (0, common_1.Get)(':id'),
+    tslib_1.__param(0, (0, common_1.Param)('id')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [String]),
+    tslib_1.__metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+], ThemesController.prototype, "getThemeById", null);
+tslib_1.__decorate([
+    (0, common_1.Post)(),
+    tslib_1.__param(0, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [typeof (_d = typeof create_theme_dto_1.CreateThemeDto !== "undefined" && create_theme_dto_1.CreateThemeDto) === "function" ? _d : Object]),
+    tslib_1.__metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+], ThemesController.prototype, "createTheme", null);
+tslib_1.__decorate([
+    (0, common_1.Patch)(':id'),
+    tslib_1.__param(0, (0, common_1.Param)('id')),
+    tslib_1.__param(1, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [String, typeof (_f = typeof update_theme_dto_1.UpdateThemeDto !== "undefined" && update_theme_dto_1.UpdateThemeDto) === "function" ? _f : Object]),
+    tslib_1.__metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+], ThemesController.prototype, "updateTheme", null);
+tslib_1.__decorate([
+    (0, common_1.Delete)(':id'),
+    tslib_1.__param(0, (0, common_1.Param)('id')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [String]),
+    tslib_1.__metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+], ThemesController.prototype, "deleteTheme", null);
+ThemesController = tslib_1.__decorate([
+    (0, common_1.Controller)('theme'),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof themes_service_1.ThemesService !== "undefined" && themes_service_1.ThemesService) === "function" ? _a : Object])
+], ThemesController);
+exports.ThemesController = ThemesController;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/themes/themes.module.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ThemesModule = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const mongoose_1 = __webpack_require__("@nestjs/mongoose");
+const theme_schema_1 = __webpack_require__("./apps/gessit-api/src/app/themes/theme.schema.ts");
+const themes_controller_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.controller.ts");
+const themes_repository_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.repository.ts");
+const themes_service_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.service.ts");
+let ThemesModule = class ThemesModule {
+};
+ThemesModule = tslib_1.__decorate([
+    (0, common_1.Module)({
+        imports: [mongoose_1.MongooseModule.forFeature([{ name: theme_schema_1.Theme.name, schema: theme_schema_1.ThemeSchema }])],
+        controllers: [themes_controller_1.ThemesController],
+        providers: [themes_service_1.ThemesService, themes_repository_1.ThemesRepository]
+    })
+], ThemesModule);
+exports.ThemesModule = ThemesModule;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/themes/themes.repository.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ThemesRepository = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const mongoose_1 = __webpack_require__("@nestjs/mongoose");
+const mongoose_2 = __webpack_require__("mongoose");
+const theme_schema_1 = __webpack_require__("./apps/gessit-api/src/app/themes/theme.schema.ts");
+let ThemesRepository = class ThemesRepository {
+    constructor(themeModel) {
+        this.themeModel = themeModel;
+    }
+    findOne(threadFilterQuery) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.themeModel.findOne(threadFilterQuery);
+        });
+    }
+    find(themeFilterQuery) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.themeModel.find(themeFilterQuery);
+        });
+    }
+    create(theme) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const newTheme = new this.themeModel(theme);
+            return newTheme.save();
+        });
+    }
+    findOneAndUpdate(themeFilterQuery, theme) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.themeModel.findOneAndUpdate(themeFilterQuery, theme);
+        });
+    }
+    findOneAndDelete(themeFilterQuery) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.themeModel.findOneAndDelete(themeFilterQuery);
+        });
+    }
+};
+ThemesRepository = tslib_1.__decorate([
+    (0, common_1.Injectable)(),
+    tslib_1.__param(0, (0, mongoose_1.InjectModel)(theme_schema_1.Theme.name)),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object])
+], ThemesRepository);
+exports.ThemesRepository = ThemesRepository;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/themes/themes.service.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ThemesService = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const mongoose_1 = __webpack_require__("mongoose");
+const themes_repository_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.repository.ts");
+const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
+let ThemesService = class ThemesService {
+    constructor(themeRepository) {
+        this.themeRepository = themeRepository;
+    }
+    getThemeById(id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.themeRepository.findOne({ _id: id });
+        });
+    }
+    getThemes() {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.themeRepository.find({});
+        });
+    }
+    createTheme(name) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            if ((yield this.getThemes()).filter(p => p.name === name).length > 0) {
+                throw new validation_exception_1.ValidationException(['A Theme with this name already exists!']);
+            }
+            return this.themeRepository.create({
+                _id: new mongoose_1.Types.ObjectId(),
+                name
+            });
+        });
+    }
+    updateTheme(id, theme) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            if ((yield this.getThemes()).filter(p => p.name === theme.name).length > 0) {
+                throw new validation_exception_1.ValidationException(['A Theme with this name already exists!']);
+            }
+            return this.themeRepository.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, theme);
+        });
+    }
+    deleteTheme(id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return this.themeRepository.findOneAndDelete({ _id: id });
+        });
+    }
+};
+ThemesService = tslib_1.__decorate([
+    (0, common_1.Injectable)(),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof themes_repository_1.ThemesRepository !== "undefined" && themes_repository_1.ThemesRepository) === "function" ? _a : Object])
+], ThemesService);
+exports.ThemesService = ThemesService;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/themes/update-theme.dto.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateThemeDto = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const class_validator_1 = __webpack_require__("class-validator");
+class UpdateThemeDto {
+}
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    tslib_1.__metadata("design:type", String)
+], UpdateThemeDto.prototype, "name", void 0);
+exports.UpdateThemeDto = UpdateThemeDto;
 
 
 /***/ }),
