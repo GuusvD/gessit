@@ -1353,14 +1353,12 @@ tslib_1.__decorate([
 ], User.prototype, "roles", void 0);
 tslib_1.__decorate([
     (0, mongoose_1.Prop)({
-        type: [mongoose_2.Schema.Types.ObjectId],
         ref: 'User'
     }),
     tslib_1.__metadata("design:type", Array)
 ], User.prototype, "following", void 0);
 tslib_1.__decorate([
     (0, mongoose_1.Prop)({
-        type: [mongoose_2.Schema.Types.ObjectId],
         ref: 'User'
     }),
     tslib_1.__metadata("design:type", Array)
@@ -1681,8 +1679,8 @@ let UsersService = class UsersService {
                 registerDate: new Date(),
                 image,
                 roles: [role_enum_1.Role.User],
-                following: [],
-                followers: []
+                following: [null],
+                followers: [null]
             });
         });
     }

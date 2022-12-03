@@ -36,16 +36,14 @@ export class User {
     roles: Role[];
 
     @Prop({
-        type: [MongooseSchema.Types.ObjectId],
         ref: 'User'
     })
-    following: User[];
+    following: [Types.ObjectId];
 
     @Prop({
-        type: [MongooseSchema.Types.ObjectId],
         ref: 'User'
     })
-    followers: User[];
+    followers: [Types.ObjectId];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

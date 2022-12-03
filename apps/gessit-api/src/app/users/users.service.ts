@@ -88,8 +88,8 @@ export class UsersService {
       registerDate: new Date(),
       image,
       roles: [Role.User],
-      following: [],
-      followers: []
+      following: [null],
+      followers: [null]
     });
   }
 
