@@ -10,4 +10,13 @@ export class ObjectIdPipe implements PipeTransform<string> {
 
         return value;
     }
+
+    public static isValidObjectId(value: any): boolean {
+        try {
+            ObjectId.createFromHexString(value);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
 }

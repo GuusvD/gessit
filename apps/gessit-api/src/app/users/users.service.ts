@@ -1,14 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Role } from './role.enum';
 import { UsersRepository } from './users.repository';
 import * as bcrypt from 'bcrypt';
 import { ValidationException } from '../shared/filters/validation.exception';
-import { User } from './user.schema';
+import { User, UserDocument } from './user.schema';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly userRepository : UsersRepository) {}
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>, private readonly userRepository : UsersRepository) {}
 
   async getUserByUsername(username: string): Promise<User | undefined> {
     return this.userRepository.findOne({ username: username });
@@ -78,7 +79,7 @@ export class UsersService {
       throw new ValidationException([`Username ${username} already in use!`]);
     }
 
-    return this.userRepository.create({
+    const newUser = new this.userModel({
       _id: new Types.ObjectId(),
       username,
       birthDate,
@@ -87,10 +88,10 @@ export class UsersService {
       password,
       registerDate: new Date(),
       image,
-      roles: [Role.User],
-      following: [null],
-      followers: [null]
+      roles: [Role.User]
     });
+
+    return this.userModel.create(newUser);
   }
 
   async updateUser(req, id: string, user: Partial<User>): Promise<User> {

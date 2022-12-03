@@ -25,4 +25,8 @@ export class CreateCommunityDto {
     @IsNotEmpty()
     @IsDefined()
     isOpen: boolean;
+
+    @IsNotEmpty()
+    @IsDefined()
+    themes: string[]
 }

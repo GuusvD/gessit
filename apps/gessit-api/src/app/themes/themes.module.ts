@@ -8,7 +8,8 @@ import { ThemesService } from './themes.service';
 @Module({
     imports: [MongooseModule.forFeature([{ name: Theme.name, schema: ThemeSchema }])],
     controllers: [ThemesController],
-    providers: [ThemesService, ThemesRepository]
+    providers: [ThemesService, ThemesRepository],
+    exports: [ThemesService]
 })
 
 export class ThemesModule {}
