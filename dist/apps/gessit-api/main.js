@@ -1378,7 +1378,7 @@ exports.UserSchema = mongoose_1.SchemaFactory.createForClass(User);
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -1411,6 +1411,11 @@ let UsersController = class UsersController {
     followUser(req, id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return yield this.userService.followUser(req, id);
+        });
+    }
+    unfollowUser(req, id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.userService.unfollowUser(req, id);
         });
     }
     createUser(createUserDto) {
@@ -1458,12 +1463,20 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], UsersController.prototype, "followUser", null);
 tslib_1.__decorate([
+    (0, common_1.Post)(':id/unfollow'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Param)('id')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, String]),
+    tslib_1.__metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+], UsersController.prototype, "unfollowUser", null);
+tslib_1.__decorate([
     (0, common_1.Post)(),
     (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [typeof (_f = typeof create_user_dto_1.CreateUserDto !== "undefined" && create_user_dto_1.CreateUserDto) === "function" ? _f : Object]),
-    tslib_1.__metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+    tslib_1.__metadata("design:paramtypes", [typeof (_g = typeof create_user_dto_1.CreateUserDto !== "undefined" && create_user_dto_1.CreateUserDto) === "function" ? _g : Object]),
+    tslib_1.__metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], UsersController.prototype, "createUser", null);
 tslib_1.__decorate([
     (0, common_1.Patch)(':id'),
@@ -1471,8 +1484,8 @@ tslib_1.__decorate([
     tslib_1.__param(1, (0, common_1.Param)('id')),
     tslib_1.__param(2, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, String, typeof (_h = typeof update_user_dto_1.UpdateUserDto !== "undefined" && update_user_dto_1.UpdateUserDto) === "function" ? _h : Object]),
-    tslib_1.__metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+    tslib_1.__metadata("design:paramtypes", [Object, String, typeof (_j = typeof update_user_dto_1.UpdateUserDto !== "undefined" && update_user_dto_1.UpdateUserDto) === "function" ? _j : Object]),
+    tslib_1.__metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], UsersController.prototype, "updateUser", null);
 tslib_1.__decorate([
     (0, common_1.Delete)(':id'),
@@ -1480,7 +1493,7 @@ tslib_1.__decorate([
     tslib_1.__param(1, (0, common_1.Param)('id')),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [Object, String]),
-    tslib_1.__metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+    tslib_1.__metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
 ], UsersController.prototype, "deleteUser", null);
 UsersController = tslib_1.__decorate([
     (0, common_1.Controller)('user'),
@@ -1610,14 +1623,40 @@ let UsersService = class UsersService {
             const user = yield this.getUserById(id);
             const loggedInUser = yield this.getUserById(req.user.id);
             if (!(loggedInUser._id.equals(user._id))) {
-                loggedInUser.following.push(user._id);
-                user.followers.push(loggedInUser._id);
-                const loggedInUserNew = yield this.userRepository.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
-                const userNew = yield this.userRepository.findOneAndUpdate({ _id: user._id }, user);
-                return [loggedInUserNew, userNew];
+                if (!((yield (yield this.userRepository.find({ $and: [{ _id: req.user.id }, { following: { $in: id } }] })).length) > 0)) {
+                    loggedInUser.following.push(user._id);
+                    user.followers.push(loggedInUser._id);
+                    const loggedInUserNew = yield this.userRepository.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
+                    const userNew = yield this.userRepository.findOneAndUpdate({ _id: user._id }, user);
+                    return [loggedInUserNew, userNew];
+                }
+                else {
+                    throw new validation_exception_1.ValidationException(['Already following this user!']);
+                }
             }
             else {
                 throw new validation_exception_1.ValidationException(['Can not follow yourself!']);
+            }
+        });
+    }
+    unfollowUser(req, id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const user = yield this.getUserById(id);
+            const loggedInUser = yield this.getUserById(req.user.id);
+            if (!(loggedInUser._id.equals(user._id))) {
+                if (!((yield (yield this.userRepository.find({ $and: [{ _id: req.user.id }, { following: { $in: id } }] })).length) === 0)) {
+                    loggedInUser.following.pull(user._id);
+                    user.followers.pull(loggedInUser._id);
+                    const loggedInUserNew = yield this.userRepository.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
+                    const userNew = yield this.userRepository.findOneAndUpdate({ _id: user._id }, user);
+                    return [loggedInUserNew, userNew];
+                }
+                else {
+                    throw new validation_exception_1.ValidationException(['You do not follow this user!']);
+                }
+            }
+            else {
+                throw new validation_exception_1.ValidationException(['Can not unfollow yourself!']);
             }
         });
     }

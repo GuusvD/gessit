@@ -27,15 +27,40 @@ export class UsersService {
     const loggedInUser = await this.getUserById(req.user.id);
 
     if (!(loggedInUser._id.equals(user._id))) {
-      (loggedInUser.following as any).push(user._id);
-      (user.followers as any).push(loggedInUser._id);
-  
-      const loggedInUserNew = await this.userRepository.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
-      const userNew = await this.userRepository.findOneAndUpdate({ _id: user._id }, user);
-  
-      return [loggedInUserNew, userNew];
+      if (!(await (await this.userRepository.find({ $and: [ {_id: req.user.id}, {following: { $in : id}} ] })).length > 0)) {
+        (loggedInUser.following as any).push(user._id);
+        (user.followers as any).push(loggedInUser._id);
+    
+        const loggedInUserNew = await this.userRepository.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
+        const userNew = await this.userRepository.findOneAndUpdate({ _id: user._id }, user);
+    
+        return [loggedInUserNew, userNew];
+      } else {
+        throw new ValidationException(['Already following this user!']);
+      }
     } else {
       throw new ValidationException(['Can not follow yourself!']);
+    }
+  }
+
+  async unfollowUser(req, id: string): Promise<User[]> {
+    const user = await this.getUserById(id);
+    const loggedInUser = await this.getUserById(req.user.id);
+
+    if (!(loggedInUser._id.equals(user._id))) {
+      if (!(await (await this.userRepository.find({ $and: [ {_id: req.user.id}, {following: { $in : id}} ] })).length === 0)) {
+        (loggedInUser.following as any).pull(user._id);
+        (user.followers as any).pull(loggedInUser._id);
+        
+        const loggedInUserNew = await this.userRepository.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
+        const userNew = await this.userRepository.findOneAndUpdate({ _id: user._id }, user);
+
+        return [loggedInUserNew, userNew];
+      } else {
+        throw new ValidationException(['You do not follow this user!']);
+      }
+    } else {
+      throw new ValidationException(['Can not unfollow yourself!']);
     }
   }
 

@@ -31,6 +31,11 @@ export class UsersController {
         return await this.userService.followUser(req, id);
     }
 
+    @Post(':id/unfollow')
+    async unfollowUser(@Req() req, @Param('id') id: string): Promise<User[]> {
+        return await this.userService.unfollowUser(req, id);
+    }
+
     @Post()
     @Roles(Role.Admin)
     async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
