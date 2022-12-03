@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { CommunitiesService } from '../services/communities.service';
-import { CreateCommunityDto } from '../dto/create-community.dto';
-import { Community } from '../schemas/community.schema';
-import { UpdateCommunityDto } from '../dto/update-community.dto';
+import { CommunitiesService } from './communities.service';
+import { CreateCommunityDto } from './create-community.dto';
+import { Community } from './community.schema';
+import { UpdateCommunityDto } from './update-community.dto';
 import { Types } from 'mongoose';
 
 @Controller('community')

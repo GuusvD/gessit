@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { Types } from 'mongoose';
-import { ThreadsService } from '../services/threads.service';
-import { Thread } from '../schemas/thread.schema';
-import { UpdateThreadDto } from '../dto/update-thread.dto';
-import { CreateThreadDto } from '../dto/create-thread.dto';
+import { ThreadsService } from './threads.service';
+import { Thread } from './thread.schema';
+import { UpdateThreadDto } from './update-thread.dto';
+import { CreateThreadDto } from './create-thread.dto';
 
 @Controller('thread')
 export class ThreadsController {
