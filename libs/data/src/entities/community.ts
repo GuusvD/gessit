@@ -1,7 +1,8 @@
 export * from '../lib/data.module';
+import { Types } from "mongoose";
 
 export interface ICommunity {
-    _id: string;
+    _id: Types.ObjectId;
     name: string;
     description: string;
     image: string;
@@ -10,10 +11,10 @@ export interface ICommunity {
 }
 
 export class Community implements ICommunity {
-    _id: string = '';
-    name: string = '';
-    description: string = '';
-    image: string = '';
-    creationDate: Date = new Date();
-    isOpen: boolean = true;
+    _id = new Types.ObjectId;
+    name = '';
+    description = '';
+    image = '';
+    creationDate = new Date();
+    isOpen = true;
 }

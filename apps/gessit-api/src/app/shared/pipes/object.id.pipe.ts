@@ -1,5 +1,5 @@
 import { PipeTransform } from "@nestjs/common";
-import { ValidationException } from "../../shared/filters/validation.exception";
+import { ValidationException } from "../filters/validation.exception";
 var ObjectId = require('mongoose').Types.ObjectId;
 
 export class ObjectIdPipe implements PipeTransform<string> {
@@ -9,5 +9,14 @@ export class ObjectIdPipe implements PipeTransform<string> {
         }
 
         return value;
+    }
+
+    public static isValidObjectId(value: any): boolean {
+        try {
+            ObjectId.createFromHexString(value);
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 }

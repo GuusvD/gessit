@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Thread } from 'libs/data/src/entities/thread';
 import { Subscription } from 'rxjs';
 import { ThreadsImService } from '../../../../../../../libs/data/src/services/threads.service';
@@ -14,7 +14,7 @@ export class ThreadsComponent implements OnInit {
   communityId: string | null = null;
   subscription: Subscription | undefined;
 
-  constructor(private threadsImService: ThreadsImService, private route: ActivatedRoute) {}
+  constructor(private threadsImService: ThreadsImService, private route: ActivatedRoute, private router: Router) {}
 
   fetch() {
     if (this.communityId) {
@@ -37,7 +37,9 @@ export class ThreadsComponent implements OnInit {
   delete(id: string): void {
     if (id) {
       this.threadsImService.delete(id);
-      this.fetch();
+      this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+      this.router.onSameUrlNavigation = 'reload';
+      this.router.navigate([`/communities/${this.communityId}`]);
     }
   }
 
