@@ -82,7 +82,7 @@ export class ThreadsService {
         const community = await this.communityModel.findOne({ _id : new Types.ObjectId(communityId) });
 
         if(!community) {
-            throw new ValidationException([`Community with id ${communityId} doesn't exist!`]);
+            throw new ValidationException([`Community with id ${communityId} does not exist!`]);
         }
 
         if(threadId) {

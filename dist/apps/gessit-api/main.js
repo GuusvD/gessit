@@ -1126,7 +1126,8 @@ let ThemesService = class ThemesService {
     }
     getThemeById(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.themeModel.findOne({ _id: id });
+            yield this.existing(id);
+            return this.themeModel.findOne({ _id: new mongoose_1.Types.ObjectId(id) });
         });
     }
     getThemes() {
@@ -1148,6 +1149,7 @@ let ThemesService = class ThemesService {
     }
     updateTheme(id, theme) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(id);
             if ((yield this.getThemes()).filter(p => p.name === theme.name).length > 0) {
                 throw new validation_exception_1.ValidationException(['A Theme with this name already exists!']);
             }
@@ -1156,7 +1158,16 @@ let ThemesService = class ThemesService {
     }
     deleteTheme(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.themeModel.findOneAndDelete({ _id: id });
+            yield this.existing(id);
+            return this.themeModel.findOneAndDelete({ _id: new mongoose_1.Types.ObjectId(id) });
+        });
+    }
+    existing(themeId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const theme = yield this.themeModel.findOne({ _id: new mongoose_1.Types.ObjectId(themeId) });
+            if (!theme) {
+                throw new validation_exception_1.ValidationException([`Theme with id ${themeId} does not exist!`]);
+            }
         });
     }
 };
@@ -1489,7 +1500,7 @@ let ThreadsService = class ThreadsService {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const community = yield this.communityModel.findOne({ _id: new mongoose_1.Types.ObjectId(communityId) });
             if (!community) {
-                throw new validation_exception_1.ValidationException([`Community with id ${communityId} doesn't exist!`]);
+                throw new validation_exception_1.ValidationException([`Community with id ${communityId} does not exist!`]);
             }
             if (threadId) {
                 if (!(community.threads.filter(thread => thread._id.equals(new mongoose_1.Types.ObjectId(threadId))).length > 0)) {

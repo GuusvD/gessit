@@ -8,8 +8,9 @@ import { InjectModel } from "@nestjs/mongoose";
 export class ThemesService {
     constructor(@InjectModel(Theme.name) private themeModel: Model<ThemeDocument>) {}
 
-    async getThemeById(id: Types.ObjectId): Promise<Theme> {
-        return this.themeModel.findOne({ _id: id });
+    async getThemeById(id: string): Promise<Theme> {
+        await this.existing(id);
+        return this.themeModel.findOne({ _id: new Types.ObjectId(id) });
     }
 
     async getThemes(): Promise<Theme[]> {
@@ -30,6 +31,8 @@ export class ThemesService {
     }
 
     async updateTheme(id: string, theme: Partial<Theme>): Promise<Theme> {
+        await this.existing(id);
+
         if ((await this.getThemes()).filter(p => p.name === theme.name).length > 0) {
             throw new ValidationException(['A Theme with this name already exists!'])
         }
@@ -37,7 +40,16 @@ export class ThemesService {
         return this.themeModel.findOneAndUpdate({ _id: new Types.ObjectId(id) }, theme);
     }
 
-    async deleteTheme(id: Types.ObjectId): Promise<Theme> {
-        return this.themeModel.findOneAndDelete({ _id: id });
+    async deleteTheme(id: string): Promise<Theme> {
+        await this.existing(id);
+        return this.themeModel.findOneAndDelete({ _id: new Types.ObjectId(id) });
+    }
+
+    async existing(themeId: string): Promise<void> {
+        const theme = await this.themeModel.findOne({ _id: new Types.ObjectId(themeId) });
+
+        if (!theme) {
+            throw new ValidationException([`Theme with id ${themeId} does not exist!`]);
+        }
     }
 }
