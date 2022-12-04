@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { CommunitiesRepository } from "./communities.repository";
 import { Community, CommunityDocument } from "./community.schema";
 import { Model, Types } from "mongoose";
 import { ThemesService } from "../themes/themes.service";
@@ -13,14 +12,14 @@ import { ObjectIdPipe } from "../shared/pipes/object.id.pipe";
 
 @Injectable()
 export class CommunitiesService {
-    constructor(@InjectModel(Community.name) private communityModel: Model<CommunityDocument>, private readonly communityRepository : CommunitiesRepository, private readonly themesService : ThemesService, private readonly usersService : UsersService) {}
+    constructor(@InjectModel(Community.name) private communityModel: Model<CommunityDocument>, private readonly themesService : ThemesService, private readonly usersService : UsersService) {}
 
     async getCommunityById(id: Types.ObjectId): Promise<Community> {
-        return this.communityRepository.findOne({ _id: id });
+        return this.communityModel.findOne({ _id: id });
     }
 
     async getCommunities(): Promise<Community[]> {
-        return this.communityRepository.find({});
+        return this.communityModel.find({});
     }
 
     async createCommunity(req, createCommunityDto: CreateCommunityDto): Promise<Community> {
@@ -41,7 +40,7 @@ export class CommunitiesService {
             owner: await this.usersService.getUserById(req.user.id)
         });
         
-        return this.communityRepository.create(mergedCommunity);
+        return this.communityModel.create(mergedCommunity);
     }
 
     async updateCommunity(id: string, updateCommunityDto: UpdateCommunityDto): Promise<Community> {
@@ -67,11 +66,11 @@ export class CommunitiesService {
 
         updatedObject = { ...updateCommunityDto, ...updatedObject };
 
-        return this.communityRepository.findOneAndUpdate({ _id: new Types.ObjectId(id) }, updatedObject);
+        return this.communityModel.findOneAndUpdate({ _id: new Types.ObjectId(id) }, updatedObject);
     }
 
     async deleteCommunity(id: Types.ObjectId): Promise<Community> {
-        return this.communityRepository.findOneAndDelete({ _id: id });
+        return this.communityModel.findOneAndDelete({ _id: id });
     }
 
     async areValidObjectIds(value: string[]) {
