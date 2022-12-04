@@ -1,9 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { Types } from 'mongoose';
+import { Roles } from '../auth/roles.decorator';
+import { ObjectIdPipe } from '../shared/pipes/object.id.pipe';
+import { Role } from '../users/role.enum';
 import { CreateThemeDto } from './create-theme.dto';
 import { Theme } from './theme.schema';
 import { ThemesService } from './themes.service';
-import { UpdateThemeDto } from './update-theme.dto';
 
 @Controller('theme')
 export class ThemesController {
@@ -15,22 +16,19 @@ export class ThemesController {
   }
 
   @Get(':id')
-  async getThemeById(@Param('id') id: string): Promise<Theme> {
-    return await this.themeService.getThemeById(new Types.ObjectId(id));
+  async getThemeById(@Param('id', ObjectIdPipe) id: string): Promise<Theme> {
+    return await this.themeService.getThemeById(id);
   }
 
+  @Roles(Role.Admin)
   @Post()
   async createTheme(@Body() createThemeDto: CreateThemeDto): Promise<Theme> {
     return await this.themeService.createTheme(createThemeDto.name);
   }
 
-  @Patch(':id')
-  async updateTheme(@Param('id') id: string, @Body() updateThemeDto: UpdateThemeDto): Promise<Theme> {
-    return await this.themeService.updateTheme(id, updateThemeDto);
-  }
-
+  @Roles(Role.Admin)
   @Delete(':id')
-  async deleteTheme(@Param('id') id: string): Promise<Theme> {
-    return await this.themeService.deleteTheme(new Types.ObjectId(id));
+  async deleteTheme(@Param('id', ObjectIdPipe) id: string): Promise<Theme> {
+    return await this.themeService.deleteTheme(id);
   }
 }

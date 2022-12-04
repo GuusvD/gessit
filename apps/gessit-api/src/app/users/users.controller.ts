@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from "@nestjs/common";
 import { Types } from "mongoose";
 import { Roles } from "../auth/roles.decorator";
+import { ObjectIdPipe } from "../shared/pipes/object.id.pipe";
 import { CreateUserDto } from "./create-user.dto";
 import { Role } from "./role.enum";
 import { UpdateUserDto } from "./update-user.dto";
@@ -17,7 +18,7 @@ export class UsersController {
     }
 
     @Get(':id')
-    async getUserById(@Param('id') id: string): Promise<User> {
+    async getUserById(@Param('id', ObjectIdPipe) id: string): Promise<User> {
         return await this.userService.getUserById(id);
     }
 
@@ -27,12 +28,12 @@ export class UsersController {
     }
 
     @Post(':id/follow')
-    async followUser(@Req() req, @Param('id') id: string): Promise<User[]> {
+    async followUser(@Req() req, @Param('id', ObjectIdPipe) id: string): Promise<User[]> {
         return await this.userService.followUser(req, id);
     }
 
     @Post(':id/unfollow')
-    async unfollowUser(@Req() req, @Param('id') id: string): Promise<User[]> {
+    async unfollowUser(@Req() req, @Param('id', ObjectIdPipe) id: string): Promise<User[]> {
         return await this.userService.unfollowUser(req, id);
     }
 
@@ -43,12 +44,12 @@ export class UsersController {
     }
 
     @Patch(':id')
-    async updateUser(@Req() req, @Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
+    async updateUser(@Req() req, @Param('id', ObjectIdPipe) id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
         return await this.userService.updateUser(req, id, updateUserDto);
     }
 
     @Delete(':id')
-    async deleteUser(@Req() req, @Param('id') id: string): Promise<User> {
-        return await this.userService.deleteUser(req, new Types.ObjectId(id));
+    async deleteUser(@Req() req, @Param('id', ObjectIdPipe) id: string): Promise<User> {
+        return await this.userService.deleteUser(req, id);
     }
 }

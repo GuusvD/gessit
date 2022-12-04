@@ -1,5 +1,4 @@
-import { Injectable } from "@nestjs/common";
-import { CommunitiesRepository } from "./communities.repository";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { Community, CommunityDocument } from "./community.schema";
 import { Model, Types } from "mongoose";
 import { ThemesService } from "../themes/themes.service";
@@ -10,17 +9,19 @@ import { CreateCommunityDto } from "./create-community.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { ValidationException } from "../shared/filters/validation.exception";
 import { ObjectIdPipe } from "../shared/pipes/object.id.pipe";
+import { Role } from "../users/role.enum";
 
 @Injectable()
 export class CommunitiesService {
-    constructor(@InjectModel(Community.name) private communityModel: Model<CommunityDocument>, private readonly communityRepository : CommunitiesRepository, private readonly themesService : ThemesService, private readonly usersService : UsersService) {}
+    constructor(@InjectModel(Community.name) private communityModel: Model<CommunityDocument>, private readonly themesService : ThemesService, private readonly usersService : UsersService) {}
 
-    async getCommunityById(id: Types.ObjectId): Promise<Community> {
-        return this.communityRepository.findOne({ _id: id });
+    async getCommunityById(id: string): Promise<Community> {
+        await this.existing(id);
+        return this.communityModel.findOne({ _id: new Types.ObjectId(id) });
     }
 
     async getCommunities(): Promise<Community[]> {
-        return this.communityRepository.find({});
+        return this.communityModel.find({});
     }
 
     async createCommunity(req, createCommunityDto: CreateCommunityDto): Promise<Community> {
@@ -40,43 +41,89 @@ export class CommunitiesService {
             themes: themesArray,
             owner: await this.usersService.getUserById(req.user.id)
         });
-
-        console.log(mergedCommunity)
         
-        return this.communityRepository.create(mergedCommunity);
+        return this.communityModel.create(mergedCommunity);
     }
 
-    async updateCommunity(id: string, updateCommunityDto: UpdateCommunityDto): Promise<Community> {
+    async joinCommunity(req, id: string): Promise<Community> {
+        await this.existing(id);
+
+        if ((await this.getCommunityById(id)).owner._id.equals(req.user.id)) {
+            throw new ValidationException(['Can not join your own created community!']);
+        }
+
+        if ((await this.getCommunityById(id)).members.filter(p => p._id.equals(req.user.id)).length > 0) {
+            throw new ValidationException(['Already part of this community!']);
+        }
+
+        return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(id)}, {$push: {members: (await this.usersService.getUserById(req.user.id))._id}});
+    }
+
+    async leaveCommunity(req, id: string): Promise<Community> {
+        await this.existing(id);
+
+        if ((await this.getCommunityById(id)).owner._id.equals(req.user.id)) {
+            throw new ValidationException(['Can not leave your own created community!']);
+        }
+
+        if ((await this.getCommunityById(id)).members.filter(p => p._id.equals(req.user.id)).length === 0) {
+            throw new ValidationException(['Not part of this community!']);
+        }
+
+        return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(id)}, {$pull: {members: (await this.usersService.getUserById(req.user.id))._id}});
+    }
+
+    async updateCommunity(req, id: string, updateCommunityDto: UpdateCommunityDto): Promise<Community> {
         if (updateCommunityDto.themes) {
             if (!(await this.areValidObjectIds(updateCommunityDto.themes as string[]))) {
                 throw new ValidationException(['Themes attribute data must be of type ObjectId!'])
             }
         }
 
-        let updatedObject = {};
+        await this.existing(id);
 
-        if (updateCommunityDto.themes) {
-            const themes : Theme[] = [];
+        if ((await this.getCommunityById(id)).owner._id.equals(req.user.id) || req.user.roles.includes(Role.Admin)) {
+            let updatedObject = {};
 
-            for (const theme of updateCommunityDto.themes) {
-                themes.push(await this.themesService.getThemeById(new Types.ObjectId(theme)));
+            if (updateCommunityDto.themes) {
+                const themes : Theme[] = [];
+    
+                for (const theme of updateCommunityDto.themes) {
+                    themes.push(await this.themesService.getThemeById(theme));
+                }
+    
+                delete updateCommunityDto.themes;
+    
+                updatedObject = { themes };
             }
-
-            delete updateCommunityDto.themes;
-
-            updatedObject = { themes };
+    
+            updatedObject = { ...updateCommunityDto, ...updatedObject };
+    
+            return this.communityModel.findOneAndUpdate({ _id: new Types.ObjectId(id) }, updatedObject);
+        } else {
+            throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
         }
-
-        updatedObject = { ...updateCommunityDto, ...updatedObject };
-
-        return this.communityRepository.findOneAndUpdate({ _id: new Types.ObjectId(id) }, updatedObject);
     }
 
-    async deleteCommunity(id: Types.ObjectId): Promise<Community> {
-        return this.communityRepository.findOneAndDelete({ _id: id });
+    async deleteCommunity(req, id: string): Promise<Community> {
+        await this.existing(id);
+
+        if ((await this.getCommunityById(id)).owner._id.equals(req.user.id) || req.user.roles.includes(Role.Admin)) {
+            return this.communityModel.findOneAndDelete({ _id: new Types.ObjectId(id) });
+        } else {
+            throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+        }
     }
 
     async areValidObjectIds(value: string[]) {
         return value.every((id) => ObjectIdPipe.isValidObjectId(id));
+    }
+
+    async existing(communityId: string): Promise<void> {
+        const community = await this.communityModel.findOne({ _id: new Types.ObjectId(communityId) });
+
+        if (!community) {
+            throw new ValidationException([`Community with id ${communityId} does not exist!`])
+        }
     }
 }
