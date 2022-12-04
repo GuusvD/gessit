@@ -118,7 +118,7 @@ let AuthController = class AuthController {
         });
     }
     getProfile(req) {
-        return req.body;
+        return req.user;
     }
 };
 tslib_1.__decorate([
@@ -449,7 +449,7 @@ exports.RolesGuard = RolesGuard;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g, _h;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommunitiesController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -475,6 +475,11 @@ let CommunitiesController = class CommunitiesController {
     createCommunity(req, createCommunityDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return yield this.communityService.createCommunity(req, createCommunityDto);
+        });
+    }
+    joinCommunity(req, id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.communityService.joinCommunity(req, id);
         });
     }
     updateCommunity(id, updateCommunityDto) {
@@ -510,19 +515,27 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], CommunitiesController.prototype, "createCommunity", null);
 tslib_1.__decorate([
+    (0, common_1.Post)(':id/join'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Param)('id')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, String]),
+    tslib_1.__metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+], CommunitiesController.prototype, "joinCommunity", null);
+tslib_1.__decorate([
     (0, common_1.Patch)(':id'),
     tslib_1.__param(0, (0, common_1.Param)('id')),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [String, typeof (_f = typeof update_community_dto_1.UpdateCommunityDto !== "undefined" && update_community_dto_1.UpdateCommunityDto) === "function" ? _f : Object]),
-    tslib_1.__metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+    tslib_1.__metadata("design:paramtypes", [String, typeof (_g = typeof update_community_dto_1.UpdateCommunityDto !== "undefined" && update_community_dto_1.UpdateCommunityDto) === "function" ? _g : Object]),
+    tslib_1.__metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], CommunitiesController.prototype, "updateCommunity", null);
 tslib_1.__decorate([
     (0, common_1.Delete)(':id'),
     tslib_1.__param(0, (0, common_1.Param)('id')),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [String]),
-    tslib_1.__metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+    tslib_1.__metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
 ], CommunitiesController.prototype, "deleteCommunity", null);
 CommunitiesController = tslib_1.__decorate([
     (0, common_1.Controller)('community'),
@@ -604,6 +617,17 @@ let CommunitiesService = class CommunitiesService {
             const themesArray = (yield this.themesService.getThemes()).filter(p => createCommunityDto.themes.includes(p._id.toString()));
             const mergedCommunity = new this.communityModel(Object.assign(Object.assign({}, createCommunityDto), { _id: new mongoose_1.Types.ObjectId(), creationDate: new Date(), ranking: 0, themes: themesArray, owner: yield this.usersService.getUserById(req.user.id) }));
             return this.communityModel.create(mergedCommunity);
+        });
+    }
+    joinCommunity(req, id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            if ((yield this.getCommunityById(new mongoose_1.Types.ObjectId(id))).owner._id.equals(req.user.id)) {
+                throw new validation_exception_1.ValidationException(['Can not join your own created community!']);
+            }
+            if ((yield this.getCommunityById(new mongoose_1.Types.ObjectId(id))).members.filter(p => p._id.equals(req.user.id)).length > 0) {
+                throw new validation_exception_1.ValidationException(['Already part of this community!']);
+            }
+            return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $push: { members: yield (yield this.usersService.getUserById(req.user.id))._id } });
         });
     }
     updateCommunity(id, updateCommunityDto) {

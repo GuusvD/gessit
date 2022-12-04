@@ -26,6 +26,6 @@ export class AuthController {
     @Roles(Role.User)
     @Get('profile')
     getProfile(@Request() req) {
-        return req.body;
+        return req.user;
     }
 }
