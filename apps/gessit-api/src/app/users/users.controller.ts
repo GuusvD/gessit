@@ -50,6 +50,6 @@ export class UsersController {
 
     @Delete(':id')
     async deleteUser(@Req() req, @Param('id', ObjectIdPipe) id: string): Promise<User> {
-        return await this.userService.deleteUser(req, new Types.ObjectId(id));
+        return await this.userService.deleteUser(req, id);
     }
 }

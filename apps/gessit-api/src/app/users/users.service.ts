@@ -19,10 +19,13 @@ export class UsersService {
   }
 
   async getUserById(id: string): Promise<User> {
+    await this.existing(id);
     return this.userModel.findOne({ _id: new Types.ObjectId(id) });
   }
 
   async followUser(req, id: string): Promise<User[]> {
+    await this.existing(id);
+
     const user = await this.getUserById(id);
     const loggedInUser = await this.getUserById(req.user.id);
 
@@ -44,6 +47,8 @@ export class UsersService {
   }
 
   async unfollowUser(req, id: string): Promise<User[]> {
+    await this.existing(id);
+
     const user = await this.getUserById(id);
     const loggedInUser = await this.getUserById(req.user.id);
 
@@ -94,6 +99,8 @@ export class UsersService {
   }
 
   async updateUser(req, id: string, user: Partial<User>): Promise<User> {
+    await this.existing(id);
+
     if (req.user.id.equals(new Types.ObjectId(id)) || req.user.roles.includes(Role.Admin)) {
       if (user.username) {
         if ((await this.getUsers()).filter(p => p.username === user.username && !(p._id.equals(new Types.ObjectId(id)))).length > 0) {
@@ -121,11 +128,21 @@ export class UsersService {
     }
   }
 
-  async deleteUser(req, id: Types.ObjectId): Promise<User> {
+  async deleteUser(req, id: string): Promise<User> {
+    await this.existing(id);
+
     if (req.user.id.equals(new Types.ObjectId(id)) || req.user.roles.includes(Role.Admin)) {
-      return this.userModel.findOneAndDelete({ _id: id })
+      return this.userModel.findOneAndDelete({ _id: new Types.ObjectId(id) })
     } else {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+  }
+
+  async existing(userId: string): Promise<void> {
+    const user = await this.userModel.findOne({ _id: new Types.ObjectId(userId) });
+
+    if (!user) {
+      throw new ValidationException([`User with id ${userId} does not exist!`]);
     }
   }
 }

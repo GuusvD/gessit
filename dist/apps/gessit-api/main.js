@@ -1715,7 +1715,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const mongoose_1 = __webpack_require__("mongoose");
 const roles_decorator_1 = __webpack_require__("./apps/gessit-api/src/app/auth/roles.decorator.ts");
 const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
 const create_user_dto_1 = __webpack_require__("./apps/gessit-api/src/app/users/create-user.dto.ts");
@@ -1763,7 +1762,7 @@ let UsersController = class UsersController {
     }
     deleteUser(req, id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.userService.deleteUser(req, new mongoose_1.Types.ObjectId(id));
+            return yield this.userService.deleteUser(req, id);
         });
     }
 };
@@ -1895,11 +1894,13 @@ let UsersService = class UsersService {
     }
     getUserById(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(id);
             return this.userModel.findOne({ _id: new mongoose_1.Types.ObjectId(id) });
         });
     }
     followUser(req, id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(id);
             const user = yield this.getUserById(id);
             const loggedInUser = yield this.getUserById(req.user.id);
             if (!(loggedInUser._id.equals(user._id))) {
@@ -1921,6 +1922,7 @@ let UsersService = class UsersService {
     }
     unfollowUser(req, id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(id);
             const user = yield this.getUserById(id);
             const loggedInUser = yield this.getUserById(req.user.id);
             if (!(loggedInUser._id.equals(user._id))) {
@@ -1967,6 +1969,7 @@ let UsersService = class UsersService {
     }
     updateUser(req, id, user) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(id);
             if (req.user.id.equals(new mongoose_1.Types.ObjectId(id)) || req.user.roles.includes(role_enum_1.Role.Admin)) {
                 if (user.username) {
                     if ((yield this.getUsers()).filter(p => p.username === user.username && !(p._id.equals(new mongoose_1.Types.ObjectId(id)))).length > 0) {
@@ -1993,11 +1996,20 @@ let UsersService = class UsersService {
     }
     deleteUser(req, id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(id);
             if (req.user.id.equals(new mongoose_1.Types.ObjectId(id)) || req.user.roles.includes(role_enum_1.Role.Admin)) {
-                return this.userModel.findOneAndDelete({ _id: id });
+                return this.userModel.findOneAndDelete({ _id: new mongoose_1.Types.ObjectId(id) });
             }
             else {
                 throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
+            }
+        });
+    }
+    existing(userId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const user = yield this.userModel.findOne({ _id: new mongoose_1.Types.ObjectId(userId) });
+            if (!user) {
+                throw new validation_exception_1.ValidationException([`User with id ${userId} does not exist!`]);
             }
         });
     }
