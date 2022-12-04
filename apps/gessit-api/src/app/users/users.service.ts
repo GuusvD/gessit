@@ -27,7 +27,7 @@ export class UsersService {
     const loggedInUser = await this.getUserById(req.user.id);
 
     if (!(loggedInUser._id.equals(user._id))) {
-      if (!(await (await this.userModel.find({ $and: [ {_id: req.user.id}, {following: { $in : id}} ] })).length > 0)) {
+      if (!((await this.userModel.find({ $and: [ {_id: req.user.id}, {following: { $in : new Types.ObjectId(id)}} ] })).length > 0)) {
         (loggedInUser.following as any).push(user._id);
         (user.followers as any).push(loggedInUser._id);
     
