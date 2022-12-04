@@ -1255,14 +1255,14 @@ let ThreadsController = class ThreadsController {
             return yield this.threadService.createThread(req, new mongoose_1.Types.ObjectId(communityId), createThreadDto);
         });
     }
-    updateThread(communityId, threadId, updateThreadDto) {
+    updateThread(req, communityId, threadId, updateThreadDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.threadService.updateThread(new mongoose_1.Types.ObjectId(communityId), new mongoose_1.Types.ObjectId(threadId), updateThreadDto);
+            return yield this.threadService.updateThread(req, new mongoose_1.Types.ObjectId(communityId), new mongoose_1.Types.ObjectId(threadId), updateThreadDto);
         });
     }
-    deleteThread(communityId, threadId) {
+    deleteThread(req, communityId, threadId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.threadService.deleteThread(new mongoose_1.Types.ObjectId(communityId), new mongoose_1.Types.ObjectId(threadId));
+            return yield this.threadService.deleteThread(req, new mongoose_1.Types.ObjectId(communityId), new mongoose_1.Types.ObjectId(threadId));
         });
     }
 };
@@ -1294,19 +1294,21 @@ tslib_1.__decorate([
 ], ThreadsController.prototype, "createThread", null);
 tslib_1.__decorate([
     (0, common_1.Patch)(':communityId/thread/:threadId'),
-    tslib_1.__param(0, (0, common_1.Param)('communityId')),
-    tslib_1.__param(1, (0, common_1.Param)('threadId')),
-    tslib_1.__param(2, (0, common_1.Body)()),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Param)('communityId')),
+    tslib_1.__param(2, (0, common_1.Param)('threadId')),
+    tslib_1.__param(3, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [String, String, typeof (_f = typeof update_thread_dto_1.UpdateThreadDto !== "undefined" && update_thread_dto_1.UpdateThreadDto) === "function" ? _f : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, String, String, typeof (_f = typeof update_thread_dto_1.UpdateThreadDto !== "undefined" && update_thread_dto_1.UpdateThreadDto) === "function" ? _f : Object]),
     tslib_1.__metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], ThreadsController.prototype, "updateThread", null);
 tslib_1.__decorate([
     (0, common_1.Delete)(':communityId/thread/:threadId'),
-    tslib_1.__param(0, (0, common_1.Param)('communityId')),
-    tslib_1.__param(1, (0, common_1.Param)('threadId')),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Param)('communityId')),
+    tslib_1.__param(2, (0, common_1.Param)('threadId')),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [String, String]),
+    tslib_1.__metadata("design:paramtypes", [Object, String, String]),
     tslib_1.__metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], ThreadsController.prototype, "deleteThread", null);
 ThreadsController = tslib_1.__decorate([
@@ -1380,22 +1382,43 @@ let ThreadsService = class ThreadsService {
     }
     createThread(req, communityId, createThreadDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const newThread = new this.threadModel(Object.assign(Object.assign({}, createThreadDto), { _id: new mongoose_1.Types.ObjectId(), views: 0, likes: 0, dislikes: 0, creationDate: new Date(), creator: yield this.usersService.getUserById(req.user.id) }));
-            return yield this.communityModel.findOneAndUpdate({ _id: communityId }, { $push: { threads: newThread } });
+            if ((yield this.communitiesService.getCommunityById(communityId)).members.filter(p => p._id.equals(req.user.id)).length === 0) {
+                if ((yield this.communitiesService.getCommunityById(communityId)).owner._id.equals(req.user.id)) {
+                    const newThread = new this.threadModel(Object.assign(Object.assign({}, createThreadDto), { _id: new mongoose_1.Types.ObjectId(), views: 0, likes: 0, dislikes: 0, creationDate: new Date(), creator: yield this.usersService.getUserById(req.user.id) }));
+                    return yield this.communityModel.findOneAndUpdate({ _id: communityId }, { $push: { threads: newThread } });
+                }
+                else {
+                    throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
+                }
+            }
+            else {
+                const newThread = new this.threadModel(Object.assign(Object.assign({}, createThreadDto), { _id: new mongoose_1.Types.ObjectId(), views: 0, likes: 0, dislikes: 0, creationDate: new Date(), creator: yield this.usersService.getUserById(req.user.id) }));
+                return yield this.communityModel.findOneAndUpdate({ _id: communityId }, { $push: { threads: newThread } });
+            }
         });
     }
-    updateThread(communityId, threadId, thread) {
+    updateThread(req, communityId, threadId, thread) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const oldThread = (yield this.communitiesService.getCommunityById(communityId)).threads.filter(p => p._id.equals(threadId))[0];
-            const newThread = Object.assign(Object.assign({}, oldThread), thread);
-            yield this.communityModel.findOneAndUpdate({ _id: communityId }, { $pull: { threads: oldThread } });
-            return yield this.communityModel.findOneAndUpdate({ _id: communityId }, { $push: { threads: newThread } });
+            if ((yield this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id)) {
+                const oldThread = yield this.getThreadById(communityId, threadId);
+                const newThread = Object.assign(Object.assign({}, oldThread), thread);
+                yield this.communityModel.findOneAndUpdate({ _id: communityId }, { $pull: { threads: oldThread } });
+                return yield this.communityModel.findOneAndUpdate({ _id: communityId }, { $push: { threads: newThread } });
+            }
+            else {
+                throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
+            }
         });
     }
-    deleteThread(communityId, threadId) {
+    deleteThread(req, communityId, threadId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const thread = (yield this.communitiesService.getCommunityById(communityId)).threads.filter(p => p._id.equals(threadId))[0];
-            return yield this.communityModel.findOneAndUpdate({ _id: communityId }, { $pull: { threads: thread } });
+            if ((yield this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id)) {
+                const thread = yield this.getThreadById(communityId, threadId);
+                return yield this.communityModel.findOneAndUpdate({ _id: communityId }, { $pull: { threads: thread } });
+            }
+            else {
+                throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
+            }
         });
     }
 };

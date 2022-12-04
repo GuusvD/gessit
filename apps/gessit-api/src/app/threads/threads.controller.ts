@@ -28,12 +28,12 @@ export class ThreadsController {
   }
 
   @Patch(':communityId/thread/:threadId')
-  async updateThread(@Param('communityId') communityId: string, @Param('threadId') threadId: string, @Body() updateThreadDto: UpdateThreadDto): Promise<Thread> {
-    return await this.threadService.updateThread(new Types.ObjectId(communityId), new Types.ObjectId(threadId), updateThreadDto);
+  async updateThread(@Req() req, @Param('communityId') communityId: string, @Param('threadId') threadId: string, @Body() updateThreadDto: UpdateThreadDto): Promise<Thread> {
+    return await this.threadService.updateThread(req, new Types.ObjectId(communityId), new Types.ObjectId(threadId), updateThreadDto);
   }
 
   @Delete(':communityId/thread/:threadId')
-  async deleteThread(@Param('communityId') communityId: string, @Param('threadId') threadId: string): Promise<Thread> {
-    return await this.threadService.deleteThread(new Types.ObjectId(communityId), new Types.ObjectId(threadId));
+  async deleteThread(@Req() req, @Param('communityId') communityId: string, @Param('threadId') threadId: string): Promise<Thread> {
+    return await this.threadService.deleteThread(req, new Types.ObjectId(communityId), new Types.ObjectId(threadId));
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { Model, Types } from "mongoose";
 import { Thread, ThreadDocument } from "./thread.schema";
 import { UsersService } from "../users/users.service";
@@ -20,29 +20,55 @@ export class ThreadsService {
     }
 
     async createThread(req, communityId: Types.ObjectId, createThreadDto: CreateThreadDto): Promise<Thread> {
-        const newThread = new this.threadModel({
-            ...createThreadDto,
-            _id: new Types.ObjectId(),
-            views: 0,
-            likes: 0,
-            dislikes: 0,
-            creationDate: new Date(),
-            creator: await this.usersService.getUserById(req.user.id)
-        });
-
-        return await this.communityModel.findOneAndUpdate({_id: communityId}, {$push: {threads: newThread}});
+        if ((await this.communitiesService.getCommunityById(communityId)).members.filter(p => p._id.equals(req.user.id)).length === 0) {
+            if ((await this.communitiesService.getCommunityById(communityId)).owner._id.equals(req.user.id)) {
+                const newThread = new this.threadModel({
+                    ...createThreadDto,
+                    _id: new Types.ObjectId(),
+                    views: 0,
+                    likes: 0,
+                    dislikes: 0,
+                    creationDate: new Date(),
+                    creator: await this.usersService.getUserById(req.user.id)
+                });
+        
+                return await this.communityModel.findOneAndUpdate({_id: communityId}, {$push: {threads: newThread}});
+            } else {
+                throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+            }
+        } else {
+            const newThread = new this.threadModel({
+                ...createThreadDto,
+                _id: new Types.ObjectId(),
+                views: 0,
+                likes: 0,
+                dislikes: 0,
+                creationDate: new Date(),
+                creator: await this.usersService.getUserById(req.user.id)
+            });
+    
+            return await this.communityModel.findOneAndUpdate({_id: communityId}, {$push: {threads: newThread}});
+        }
     }
 
-    async updateThread(communityId: Types.ObjectId, threadId: Types.ObjectId, thread: Partial<Thread>): Promise<Thread> {
-        const oldThread = (await this.communitiesService.getCommunityById(communityId)).threads.filter(p => p._id.equals(threadId))[0];
-        const newThread = { ...oldThread, ...thread };
-
-        await this.communityModel.findOneAndUpdate({_id: communityId}, {$pull: {threads: oldThread}});
-        return await this.communityModel.findOneAndUpdate({_id: communityId}, {$push: {threads: newThread}});
+    async updateThread(req, communityId: Types.ObjectId, threadId: Types.ObjectId, thread: Partial<Thread>): Promise<Thread> {
+        if ((await this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id)) {
+            const oldThread = await this.getThreadById(communityId, threadId);
+            const newThread = { ...oldThread, ...thread };
+    
+            await this.communityModel.findOneAndUpdate({_id: communityId}, {$pull: {threads: oldThread}});
+            return await this.communityModel.findOneAndUpdate({_id: communityId}, {$push: {threads: newThread}});
+        } else {
+            throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+        }
     }
 
-    async deleteThread(communityId: Types.ObjectId, threadId: Types.ObjectId): Promise<Thread> {
-        const thread = (await this.communitiesService.getCommunityById(communityId)).threads.filter(p => p._id.equals(threadId))[0];
-        return await this.communityModel.findOneAndUpdate({_id: communityId}, {$pull: {threads: thread}});
+    async deleteThread(req, communityId: Types.ObjectId, threadId: Types.ObjectId): Promise<Thread> {
+        if ((await this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id)) {
+            const thread = await this.getThreadById(communityId, threadId);
+            return await this.communityModel.findOneAndUpdate({_id: communityId}, {$pull: {threads: thread}});
+        } else {
+            throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+        }
     }
 }
