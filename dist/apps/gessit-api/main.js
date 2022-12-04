@@ -449,7 +449,7 @@ exports.RolesGuard = RolesGuard;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommunitiesController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -480,6 +480,11 @@ let CommunitiesController = class CommunitiesController {
     joinCommunity(req, id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return yield this.communityService.joinCommunity(req, id);
+        });
+    }
+    leaveCommunity(req, id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.communityService.leaveCommunity(req, id);
         });
     }
     updateCommunity(id, updateCommunityDto) {
@@ -523,19 +528,27 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], CommunitiesController.prototype, "joinCommunity", null);
 tslib_1.__decorate([
+    (0, common_1.Post)(':id/leave'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Param)('id')),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, String]),
+    tslib_1.__metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+], CommunitiesController.prototype, "leaveCommunity", null);
+tslib_1.__decorate([
     (0, common_1.Patch)(':id'),
     tslib_1.__param(0, (0, common_1.Param)('id')),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [String, typeof (_g = typeof update_community_dto_1.UpdateCommunityDto !== "undefined" && update_community_dto_1.UpdateCommunityDto) === "function" ? _g : Object]),
-    tslib_1.__metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+    tslib_1.__metadata("design:paramtypes", [String, typeof (_h = typeof update_community_dto_1.UpdateCommunityDto !== "undefined" && update_community_dto_1.UpdateCommunityDto) === "function" ? _h : Object]),
+    tslib_1.__metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
 ], CommunitiesController.prototype, "updateCommunity", null);
 tslib_1.__decorate([
     (0, common_1.Delete)(':id'),
     tslib_1.__param(0, (0, common_1.Param)('id')),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [String]),
-    tslib_1.__metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+    tslib_1.__metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], CommunitiesController.prototype, "deleteCommunity", null);
 CommunitiesController = tslib_1.__decorate([
     (0, common_1.Controller)('community'),
@@ -627,7 +640,18 @@ let CommunitiesService = class CommunitiesService {
             if ((yield this.getCommunityById(new mongoose_1.Types.ObjectId(id))).members.filter(p => p._id.equals(req.user.id)).length > 0) {
                 throw new validation_exception_1.ValidationException(['Already part of this community!']);
             }
-            return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $push: { members: yield (yield this.usersService.getUserById(req.user.id))._id } });
+            return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $push: { members: (yield this.usersService.getUserById(req.user.id))._id } });
+        });
+    }
+    leaveCommunity(req, id) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            if ((yield this.getCommunityById(new mongoose_1.Types.ObjectId(id))).owner._id.equals(req.user.id)) {
+                throw new validation_exception_1.ValidationException(['Can not leave your own created community!']);
+            }
+            if ((yield this.getCommunityById(new mongoose_1.Types.ObjectId(id))).members.filter(p => p._id.equals(req.user.id)).length === 0) {
+                throw new validation_exception_1.ValidationException(['Not part of this community!']);
+            }
+            return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $pull: { members: (yield this.usersService.getUserById(req.user.id))._id } });
         });
     }
     updateCommunity(id, updateCommunityDto) {

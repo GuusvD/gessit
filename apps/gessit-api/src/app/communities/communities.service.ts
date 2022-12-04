@@ -52,7 +52,19 @@ export class CommunitiesService {
             throw new ValidationException(['Already part of this community!']);
         }
 
-        return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(id)}, {$push: {members: await (await this.usersService.getUserById(req.user.id))._id}});
+        return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(id)}, {$push: {members: (await this.usersService.getUserById(req.user.id))._id}});
+    }
+
+    async leaveCommunity(req, id: string): Promise<Community> {
+        if ((await this.getCommunityById(new Types.ObjectId(id))).owner._id.equals(req.user.id)) {
+            throw new ValidationException(['Can not leave your own created community!']);
+        }
+
+        if ((await this.getCommunityById(new Types.ObjectId(id))).members.filter(p => p._id.equals(req.user.id)).length === 0) {
+            throw new ValidationException(['Not part of this community!']);
+        }
+
+        return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(id)}, {$pull: {members: (await this.usersService.getUserById(req.user.id))._id}});
     }
 
     async updateCommunity(id: string, updateCommunityDto: UpdateCommunityDto): Promise<Community> {

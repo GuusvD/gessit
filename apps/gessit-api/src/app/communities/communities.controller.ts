@@ -29,6 +29,11 @@ export class CommunitiesController {
     return await this.communityService.joinCommunity(req, id);
   }
 
+  @Post(':id/leave')
+  async leaveCommunity(@Req() req, @Param('id') id: string): Promise<Community> {
+    return await this.communityService.leaveCommunity(req, id);
+  }
+
   @Patch(':id')
   async updateCommunity(@Param('id') id: string, @Body() updateCommunityDto: UpdateCommunityDto): Promise<Community> {
     return await this.communityService.updateCommunity(id, updateCommunityDto);
