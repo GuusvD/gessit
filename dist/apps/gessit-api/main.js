@@ -1854,7 +1854,7 @@ let UsersService = class UsersService {
             const user = yield this.getUserById(id);
             const loggedInUser = yield this.getUserById(req.user.id);
             if (!(loggedInUser._id.equals(user._id))) {
-                if (!((yield (yield this.userModel.find({ $and: [{ _id: req.user.id }, { following: { $in: id } }] })).length) === 0)) {
+                if (!((yield this.userModel.find({ $and: [{ _id: req.user.id }, { following: { $in: new mongoose_1.Types.ObjectId(id) } }] })).length === 0)) {
                     loggedInUser.following.pull(user._id);
                     user.followers.pull(loggedInUser._id);
                     const loggedInUserNew = yield this.userModel.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
