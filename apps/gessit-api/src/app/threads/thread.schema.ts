@@ -18,11 +18,10 @@ export class Thread {
     @Prop()
     views: number;
 
-    @Prop()
-    likes: number;
-
-    @Prop()
-    dislikes: number;
+    @Prop({
+        ref: 'User'
+    })
+    likes: [Types.ObjectId];
 
     @Prop()
     creationDate: Date;

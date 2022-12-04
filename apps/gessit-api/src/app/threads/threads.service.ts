@@ -29,8 +29,6 @@ export class ThreadsService {
                     ...createThreadDto,
                     _id: new Types.ObjectId(),
                     views: 0,
-                    likes: 0,
-                    dislikes: 0,
                     creationDate: new Date(),
                     creator: await this.usersService.getUserById(req.user.id)
                 });
@@ -44,14 +42,31 @@ export class ThreadsService {
                 ...createThreadDto,
                 _id: new Types.ObjectId(),
                 views: 0,
-                likes: 0,
-                dislikes: 0,
                 creationDate: new Date(),
                 creator: await this.usersService.getUserById(req.user.id)
             });
     
             return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$push: {threads: newThread}});
         }
+    }
+
+    async likeThread(req, communityId: string, threadId: string): Promise<Thread> {
+        await this.existing(communityId, threadId);
+
+        let community;
+
+        if ((await this.getThreadById(communityId, threadId)).likes.filter(p => p._id.equals(req.user.id)).length === 0) {
+            community = await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId), "threads._id": new Types.ObjectId(threadId)}, {$push: {"threads.$.likes": req.user.id}}, {new: true});
+        } else {
+            community = await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId), "threads._id": new Types.ObjectId(threadId)}, {$pull: {"threads.$.likes": req.user.id}}, {new: true});
+        }
+        
+        return community.threads.filter(p => p._id.equals(new Types.ObjectId(threadId)))[0];
+    }
+
+    async viewThread(communityId: string, threadId: string): Promise<Thread> {
+        let community = await this.communityModel.findOneAndUpdate({_id : new Types.ObjectId(communityId), "threads._id" : new Types.ObjectId(threadId)}, {$inc: {"threads.$.views" : 1}});
+        return community.threads.filter(p => p._id.equals(new Types.ObjectId(threadId)))[0];
     }
 
     async updateThread(req, communityId: string, threadId: string, thread: Partial<Thread>): Promise<Thread> {

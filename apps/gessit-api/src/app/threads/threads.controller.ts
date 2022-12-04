@@ -1,5 +1,4 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from '@nestjs/common';
-import { Types } from 'mongoose';
 import { ThreadsService } from './threads.service';
 import { Thread } from './thread.schema';
 import { UpdateThreadDto } from './update-thread.dto';
@@ -26,6 +25,16 @@ export class ThreadsController {
   @Post(':communityId/thread')
   async createThread(@Req() req, @Body() createThreadDto: CreateThreadDto, @Param('communityId', ObjectIdPipe) communityId: string): Promise<Thread> {
     return await this.threadService.createThread(req, communityId, createThreadDto);
+  }
+
+  @Post(':communityId/thread/:threadId/like')
+  async likeThread(@Req() req, @Param('communityId', ObjectIdPipe) communityId: string, @Param('threadId', ObjectIdPipe) threadId: string) {
+    return await this.threadService.likeThread(req, communityId, threadId);
+  }
+
+  @Post(':communityId/thread/:threadId/view')
+  async viewThread(@Param('communityId', ObjectIdPipe) communityId: string, @Param('threadId', ObjectIdPipe) threadId: string) {
+    return await this.threadService.viewThread(communityId, threadId);
   }
 
   @Patch(':communityId/thread/:threadId')

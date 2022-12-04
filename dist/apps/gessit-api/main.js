@@ -1229,13 +1229,11 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:type", Number)
 ], Thread.prototype, "views", void 0);
 tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
-    tslib_1.__metadata("design:type", Number)
+    (0, mongoose_1.Prop)({
+        ref: 'User'
+    }),
+    tslib_1.__metadata("design:type", Array)
 ], Thread.prototype, "likes", void 0);
-tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
-    tslib_1.__metadata("design:type", Number)
-], Thread.prototype, "dislikes", void 0);
 tslib_1.__decorate([
     (0, mongoose_1.Prop)(),
     tslib_1.__metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
@@ -1298,6 +1296,16 @@ let ThreadsController = class ThreadsController {
             return yield this.threadService.createThread(req, communityId, createThreadDto);
         });
     }
+    likeThread(req, communityId, threadId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.threadService.likeThread(req, communityId, threadId);
+        });
+    }
+    viewThread(communityId, threadId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.threadService.viewThread(communityId, threadId);
+        });
+    }
     updateThread(req, communityId, threadId, updateThreadDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return yield this.threadService.updateThread(req, communityId, threadId, updateThreadDto);
@@ -1335,6 +1343,23 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [Object, typeof (_d = typeof create_thread_dto_1.CreateThreadDto !== "undefined" && create_thread_dto_1.CreateThreadDto) === "function" ? _d : Object, String]),
     tslib_1.__metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], ThreadsController.prototype, "createThread", null);
+tslib_1.__decorate([
+    (0, common_1.Post)(':communityId/thread/:threadId/like'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(2, (0, common_1.Param)('threadId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, String, String]),
+    tslib_1.__metadata("design:returntype", Promise)
+], ThreadsController.prototype, "likeThread", null);
+tslib_1.__decorate([
+    (0, common_1.Post)(':communityId/thread/:threadId/view'),
+    tslib_1.__param(0, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(1, (0, common_1.Param)('threadId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [String, String]),
+    tslib_1.__metadata("design:returntype", Promise)
+], ThreadsController.prototype, "viewThread", null);
 tslib_1.__decorate([
     (0, common_1.Patch)(':communityId/thread/:threadId'),
     tslib_1.__param(0, (0, common_1.Req)()),
@@ -1430,7 +1455,7 @@ let ThreadsService = class ThreadsService {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             if ((yield this.communitiesService.getCommunityById(communityId)).members.filter(p => p._id.equals(req.user.id)).length === 0) {
                 if ((yield this.communitiesService.getCommunityById(communityId)).owner._id.equals(req.user.id)) {
-                    const newThread = new this.threadModel(Object.assign(Object.assign({}, createThreadDto), { _id: new mongoose_1.Types.ObjectId(), views: 0, likes: 0, dislikes: 0, creationDate: new Date(), creator: yield this.usersService.getUserById(req.user.id) }));
+                    const newThread = new this.threadModel(Object.assign(Object.assign({}, createThreadDto), { _id: new mongoose_1.Types.ObjectId(), views: 0, creationDate: new Date(), creator: yield this.usersService.getUserById(req.user.id) }));
                     return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $push: { threads: newThread } });
                 }
                 else {
@@ -1438,9 +1463,28 @@ let ThreadsService = class ThreadsService {
                 }
             }
             else {
-                const newThread = new this.threadModel(Object.assign(Object.assign({}, createThreadDto), { _id: new mongoose_1.Types.ObjectId(), views: 0, likes: 0, dislikes: 0, creationDate: new Date(), creator: yield this.usersService.getUserById(req.user.id) }));
+                const newThread = new this.threadModel(Object.assign(Object.assign({}, createThreadDto), { _id: new mongoose_1.Types.ObjectId(), views: 0, creationDate: new Date(), creator: yield this.usersService.getUserById(req.user.id) }));
                 return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $push: { threads: newThread } });
             }
+        });
+    }
+    likeThread(req, communityId, threadId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(communityId, threadId);
+            let community;
+            if ((yield this.getThreadById(communityId, threadId)).likes.filter(p => p._id.equals(req.user.id)).length === 0) {
+                community = yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId), "threads._id": new mongoose_1.Types.ObjectId(threadId) }, { $push: { "threads.$.likes": req.user.id } }, { new: true });
+            }
+            else {
+                community = yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId), "threads._id": new mongoose_1.Types.ObjectId(threadId) }, { $pull: { "threads.$.likes": req.user.id } }, { new: true });
+            }
+            return community.threads.filter(p => p._id.equals(new mongoose_1.Types.ObjectId(threadId)))[0];
+        });
+    }
+    viewThread(communityId, threadId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            let community = yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId), "threads._id": new mongoose_1.Types.ObjectId(threadId) }, { $inc: { "threads.$.views": 1 } });
+            return community.threads.filter(p => p._id.equals(new mongoose_1.Types.ObjectId(threadId)))[0];
         });
     }
     updateThread(req, communityId, threadId, thread) {
@@ -1514,21 +1558,6 @@ tslib_1.__decorate([
     (0, class_validator_1.IsOptional)(),
     tslib_1.__metadata("design:type", String)
 ], UpdateThreadDto.prototype, "content", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsOptional)(),
-    tslib_1.__metadata("design:type", Number)
-], UpdateThreadDto.prototype, "views", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsOptional)(),
-    tslib_1.__metadata("design:type", Number)
-], UpdateThreadDto.prototype, "likes", void 0);
-tslib_1.__decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.IsOptional)(),
-    tslib_1.__metadata("design:type", Number)
-], UpdateThreadDto.prototype, "dislikes", void 0);
 tslib_1.__decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
