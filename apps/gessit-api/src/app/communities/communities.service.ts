@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
 import { Community, CommunityDocument } from "./community.schema";
 import { Model, Types } from "mongoose";
 import { ThemesService } from "../themes/themes.service";
@@ -13,7 +13,7 @@ import { Role } from "../users/role.enum";
 
 @Injectable()
 export class CommunitiesService {
-    constructor(@InjectModel(Community.name) private communityModel: Model<CommunityDocument>, private readonly themesService : ThemesService, private readonly usersService : UsersService) {}
+    constructor(@InjectModel(Community.name) private communityModel: Model<CommunityDocument>, private readonly themesService : ThemesService, @Inject(forwardRef(() => UsersService)) private readonly usersService : UsersService) {}
 
     async getCommunityById(id: string): Promise<Community> {
         await this.existing(id);

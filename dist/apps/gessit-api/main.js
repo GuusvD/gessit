@@ -43,11 +43,12 @@ const core_1 = __webpack_require__("@nestjs/core");
 const jwt_auth_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/jwt-auth.guard.ts");
 const roles_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/roles.guard.ts");
 const themes_module_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.module.ts");
+const messages_module_1 = __webpack_require__("./apps/gessit-api/src/app/messages/messages.module.ts");
 let AppModule = class AppModule {
 };
 AppModule = tslib_1.__decorate([
     (0, common_2.Module)({
-        imports: [mongoose_1.MongooseModule.forRoot('mongodb://127.0.0.1:27017/gessit'), communities_module_1.CommunitiesModule, threads_module_1.ThreadsModule, auth_module_1.AuthModule, users_module_1.UsersModule, themes_module_1.ThemesModule],
+        imports: [mongoose_1.MongooseModule.forRoot('mongodb://127.0.0.1:27017/gessit'), communities_module_1.CommunitiesModule, threads_module_1.ThreadsModule, auth_module_1.AuthModule, users_module_1.UsersModule, themes_module_1.ThemesModule, messages_module_1.MessagesModule],
         controllers: [app_controller_1.AppController],
         providers: [
             {
@@ -576,7 +577,7 @@ let CommunitiesModule = class CommunitiesModule {
 };
 CommunitiesModule = tslib_1.__decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: community_schema_1.Community.name, schema: community_schema_1.CommunitySchema }]), themes_module_1.ThemesModule, users_module_1.UsersModule],
+        imports: [mongoose_1.MongooseModule.forFeature([{ name: community_schema_1.Community.name, schema: community_schema_1.CommunitySchema }]), themes_module_1.ThemesModule, (0, common_1.forwardRef)(() => users_module_1.UsersModule)],
         controllers: [communities_controller_1.CommunitiesController],
         providers: [communities_service_1.CommunitiesService],
         exports: [mongoose_1.MongooseModule, communities_service_1.CommunitiesService]
@@ -711,6 +712,7 @@ let CommunitiesService = class CommunitiesService {
 CommunitiesService = tslib_1.__decorate([
     (0, common_1.Injectable)(),
     tslib_1.__param(0, (0, mongoose_2.InjectModel)(community_schema_1.Community.name)),
+    tslib_1.__param(2, (0, common_1.Inject)((0, common_1.forwardRef)(() => users_service_1.UsersService))),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof mongoose_1.Model !== "undefined" && mongoose_1.Model) === "function" ? _a : Object, typeof (_b = typeof themes_service_1.ThemesService !== "undefined" && themes_service_1.ThemesService) === "function" ? _b : Object, typeof (_c = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _c : Object])
 ], CommunitiesService);
 exports.CommunitiesService = CommunitiesService;
@@ -874,6 +876,373 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:type", Array)
 ], UpdateCommunityDto.prototype, "threads", void 0);
 exports.UpdateCommunityDto = UpdateCommunityDto;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/messages/create-message.dto.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CreateMessageDto = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const class_validator_1 = __webpack_require__("class-validator");
+class CreateMessageDto {
+}
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    tslib_1.__metadata("design:type", String)
+], CreateMessageDto.prototype, "content", void 0);
+exports.CreateMessageDto = CreateMessageDto;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/messages/message.schema.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a, _b, _c;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MessageSchema = exports.Message = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const mongoose_1 = __webpack_require__("@nestjs/mongoose");
+const mongoose_2 = __webpack_require__("mongoose");
+let Message = class Message {
+};
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", typeof (_a = typeof mongoose_2.Types !== "undefined" && mongoose_2.Types.ObjectId) === "function" ? _a : Object)
+], Message.prototype, "_id", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)({
+        ref: 'User'
+    }),
+    tslib_1.__metadata("design:type", typeof (_b = typeof mongoose_2.Types !== "undefined" && mongoose_2.Types.ObjectId) === "function" ? _b : Object)
+], Message.prototype, "creator", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", String)
+], Message.prototype, "content", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)({
+        ref: 'User'
+    }),
+    tslib_1.__metadata("design:type", Array)
+], Message.prototype, "likes", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
+], Message.prototype, "creationDate", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", Boolean)
+], Message.prototype, "hasLikes", void 0);
+Message = tslib_1.__decorate([
+    (0, mongoose_1.Schema)()
+], Message);
+exports.Message = Message;
+exports.MessageSchema = mongoose_1.SchemaFactory.createForClass(Message);
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/messages/messages.controller.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a, _b, _c, _d, _e, _f, _g, _h;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MessagesController = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
+const create_message_dto_1 = __webpack_require__("./apps/gessit-api/src/app/messages/create-message.dto.ts");
+const messages_service_1 = __webpack_require__("./apps/gessit-api/src/app/messages/messages.service.ts");
+const update_message_dto_1 = __webpack_require__("./apps/gessit-api/src/app/messages/update-message.dto.ts");
+let MessagesController = class MessagesController {
+    constructor(messagesService) {
+        this.messagesService = messagesService;
+    }
+    getMessages(communityId, threadId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.messagesService.getMessages(communityId, threadId);
+        });
+    }
+    getMessageById(communityId, threadId, messageId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.messagesService.getMessageById(communityId, threadId, messageId);
+        });
+    }
+    createMessage(req, communityId, threadId, createMessageDto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.messagesService.createMessage(req, communityId, threadId, createMessageDto);
+        });
+    }
+    likeMessage(req, communityId, threadId, messageId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.messagesService.likeMessage(req, communityId, threadId, messageId);
+        });
+    }
+    updateMessage(req, communityId, threadId, messageId, updateMessageDto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.messagesService.updateMessage(req, communityId, threadId, messageId, updateMessageDto);
+        });
+    }
+    deleteMessage(req, communityId, threadId, messageId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.messagesService.deleteMessage(req, communityId, threadId, messageId);
+        });
+    }
+};
+tslib_1.__decorate([
+    (0, common_1.Get)(':communityId/thread/:threadId/message'),
+    tslib_1.__param(0, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(1, (0, common_1.Param)('threadId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [String, String]),
+    tslib_1.__metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+], MessagesController.prototype, "getMessages", null);
+tslib_1.__decorate([
+    (0, common_1.Get)(':communityId/thread/:threadId/message/:messageId'),
+    tslib_1.__param(0, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(1, (0, common_1.Param)('threadId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(2, (0, common_1.Param)('messageId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [String, String, String]),
+    tslib_1.__metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+], MessagesController.prototype, "getMessageById", null);
+tslib_1.__decorate([
+    (0, common_1.Post)(':communityId/thread/:threadId/message'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(2, (0, common_1.Param)('threadId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(3, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, String, String, typeof (_d = typeof create_message_dto_1.CreateMessageDto !== "undefined" && create_message_dto_1.CreateMessageDto) === "function" ? _d : Object]),
+    tslib_1.__metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+], MessagesController.prototype, "createMessage", null);
+tslib_1.__decorate([
+    (0, common_1.Post)(':communityId/thread/:threadId/message/:messageId/like'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(2, (0, common_1.Param)('threadId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(3, (0, common_1.Param)('messageId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, String, String, String]),
+    tslib_1.__metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+], MessagesController.prototype, "likeMessage", null);
+tslib_1.__decorate([
+    (0, common_1.Patch)(':communityId/thread/:threadId/message/:messageId'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(2, (0, common_1.Param)('threadId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(3, (0, common_1.Param)('messageId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(4, (0, common_1.Body)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, String, String, String, typeof (_g = typeof update_message_dto_1.UpdateMessageDto !== "undefined" && update_message_dto_1.UpdateMessageDto) === "function" ? _g : Object]),
+    tslib_1.__metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+], MessagesController.prototype, "updateMessage", null);
+tslib_1.__decorate([
+    (0, common_1.Delete)(':communityId/thread/:threadId/message/:messageId'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(2, (0, common_1.Param)('threadId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(3, (0, common_1.Param)('messageId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, String, String, String]),
+    tslib_1.__metadata("design:returntype", Promise)
+], MessagesController.prototype, "deleteMessage", null);
+MessagesController = tslib_1.__decorate([
+    (0, common_1.Controller)('community'),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof messages_service_1.MessagesService !== "undefined" && messages_service_1.MessagesService) === "function" ? _a : Object])
+], MessagesController);
+exports.MessagesController = MessagesController;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/messages/messages.module.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MessagesModule = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const mongoose_1 = __webpack_require__("@nestjs/mongoose");
+const communities_module_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.module.ts");
+const message_schema_1 = __webpack_require__("./apps/gessit-api/src/app/messages/message.schema.ts");
+const messages_controller_1 = __webpack_require__("./apps/gessit-api/src/app/messages/messages.controller.ts");
+const messages_service_1 = __webpack_require__("./apps/gessit-api/src/app/messages/messages.service.ts");
+let MessagesModule = class MessagesModule {
+};
+MessagesModule = tslib_1.__decorate([
+    (0, common_1.Module)({
+        imports: [mongoose_1.MongooseModule.forFeature([{ name: message_schema_1.Message.name, schema: message_schema_1.MessageSchema }]), communities_module_1.CommunitiesModule],
+        controllers: [messages_controller_1.MessagesController],
+        providers: [messages_service_1.MessagesService]
+    })
+], MessagesModule);
+exports.MessagesModule = MessagesModule;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/messages/messages.service.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.MessagesService = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const mongoose_1 = __webpack_require__("@nestjs/mongoose");
+const mongoose_2 = __webpack_require__("mongoose");
+const community_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/community.schema.ts");
+const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
+const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
+const message_schema_1 = __webpack_require__("./apps/gessit-api/src/app/messages/message.schema.ts");
+let MessagesService = class MessagesService {
+    constructor(communityModel, messageModel) {
+        this.communityModel = communityModel;
+        this.messageModel = messageModel;
+    }
+    getMessageById(communityId, threadId, messageId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(communityId, threadId, messageId);
+            const community = yield this.communityModel.findOne({ _id: new mongoose_2.Types.ObjectId(communityId), "threads._id": new mongoose_2.Types.ObjectId(threadId), "messages._id": new mongoose_2.Types.ObjectId(messageId) });
+            return community.threads.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(threadId)))[0].messages.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(messageId)))[0];
+        });
+    }
+    getMessages(communityId, threadId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(communityId, threadId);
+            const community = yield this.communityModel.findOne({ _id: new mongoose_2.Types.ObjectId(communityId), "threads._id": new mongoose_2.Types.ObjectId(threadId) });
+            return community.threads.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(threadId)))[0].messages;
+        });
+    }
+    createMessage(req, communityId, threadId, createMessageDto) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(communityId, threadId);
+            const currentCommunity = yield this.communityModel.findOne({ _id: new mongoose_2.Types.ObjectId(communityId) });
+            if (currentCommunity.members.filter(p => p._id.equals(req.user.id)).length === 0) {
+                if (currentCommunity.owner._id.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
+                    const id = new mongoose_2.Types.ObjectId();
+                    const newMessage = new this.messageModel(Object.assign(Object.assign({ _id: id, creator: req.user.id }, createMessageDto), { likes: [], creationDate: new Date(), hasLikes: false }));
+                    const community = yield this.communityModel.findOneAndUpdate({ _id: new mongoose_2.Types.ObjectId(communityId), "threads._id": new mongoose_2.Types.ObjectId(threadId) }, { $push: { "threads.$.messages": newMessage } }, { new: true });
+                    return community.threads.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(threadId)))[0].messages.filter(p => p._id.equals(id))[0];
+                }
+                else {
+                    throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
+                }
+            }
+            else {
+                const id = new mongoose_2.Types.ObjectId();
+                const newMessage = new this.messageModel(Object.assign(Object.assign({ _id: id, creator: req.user.id }, createMessageDto), { likes: [], creationDate: new Date(), hasLikes: false }));
+                const community = yield this.communityModel.findOneAndUpdate({ _id: new mongoose_2.Types.ObjectId(communityId), "threads._id": new mongoose_2.Types.ObjectId(threadId) }, { $push: { "threads.$.messages": newMessage } }, { new: true });
+                return community.threads.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(threadId)))[0].messages.filter(p => p._id.equals(id))[0];
+            }
+        });
+    }
+    likeMessage(req, communityId, threadId, messageId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(communityId, threadId, messageId);
+            const message = yield this.getMessageById(communityId, threadId, messageId);
+            let result;
+            if (message.likes.filter(p => p.equals(req.user.id)).length === 0) {
+                result = (yield this.communityModel.findOneAndUpdate({ _id: new mongoose_2.Types.ObjectId(communityId), "threads._id": new mongoose_2.Types.ObjectId(threadId) }, { $push: { "threads.$.messages.$[message].likes": req.user.id } }, { arrayFilters: [{ "message._id": new mongoose_2.Types.ObjectId(messageId) }], new: true }));
+            }
+            else {
+                result = (yield this.communityModel.findOneAndUpdate({ _id: new mongoose_2.Types.ObjectId(communityId), "threads._id": new mongoose_2.Types.ObjectId(threadId) }, { $pull: { "threads.$.messages.$[message].likes": req.user.id } }, { arrayFilters: [{ "message._id": new mongoose_2.Types.ObjectId(messageId) }], new: true }));
+            }
+            if ((result.threads.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(threadId))))[0].messages.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(messageId)))[0].likes.length > 0) {
+                result = (yield this.communityModel.findOneAndUpdate({ _id: new mongoose_2.Types.ObjectId(communityId), "threads._id": new mongoose_2.Types.ObjectId(threadId) }, { $set: { "threads.$.messages.$[message].hasLikes": true } }, { arrayFilters: [{ "message._id": new mongoose_2.Types.ObjectId(messageId) }], new: true }));
+            }
+            else {
+                result = (yield this.communityModel.findOneAndUpdate({ _id: new mongoose_2.Types.ObjectId(communityId), "threads._id": new mongoose_2.Types.ObjectId(threadId) }, { $set: { "threads.$.messages.$[message].hasLikes": false } }, { arrayFilters: [{ "message._id": new mongoose_2.Types.ObjectId(messageId) }], new: true }));
+            }
+            return result.threads.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(threadId)))[0].messages.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(messageId)))[0];
+        });
+    }
+    updateMessage(req, communityId, threadId, messageId, message) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(communityId, threadId, messageId);
+            const community = yield this.communityModel.findOne({ _id: new mongoose_2.Types.ObjectId(communityId) });
+            const resultMessage = community.threads.filter(p => p._id.equals(threadId))[0].messages.filter(p => p._id.equals(messageId))[0];
+            if (resultMessage.creator._id.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
+                const oldMessage = yield this.getMessageById(communityId, threadId, messageId);
+                const newMessage = Object.assign(Object.assign({}, oldMessage), message);
+                yield this.communityModel.findOneAndUpdate({ _id: new mongoose_2.Types.ObjectId(communityId), "threads._id": new mongoose_2.Types.ObjectId(threadId) }, { $pull: { "threads.$.messages": oldMessage } });
+                return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_2.Types.ObjectId(communityId), "threads._id": new mongoose_2.Types.ObjectId(threadId) }, { $push: { "threads.$.messages": newMessage } }, { new: true });
+            }
+            else {
+                throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
+            }
+        });
+    }
+    deleteMessage(req, communityId, threadId, messageId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(communityId, threadId, messageId);
+            const community = yield this.communityModel.findOne({ _id: new mongoose_2.Types.ObjectId(communityId) });
+            const resultMessage = community.threads.filter(p => p._id.equals(threadId))[0].messages.filter(p => p._id.equals(messageId))[0];
+            if (resultMessage.creator._id.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
+                const message = yield this.getMessageById(communityId, threadId, messageId);
+                return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_2.Types.ObjectId(communityId), "threads._id": new mongoose_2.Types.ObjectId(threadId) }, { $pull: { "threads.$.messages": message } }, { new: true });
+            }
+            else {
+                throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
+            }
+        });
+    }
+    existing(communityId, threadId, messageId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const community = yield this.communityModel.findOne({ _id: new mongoose_2.Types.ObjectId(communityId) });
+            if (!community) {
+                throw new validation_exception_1.ValidationException([`Community with id ${communityId} does not exist!`]);
+            }
+            if (threadId) {
+                if (!(community.threads.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(threadId))).length > 0)) {
+                    throw new validation_exception_1.ValidationException([`Thread with id ${threadId} doesn't exist in the community with id ${communityId}!`]);
+                }
+            }
+            if (messageId) {
+                if (!(community.threads.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(threadId)))[0].messages.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(messageId))).length > 0)) {
+                    throw new validation_exception_1.ValidationException([`Message with id ${messageId} doesn't exist in the thread with id ${threadId} in the community with id ${communityId}!`]);
+                }
+            }
+        });
+    }
+};
+MessagesService = tslib_1.__decorate([
+    (0, common_1.Injectable)(),
+    tslib_1.__param(0, (0, mongoose_1.InjectModel)(community_schema_1.Community.name)),
+    tslib_1.__param(1, (0, mongoose_1.InjectModel)(message_schema_1.Message.name)),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _a : Object, typeof (_b = typeof mongoose_2.Model !== "undefined" && mongoose_2.Model) === "function" ? _b : Object])
+], MessagesService);
+exports.MessagesService = MessagesService;
+
+
+/***/ }),
+
+/***/ "./apps/gessit-api/src/app/messages/update-message.dto.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UpdateMessageDto = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const class_validator_1 = __webpack_require__("class-validator");
+class UpdateMessageDto {
+}
+tslib_1.__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    tslib_1.__metadata("design:type", String)
+], UpdateMessageDto.prototype, "content", void 0);
+exports.UpdateMessageDto = UpdateMessageDto;
 
 
 /***/ }),
@@ -1448,13 +1817,15 @@ let ThreadsService = class ThreadsService {
     }
     getThreads(communityId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(communityId);
             return (yield this.communitiesService.getCommunityById(communityId)).threads;
         });
     }
     createThread(req, communityId, createThreadDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(communityId);
             if ((yield this.communitiesService.getCommunityById(communityId)).members.filter(p => p._id.equals(req.user.id)).length === 0) {
-                if ((yield this.communitiesService.getCommunityById(communityId)).owner._id.equals(req.user.id)) {
+                if ((yield this.communitiesService.getCommunityById(communityId)).owner._id.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
                     const newThread = new this.threadModel(Object.assign(Object.assign({}, createThreadDto), { _id: new mongoose_1.Types.ObjectId(), views: 0, creationDate: new Date(), creator: yield this.usersService.getUserById(req.user.id) }));
                     return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $push: { threads: newThread } });
                 }
@@ -1483,6 +1854,7 @@ let ThreadsService = class ThreadsService {
     }
     viewThread(communityId, threadId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(communityId, threadId);
             let community = yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId), "threads._id": new mongoose_1.Types.ObjectId(threadId) }, { $inc: { "threads.$.views": 1 } });
             return community.threads.filter(p => p._id.equals(new mongoose_1.Types.ObjectId(threadId)))[0];
         });
@@ -1754,7 +2126,7 @@ exports.UserSchema = mongoose_1.SchemaFactory.createForClass(User);
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -1802,11 +2174,6 @@ let UsersController = class UsersController {
     updateUser(req, id, updateUserDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return yield this.userService.updateUser(req, id, updateUserDto);
-        });
-    }
-    deleteUser(req, id) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.userService.deleteUser(req, id);
         });
     }
 };
@@ -1863,14 +2230,6 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [Object, String, typeof (_j = typeof update_user_dto_1.UpdateUserDto !== "undefined" && update_user_dto_1.UpdateUserDto) === "function" ? _j : Object]),
     tslib_1.__metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], UsersController.prototype, "updateUser", null);
-tslib_1.__decorate([
-    (0, common_1.Delete)(':id'),
-    tslib_1.__param(0, (0, common_1.Req)()),
-    tslib_1.__param(1, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
-    tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, String]),
-    tslib_1.__metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
-], UsersController.prototype, "deleteUser", null);
 UsersController = tslib_1.__decorate([
     (0, common_1.Controller)('user'),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _a : Object])
@@ -1889,6 +2248,7 @@ exports.UsersModule = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("@nestjs/mongoose");
+const communities_module_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.module.ts");
 const user_schema_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.schema.ts");
 const users_controller_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.controller.ts");
 const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.service.ts");
@@ -1896,7 +2256,7 @@ let UsersModule = class UsersModule {
 };
 UsersModule = tslib_1.__decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: user_schema_1.User.name, schema: user_schema_1.UserSchema }])],
+        imports: [mongoose_1.MongooseModule.forFeature([{ name: user_schema_1.User.name, schema: user_schema_1.UserSchema }]), (0, common_1.forwardRef)(() => communities_module_1.CommunitiesModule)],
         controllers: [users_controller_1.UsersController],
         providers: [users_service_1.UsersService],
         exports: [users_service_1.UsersService]
@@ -1911,7 +2271,7 @@ exports.UsersModule = UsersModule;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersService = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -1922,9 +2282,13 @@ const bcrypt = __webpack_require__("bcrypt");
 const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
 const user_schema_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.schema.ts");
 const mongoose_2 = __webpack_require__("@nestjs/mongoose");
+const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.service.ts");
+const community_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/community.schema.ts");
 let UsersService = class UsersService {
-    constructor(userModel) {
+    constructor(userModel, communityModel, communitiesService) {
         this.userModel = userModel;
+        this.communityModel = communityModel;
+        this.communitiesService = communitiesService;
     }
     getUserByUsername(username) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -2031,18 +2395,11 @@ let UsersService = class UsersService {
                     user.password = yield bcrypt.hashSync(user.password, 10);
                 }
                 user._id = new mongoose_1.Types.ObjectId(id);
+                const ownedCommunities = (yield this.communitiesService.getCommunities()).filter(p => p.owner._id.equals(user._id));
+                ownedCommunities.forEach((comm) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+                    yield this.communityModel.updateOne({ _id: new mongoose_1.Types.ObjectId(comm._id) }, { $set: { owner: Object.assign(Object.assign({}, (yield this.getUserById(id))), user) } });
+                }));
                 return this.userModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, user);
-            }
-            else {
-                throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
-            }
-        });
-    }
-    deleteUser(req, id) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            yield this.existing(id);
-            if (req.user.id.equals(new mongoose_1.Types.ObjectId(id)) || req.user.roles.includes(role_enum_1.Role.Admin)) {
-                return this.userModel.findOneAndDelete({ _id: new mongoose_1.Types.ObjectId(id) });
             }
             else {
                 throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
@@ -2061,7 +2418,9 @@ let UsersService = class UsersService {
 UsersService = tslib_1.__decorate([
     (0, common_1.Injectable)(),
     tslib_1.__param(0, (0, mongoose_2.InjectModel)(user_schema_1.User.name)),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof mongoose_1.Model !== "undefined" && mongoose_1.Model) === "function" ? _a : Object])
+    tslib_1.__param(1, (0, mongoose_2.InjectModel)(community_schema_1.Community.name)),
+    tslib_1.__param(2, (0, common_1.Inject)((0, common_1.forwardRef)(() => communities_service_1.CommunitiesService))),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof mongoose_1.Model !== "undefined" && mongoose_1.Model) === "function" ? _a : Object, typeof (_b = typeof mongoose_1.Model !== "undefined" && mongoose_1.Model) === "function" ? _b : Object, typeof (_c = typeof communities_service_1.CommunitiesService !== "undefined" && communities_service_1.CommunitiesService) === "function" ? _c : Object])
 ], UsersService);
 exports.UsersService = UsersService;
 
