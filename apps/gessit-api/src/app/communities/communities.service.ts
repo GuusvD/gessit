@@ -14,8 +14,9 @@ import { ObjectIdPipe } from "../shared/pipes/object.id.pipe";
 export class CommunitiesService {
     constructor(@InjectModel(Community.name) private communityModel: Model<CommunityDocument>, private readonly themesService : ThemesService, private readonly usersService : UsersService) {}
 
-    async getCommunityById(id: Types.ObjectId): Promise<Community> {
-        return this.communityModel.findOne({ _id: id });
+    async getCommunityById(id: string): Promise<Community> {
+        await this.existing(id);
+        return this.communityModel.findOne({ _id: new Types.ObjectId(id) });
     }
 
     async getCommunities(): Promise<Community[]> {
@@ -44,11 +45,11 @@ export class CommunitiesService {
     }
 
     async joinCommunity(req, id: string): Promise<Community> {
-        if ((await this.getCommunityById(new Types.ObjectId(id))).owner._id.equals(req.user.id)) {
+        if ((await this.getCommunityById(id)).owner._id.equals(req.user.id)) {
             throw new ValidationException(['Can not join your own created community!']);
         }
 
-        if ((await this.getCommunityById(new Types.ObjectId(id))).members.filter(p => p._id.equals(req.user.id)).length > 0) {
+        if ((await this.getCommunityById(id)).members.filter(p => p._id.equals(req.user.id)).length > 0) {
             throw new ValidationException(['Already part of this community!']);
         }
 
@@ -56,11 +57,11 @@ export class CommunitiesService {
     }
 
     async leaveCommunity(req, id: string): Promise<Community> {
-        if ((await this.getCommunityById(new Types.ObjectId(id))).owner._id.equals(req.user.id)) {
+        if ((await this.getCommunityById(id)).owner._id.equals(req.user.id)) {
             throw new ValidationException(['Can not leave your own created community!']);
         }
 
-        if ((await this.getCommunityById(new Types.ObjectId(id))).members.filter(p => p._id.equals(req.user.id)).length === 0) {
+        if ((await this.getCommunityById(id)).members.filter(p => p._id.equals(req.user.id)).length === 0) {
             throw new ValidationException(['Not part of this community!']);
         }
 
@@ -73,6 +74,8 @@ export class CommunitiesService {
                 throw new ValidationException(['Themes attribute data must be of type ObjectId!'])
             }
         }
+
+        await this.existing(id);
 
         let updatedObject = {};
 
@@ -93,11 +96,20 @@ export class CommunitiesService {
         return this.communityModel.findOneAndUpdate({ _id: new Types.ObjectId(id) }, updatedObject);
     }
 
-    async deleteCommunity(id: Types.ObjectId): Promise<Community> {
-        return this.communityModel.findOneAndDelete({ _id: id });
+    async deleteCommunity(id: string): Promise<Community> {
+        await this.existing(id);
+        return this.communityModel.findOneAndDelete({ _id: new Types.ObjectId(id) });
     }
 
     async areValidObjectIds(value: string[]) {
         return value.every((id) => ObjectIdPipe.isValidObjectId(id));
+    }
+
+    async existing(communityId: string): Promise<void> {
+        const community = await this.communityModel.findOne({ _id: new Types.ObjectId(communityId) });
+
+        if (!community) {
+            throw new ValidationException([`Community with id ${communityId} does not exist!`])
+        }
     }
 }

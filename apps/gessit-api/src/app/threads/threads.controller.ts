@@ -5,6 +5,7 @@ import { Thread } from './thread.schema';
 import { UpdateThreadDto } from './update-thread.dto';
 import { CreateThreadDto } from './create-thread.dto';
 import { Public } from '../app.module';
+import { ObjectIdPipe } from '../shared/pipes/object.id.pipe';
 
 @Controller('community')
 export class ThreadsController {
@@ -12,28 +13,28 @@ export class ThreadsController {
 
   @Public()
   @Get(':communityId/thread')
-  async getThreads(@Param('communityId') communityId: string): Promise<Thread[]> {
-    return await this.threadService.getThreads(new Types.ObjectId(communityId));
+  async getThreads(@Param('communityId', ObjectIdPipe) communityId: string): Promise<Thread[]> {
+    return await this.threadService.getThreads(communityId);
   }
 
   @Public()
   @Get(':communityId/thread/:threadId')
-  async getThreadById(@Param('communityId') communityId: string, @Param('threadId') threadId: string): Promise<Thread> {
-    return await this.threadService.getThreadById(new Types.ObjectId(communityId), new Types.ObjectId(threadId));
+  async getThreadById(@Param('communityId', ObjectIdPipe) communityId: string, @Param('threadId', ObjectIdPipe) threadId: string): Promise<Thread> {
+    return await this.threadService.getThreadById(communityId, threadId);
   }
 
   @Post(':communityId/thread')
-  async createThread(@Req() req, @Body() createThreadDto: CreateThreadDto, @Param('communityId') communityId: string): Promise<Thread> {
-    return await this.threadService.createThread(req, new Types.ObjectId(communityId), createThreadDto);
+  async createThread(@Req() req, @Body() createThreadDto: CreateThreadDto, @Param('communityId', ObjectIdPipe) communityId: string): Promise<Thread> {
+    return await this.threadService.createThread(req, communityId, createThreadDto);
   }
 
   @Patch(':communityId/thread/:threadId')
-  async updateThread(@Req() req, @Param('communityId') communityId: string, @Param('threadId') threadId: string, @Body() updateThreadDto: UpdateThreadDto): Promise<Thread> {
-    return await this.threadService.updateThread(req, new Types.ObjectId(communityId), new Types.ObjectId(threadId), updateThreadDto);
+  async updateThread(@Req() req, @Param('communityId', ObjectIdPipe) communityId: string, @Param('threadId', ObjectIdPipe) threadId: string, @Body() updateThreadDto: UpdateThreadDto): Promise<Thread> {
+    return await this.threadService.updateThread(req, communityId, threadId, updateThreadDto);
   }
 
   @Delete(':communityId/thread/:threadId')
-  async deleteThread(@Req() req, @Param('communityId') communityId: string, @Param('threadId') threadId: string): Promise<Thread> {
-    return await this.threadService.deleteThread(req, new Types.ObjectId(communityId), new Types.ObjectId(threadId));
+  async deleteThread(@Req() req, @Param('communityId', ObjectIdPipe) communityId: string, @Param('threadId', ObjectIdPipe) threadId: string): Promise<Thread> {
+    return await this.threadService.deleteThread(req, communityId, threadId);
   }
 }

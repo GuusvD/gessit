@@ -457,7 +457,7 @@ const common_1 = __webpack_require__("@nestjs/common");
 const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.service.ts");
 const create_community_dto_1 = __webpack_require__("./apps/gessit-api/src/app/communities/create-community.dto.ts");
 const update_community_dto_1 = __webpack_require__("./apps/gessit-api/src/app/communities/update-community.dto.ts");
-const mongoose_1 = __webpack_require__("mongoose");
+const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
 let CommunitiesController = class CommunitiesController {
     constructor(communityService) {
         this.communityService = communityService;
@@ -469,7 +469,7 @@ let CommunitiesController = class CommunitiesController {
     }
     getCommunityById(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.communityService.getCommunityById(new mongoose_1.Types.ObjectId(id));
+            return yield this.communityService.getCommunityById(id);
         });
     }
     createCommunity(req, createCommunityDto) {
@@ -494,7 +494,7 @@ let CommunitiesController = class CommunitiesController {
     }
     deleteCommunity(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.communityService.deleteCommunity(new mongoose_1.Types.ObjectId(id));
+            return yield this.communityService.deleteCommunity(id);
         });
     }
 };
@@ -506,7 +506,7 @@ tslib_1.__decorate([
 ], CommunitiesController.prototype, "getCommunities", null);
 tslib_1.__decorate([
     (0, common_1.Get)(':id'),
-    tslib_1.__param(0, (0, common_1.Param)('id')),
+    tslib_1.__param(0, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [String]),
     tslib_1.__metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
@@ -522,7 +522,7 @@ tslib_1.__decorate([
 tslib_1.__decorate([
     (0, common_1.Post)(':id/join'),
     tslib_1.__param(0, (0, common_1.Req)()),
-    tslib_1.__param(1, (0, common_1.Param)('id')),
+    tslib_1.__param(1, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [Object, String]),
     tslib_1.__metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
@@ -530,14 +530,14 @@ tslib_1.__decorate([
 tslib_1.__decorate([
     (0, common_1.Post)(':id/leave'),
     tslib_1.__param(0, (0, common_1.Req)()),
-    tslib_1.__param(1, (0, common_1.Param)('id')),
+    tslib_1.__param(1, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [Object, String]),
     tslib_1.__metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], CommunitiesController.prototype, "leaveCommunity", null);
 tslib_1.__decorate([
     (0, common_1.Patch)(':id'),
-    tslib_1.__param(0, (0, common_1.Param)('id')),
+    tslib_1.__param(0, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [String, typeof (_h = typeof update_community_dto_1.UpdateCommunityDto !== "undefined" && update_community_dto_1.UpdateCommunityDto) === "function" ? _h : Object]),
@@ -545,7 +545,7 @@ tslib_1.__decorate([
 ], CommunitiesController.prototype, "updateCommunity", null);
 tslib_1.__decorate([
     (0, common_1.Delete)(':id'),
-    tslib_1.__param(0, (0, common_1.Param)('id')),
+    tslib_1.__param(0, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [String]),
     tslib_1.__metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
@@ -612,7 +612,8 @@ let CommunitiesService = class CommunitiesService {
     }
     getCommunityById(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.communityModel.findOne({ _id: id });
+            yield this.existing(id);
+            return this.communityModel.findOne({ _id: new mongoose_1.Types.ObjectId(id) });
         });
     }
     getCommunities() {
@@ -634,10 +635,10 @@ let CommunitiesService = class CommunitiesService {
     }
     joinCommunity(req, id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if ((yield this.getCommunityById(new mongoose_1.Types.ObjectId(id))).owner._id.equals(req.user.id)) {
+            if ((yield this.getCommunityById(id)).owner._id.equals(req.user.id)) {
                 throw new validation_exception_1.ValidationException(['Can not join your own created community!']);
             }
-            if ((yield this.getCommunityById(new mongoose_1.Types.ObjectId(id))).members.filter(p => p._id.equals(req.user.id)).length > 0) {
+            if ((yield this.getCommunityById(id)).members.filter(p => p._id.equals(req.user.id)).length > 0) {
                 throw new validation_exception_1.ValidationException(['Already part of this community!']);
             }
             return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $push: { members: (yield this.usersService.getUserById(req.user.id))._id } });
@@ -645,10 +646,10 @@ let CommunitiesService = class CommunitiesService {
     }
     leaveCommunity(req, id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if ((yield this.getCommunityById(new mongoose_1.Types.ObjectId(id))).owner._id.equals(req.user.id)) {
+            if ((yield this.getCommunityById(id)).owner._id.equals(req.user.id)) {
                 throw new validation_exception_1.ValidationException(['Can not leave your own created community!']);
             }
-            if ((yield this.getCommunityById(new mongoose_1.Types.ObjectId(id))).members.filter(p => p._id.equals(req.user.id)).length === 0) {
+            if ((yield this.getCommunityById(id)).members.filter(p => p._id.equals(req.user.id)).length === 0) {
                 throw new validation_exception_1.ValidationException(['Not part of this community!']);
             }
             return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $pull: { members: (yield this.usersService.getUserById(req.user.id))._id } });
@@ -661,6 +662,7 @@ let CommunitiesService = class CommunitiesService {
                     throw new validation_exception_1.ValidationException(['Themes attribute data must be of type ObjectId!']);
                 }
             }
+            yield this.existing(id);
             let updatedObject = {};
             if (updateCommunityDto.themes) {
                 const themes = [];
@@ -676,12 +678,21 @@ let CommunitiesService = class CommunitiesService {
     }
     deleteCommunity(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.communityModel.findOneAndDelete({ _id: id });
+            yield this.existing(id);
+            return this.communityModel.findOneAndDelete({ _id: new mongoose_1.Types.ObjectId(id) });
         });
     }
     areValidObjectIds(value) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return value.every((id) => object_id_pipe_1.ObjectIdPipe.isValidObjectId(id));
+        });
+    }
+    existing(communityId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const community = yield this.communityModel.findOne({ _id: new mongoose_1.Types.ObjectId(communityId) });
+            if (!community) {
+                throw new validation_exception_1.ValidationException([`Community with id ${communityId} does not exist!`]);
+            }
         });
     }
 };
@@ -1279,45 +1290,45 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ThreadsController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const mongoose_1 = __webpack_require__("mongoose");
 const threads_service_1 = __webpack_require__("./apps/gessit-api/src/app/threads/threads.service.ts");
 const update_thread_dto_1 = __webpack_require__("./apps/gessit-api/src/app/threads/update-thread.dto.ts");
 const create_thread_dto_1 = __webpack_require__("./apps/gessit-api/src/app/threads/create-thread.dto.ts");
 const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
+const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
 let ThreadsController = class ThreadsController {
     constructor(threadService) {
         this.threadService = threadService;
     }
     getThreads(communityId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.threadService.getThreads(new mongoose_1.Types.ObjectId(communityId));
+            return yield this.threadService.getThreads(communityId);
         });
     }
     getThreadById(communityId, threadId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.threadService.getThreadById(new mongoose_1.Types.ObjectId(communityId), new mongoose_1.Types.ObjectId(threadId));
+            return yield this.threadService.getThreadById(communityId, threadId);
         });
     }
     createThread(req, createThreadDto, communityId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.threadService.createThread(req, new mongoose_1.Types.ObjectId(communityId), createThreadDto);
+            return yield this.threadService.createThread(req, communityId, createThreadDto);
         });
     }
     updateThread(req, communityId, threadId, updateThreadDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.threadService.updateThread(req, new mongoose_1.Types.ObjectId(communityId), new mongoose_1.Types.ObjectId(threadId), updateThreadDto);
+            return yield this.threadService.updateThread(req, communityId, threadId, updateThreadDto);
         });
     }
     deleteThread(req, communityId, threadId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.threadService.deleteThread(req, new mongoose_1.Types.ObjectId(communityId), new mongoose_1.Types.ObjectId(threadId));
+            return yield this.threadService.deleteThread(req, communityId, threadId);
         });
     }
 };
 tslib_1.__decorate([
     (0, app_module_1.Public)(),
     (0, common_1.Get)(':communityId/thread'),
-    tslib_1.__param(0, (0, common_1.Param)('communityId')),
+    tslib_1.__param(0, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [String]),
     tslib_1.__metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
@@ -1325,8 +1336,8 @@ tslib_1.__decorate([
 tslib_1.__decorate([
     (0, app_module_1.Public)(),
     (0, common_1.Get)(':communityId/thread/:threadId'),
-    tslib_1.__param(0, (0, common_1.Param)('communityId')),
-    tslib_1.__param(1, (0, common_1.Param)('threadId')),
+    tslib_1.__param(0, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(1, (0, common_1.Param)('threadId', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [String, String]),
     tslib_1.__metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
@@ -1335,7 +1346,7 @@ tslib_1.__decorate([
     (0, common_1.Post)(':communityId/thread'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
-    tslib_1.__param(2, (0, common_1.Param)('communityId')),
+    tslib_1.__param(2, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [Object, typeof (_d = typeof create_thread_dto_1.CreateThreadDto !== "undefined" && create_thread_dto_1.CreateThreadDto) === "function" ? _d : Object, String]),
     tslib_1.__metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
@@ -1343,8 +1354,8 @@ tslib_1.__decorate([
 tslib_1.__decorate([
     (0, common_1.Patch)(':communityId/thread/:threadId'),
     tslib_1.__param(0, (0, common_1.Req)()),
-    tslib_1.__param(1, (0, common_1.Param)('communityId')),
-    tslib_1.__param(2, (0, common_1.Param)('threadId')),
+    tslib_1.__param(1, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(2, (0, common_1.Param)('threadId', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__param(3, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [Object, String, String, typeof (_f = typeof update_thread_dto_1.UpdateThreadDto !== "undefined" && update_thread_dto_1.UpdateThreadDto) === "function" ? _f : Object]),
@@ -1353,8 +1364,8 @@ tslib_1.__decorate([
 tslib_1.__decorate([
     (0, common_1.Delete)(':communityId/thread/:threadId'),
     tslib_1.__param(0, (0, common_1.Req)()),
-    tslib_1.__param(1, (0, common_1.Param)('communityId')),
-    tslib_1.__param(2, (0, common_1.Param)('threadId')),
+    tslib_1.__param(1, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(2, (0, common_1.Param)('threadId', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [Object, String, String]),
     tslib_1.__metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
@@ -1411,6 +1422,7 @@ const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/use
 const mongoose_2 = __webpack_require__("@nestjs/mongoose");
 const community_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/community.schema.ts");
 const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.service.ts");
+const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
 let ThreadsService = class ThreadsService {
     constructor(communityModel, threadModel, usersService, communitiesService) {
         this.communityModel = communityModel;
@@ -1420,7 +1432,8 @@ let ThreadsService = class ThreadsService {
     }
     getThreadById(communityId, threadId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return (yield this.communitiesService.getCommunityById(communityId)).threads.filter(p => p._id.equals(threadId))[0];
+            yield this.existing(communityId, threadId);
+            return (yield this.communitiesService.getCommunityById(communityId)).threads.filter(p => p._id.equals(new mongoose_1.Types.ObjectId(threadId)))[0];
         });
     }
     getThreads(communityId) {
@@ -1433,7 +1446,7 @@ let ThreadsService = class ThreadsService {
             if ((yield this.communitiesService.getCommunityById(communityId)).members.filter(p => p._id.equals(req.user.id)).length === 0) {
                 if ((yield this.communitiesService.getCommunityById(communityId)).owner._id.equals(req.user.id)) {
                     const newThread = new this.threadModel(Object.assign(Object.assign({}, createThreadDto), { _id: new mongoose_1.Types.ObjectId(), views: 0, likes: 0, dislikes: 0, creationDate: new Date(), creator: yield this.usersService.getUserById(req.user.id) }));
-                    return yield this.communityModel.findOneAndUpdate({ _id: communityId }, { $push: { threads: newThread } });
+                    return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $push: { threads: newThread } });
                 }
                 else {
                     throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
@@ -1441,17 +1454,18 @@ let ThreadsService = class ThreadsService {
             }
             else {
                 const newThread = new this.threadModel(Object.assign(Object.assign({}, createThreadDto), { _id: new mongoose_1.Types.ObjectId(), views: 0, likes: 0, dislikes: 0, creationDate: new Date(), creator: yield this.usersService.getUserById(req.user.id) }));
-                return yield this.communityModel.findOneAndUpdate({ _id: communityId }, { $push: { threads: newThread } });
+                return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $push: { threads: newThread } });
             }
         });
     }
     updateThread(req, communityId, threadId, thread) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(communityId, threadId);
             if ((yield this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id)) {
                 const oldThread = yield this.getThreadById(communityId, threadId);
                 const newThread = Object.assign(Object.assign({}, oldThread), thread);
-                yield this.communityModel.findOneAndUpdate({ _id: communityId }, { $pull: { threads: oldThread } });
-                return yield this.communityModel.findOneAndUpdate({ _id: communityId }, { $push: { threads: newThread } });
+                yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $pull: { threads: oldThread } });
+                return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $push: { threads: newThread } });
             }
             else {
                 throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
@@ -1460,12 +1474,26 @@ let ThreadsService = class ThreadsService {
     }
     deleteThread(req, communityId, threadId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(communityId, threadId);
             if ((yield this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id)) {
                 const thread = yield this.getThreadById(communityId, threadId);
-                return yield this.communityModel.findOneAndUpdate({ _id: communityId }, { $pull: { threads: thread } });
+                return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $pull: { threads: thread } });
             }
             else {
                 throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
+            }
+        });
+    }
+    existing(communityId, threadId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const community = yield this.communityModel.findOne({ _id: new mongoose_1.Types.ObjectId(communityId) });
+            if (!community) {
+                throw new validation_exception_1.ValidationException([`Community with id ${communityId} doesn't exist!`]);
+            }
+            if (threadId) {
+                if (!(community.threads.filter(thread => thread._id.equals(new mongoose_1.Types.ObjectId(threadId))).length > 0)) {
+                    throw new validation_exception_1.ValidationException([`Thread with id ${threadId} doesn't exist in the community with id ${communityId}!`]);
+                }
             }
         });
     }
