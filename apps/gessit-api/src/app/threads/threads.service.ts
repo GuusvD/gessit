@@ -7,6 +7,7 @@ import { Community, CommunityDocument } from "../communities/community.schema";
 import { CommunitiesService } from "../communities/communities.service";
 import { CreateThreadDto } from "./create-thread.dto";
 import { ValidationException } from "../shared/filters/validation.exception";
+import { Role } from "../users/role.enum";
 
 @Injectable()
 export class ThreadsService {
@@ -56,7 +57,7 @@ export class ThreadsService {
     async updateThread(req, communityId: string, threadId: string, thread: Partial<Thread>): Promise<Thread> {
         await this.existing(communityId, threadId);
 
-        if ((await this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id)) {
+        if ((await this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id) || req.user.roles.includes(Role.Admin)) {
             const oldThread = await this.getThreadById(communityId, threadId);
             const newThread = { ...oldThread, ...thread };
     
@@ -70,7 +71,7 @@ export class ThreadsService {
     async deleteThread(req, communityId: string, threadId: string): Promise<Thread> {
         await this.existing(communityId, threadId);
 
-        if ((await this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id)) {
+        if ((await this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id) || req.user.roles.includes(Role.Admin)) {
             const thread = await this.getThreadById(communityId, threadId);
             return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$pull: {threads: thread}});
         } else {

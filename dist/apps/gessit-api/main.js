@@ -98,8 +98,6 @@ exports.AuthController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
-const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
-const roles_decorator_1 = __webpack_require__("./apps/gessit-api/src/app/auth/roles.decorator.ts");
 const auth_service_1 = __webpack_require__("./apps/gessit-api/src/app/auth/auth.service.ts");
 const local_auth_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/local-auth.guard.ts");
 const create_user_dto_1 = __webpack_require__("./apps/gessit-api/src/app/users/create-user.dto.ts");
@@ -139,7 +137,6 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", Promise)
 ], AuthController.prototype, "register", null);
 tslib_1.__decorate([
-    (0, roles_decorator_1.Roles)(role_enum_1.Role.User),
     (0, common_1.Get)('profile'),
     tslib_1.__param(0, (0, common_1.Request)()),
     tslib_1.__metadata("design:type", Function),
@@ -1016,7 +1013,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ThemesController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
+const roles_decorator_1 = __webpack_require__("./apps/gessit-api/src/app/auth/roles.decorator.ts");
 const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
+const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
 const create_theme_dto_1 = __webpack_require__("./apps/gessit-api/src/app/themes/create-theme.dto.ts");
 const themes_service_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.service.ts");
 let ThemesController = class ThemesController {
@@ -1058,6 +1057,7 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
 ], ThemesController.prototype, "getThemeById", null);
 tslib_1.__decorate([
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
     (0, common_1.Post)(),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
@@ -1065,6 +1065,7 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], ThemesController.prototype, "createTheme", null);
 tslib_1.__decorate([
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
     (0, common_1.Delete)(':id'),
     tslib_1.__param(0, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
@@ -1406,6 +1407,7 @@ const mongoose_2 = __webpack_require__("@nestjs/mongoose");
 const community_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/community.schema.ts");
 const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.service.ts");
 const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
+const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
 let ThreadsService = class ThreadsService {
     constructor(communityModel, threadModel, usersService, communitiesService) {
         this.communityModel = communityModel;
@@ -1444,7 +1446,7 @@ let ThreadsService = class ThreadsService {
     updateThread(req, communityId, threadId, thread) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(communityId, threadId);
-            if ((yield this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id)) {
+            if ((yield this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
                 const oldThread = yield this.getThreadById(communityId, threadId);
                 const newThread = Object.assign(Object.assign({}, oldThread), thread);
                 yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $pull: { threads: oldThread } });
@@ -1458,7 +1460,7 @@ let ThreadsService = class ThreadsService {
     deleteThread(req, communityId, threadId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(communityId, threadId);
-            if ((yield this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id)) {
+            if ((yield this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
                 const thread = yield this.getThreadById(communityId, threadId);
                 return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $pull: { threads: thread } });
             }
