@@ -14,9 +14,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { RolesGuard } from './auth/roles.guard';
 import { ThemesModule } from './themes/themes.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://127.0.0.1:27017/gessit'), CommunitiesModule, ThreadsModule, AuthModule, UsersModule, ThemesModule],
+  imports: [MongooseModule.forRoot('mongodb://127.0.0.1:27017/gessit'), CommunitiesModule, ThreadsModule, AuthModule, UsersModule, ThemesModule, MessagesModule],
   controllers: [AppController],
   providers: [
     {
