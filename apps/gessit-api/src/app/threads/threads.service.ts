@@ -19,10 +19,13 @@ export class ThreadsService {
     }
 
     async getThreads(communityId: string): Promise<Thread[]> {
+        await this.existing(communityId);
         return (await this.communitiesService.getCommunityById(communityId)).threads;
     }
 
     async createThread(req, communityId: string, createThreadDto: CreateThreadDto): Promise<Thread> {
+        await this.existing(communityId);
+
         if ((await this.communitiesService.getCommunityById(communityId)).members.filter(p => p._id.equals(req.user.id)).length === 0) {
             if ((await this.communitiesService.getCommunityById(communityId)).owner._id.equals(req.user.id)) {
                 const newThread = new this.threadModel({
@@ -65,6 +68,8 @@ export class ThreadsService {
     }
 
     async viewThread(communityId: string, threadId: string): Promise<Thread> {
+        await this.existing(communityId, threadId);
+
         let community = await this.communityModel.findOneAndUpdate({_id : new Types.ObjectId(communityId), "threads._id" : new Types.ObjectId(threadId)}, {$inc: {"threads.$.views" : 1}});
         return community.threads.filter(p => p._id.equals(new Types.ObjectId(threadId)))[0];
     }

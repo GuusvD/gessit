@@ -1788,11 +1788,13 @@ let ThreadsService = class ThreadsService {
     }
     getThreads(communityId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(communityId);
             return (yield this.communitiesService.getCommunityById(communityId)).threads;
         });
     }
     createThread(req, communityId, createThreadDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(communityId);
             if ((yield this.communitiesService.getCommunityById(communityId)).members.filter(p => p._id.equals(req.user.id)).length === 0) {
                 if ((yield this.communitiesService.getCommunityById(communityId)).owner._id.equals(req.user.id)) {
                     const newThread = new this.threadModel(Object.assign(Object.assign({}, createThreadDto), { _id: new mongoose_1.Types.ObjectId(), views: 0, creationDate: new Date(), creator: yield this.usersService.getUserById(req.user.id) }));
@@ -1823,6 +1825,7 @@ let ThreadsService = class ThreadsService {
     }
     viewThread(communityId, threadId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(communityId, threadId);
             let community = yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId), "threads._id": new mongoose_1.Types.ObjectId(threadId) }, { $inc: { "threads.$.views": 1 } });
             return community.threads.filter(p => p._id.equals(new mongoose_1.Types.ObjectId(threadId)))[0];
         });
