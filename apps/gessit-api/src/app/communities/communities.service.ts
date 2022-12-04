@@ -40,8 +40,6 @@ export class CommunitiesService {
             themes: themesArray,
             owner: await this.usersService.getUserById(req.user.id)
         });
-
-        console.log(mergedCommunity)
         
         return this.communityRepository.create(mergedCommunity);
     }

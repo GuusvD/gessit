@@ -1,40 +1,48 @@
 import { Injectable } from "@nestjs/common";
-import { Types } from "mongoose";
-import { ThreadsRepository } from "./threads.repository";
-import { Thread } from "./thread.schema";
+import { Model, Types } from "mongoose";
+import { Thread, ThreadDocument } from "./thread.schema";
+import { UsersService } from "../users/users.service";
+import { InjectModel } from "@nestjs/mongoose";
+import { Community, CommunityDocument } from "../communities/community.schema";
+import { CommunitiesService } from "../communities/communities.service";
+import { CreateThreadDto } from "./create-thread.dto";
 
 @Injectable()
 export class ThreadsService {
-    constructor(private readonly threadRepository : ThreadsRepository) {}
+    constructor(@InjectModel(Community.name) private communityModel: Model<CommunityDocument>, @InjectModel(Thread.name) private threadModel: Model<ThreadDocument>, private readonly usersService: UsersService, private readonly communitiesService: CommunitiesService) {}
 
-    async getThreadById(id: Types.ObjectId): Promise<Thread> {
-        return this.threadRepository.findOne({ _id: id });
+    async getThreadById(communityId: Types.ObjectId, threadId: Types.ObjectId): Promise<Thread> {
+        return (await this.communitiesService.getCommunityById(communityId)).threads.filter(p => p._id.equals(threadId))[0];
     }
 
-    async getThreads(): Promise<Thread[]> {
-        return this.threadRepository.find({});
+    async getThreads(communityId: Types.ObjectId): Promise<Thread[]> {
+        return (await this.communitiesService.getCommunityById(communityId)).threads;
     }
 
-    async createThread(communityId: string, title: string, content: string, image: string): Promise<Thread> {
-        return this.threadRepository.create({
+    async createThread(req, communityId: Types.ObjectId, createThreadDto: CreateThreadDto): Promise<Thread> {
+        const newThread = new this.threadModel({
+            ...createThreadDto,
             _id: new Types.ObjectId(),
-            communityId,
-            title,
-            content,
             views: 0,
             likes: 0,
             dislikes: 0,
             creationDate: new Date(),
-            image 
+            creator: await this.usersService.getUserById(req.user.id)
         });
+
+        return await this.communityModel.findOneAndUpdate({_id: communityId}, {$push: {threads: newThread}});
     }
 
-    async updateThread(id: string, thread: Partial<Thread>): Promise<Thread> {
-        thread._id = new Types.ObjectId(thread._id);
-        return this.threadRepository.findOneAndUpdate({ _id: new Types.ObjectId(id) }, thread);
+    async updateThread(communityId: Types.ObjectId, threadId: Types.ObjectId, thread: Partial<Thread>): Promise<Thread> {
+        const oldThread = (await this.communitiesService.getCommunityById(communityId)).threads.filter(p => p._id.equals(threadId))[0];
+        const newThread = { ...oldThread, ...thread };
+
+        await this.communityModel.findOneAndUpdate({_id: communityId}, {$pull: {threads: oldThread}});
+        return await this.communityModel.findOneAndUpdate({_id: communityId}, {$push: {threads: newThread}});
     }
 
-    async deleteThread(id: Types.ObjectId): Promise<Thread> {
-        return this.threadRepository.findOneAndDelete({ _id: id });
+    async deleteThread(communityId: Types.ObjectId, threadId: Types.ObjectId): Promise<Thread> {
+        const thread = (await this.communitiesService.getCommunityById(communityId)).threads.filter(p => p._id.equals(threadId))[0];
+        return await this.communityModel.findOneAndUpdate({_id: communityId}, {$pull: {threads: thread}});
     }
 }

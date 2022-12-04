@@ -10,7 +10,8 @@ import { UsersModule } from "../users/users.module";
 @Module({
     imports: [MongooseModule.forFeature([{ name: Community.name, schema: CommunitySchema }]), ThemesModule, UsersModule],
     controllers: [CommunitiesController],
-    providers: [CommunitiesService, CommunitiesRepository]
+    providers: [CommunitiesService, CommunitiesRepository],
+    exports: [MongooseModule, CommunitiesService]
 })
 
 export class CommunitiesModule {}

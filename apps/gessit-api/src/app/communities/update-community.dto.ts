@@ -3,6 +3,7 @@ import {
     IsBoolean,
     IsOptional
 } from 'class-validator';
+import { Thread } from '../threads/thread.schema';
 
 export class UpdateCommunityDto {
     @IsString()
@@ -22,5 +23,8 @@ export class UpdateCommunityDto {
     isOpen: boolean;
 
     @IsOptional()
-    themes: string[]
+    themes: string[];
+
+    @IsOptional()
+    threads: Thread[];
 }
