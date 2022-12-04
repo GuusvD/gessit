@@ -667,7 +667,7 @@ let CommunitiesService = class CommunitiesService {
             if (updateCommunityDto.themes) {
                 const themes = [];
                 for (const theme of updateCommunityDto.themes) {
-                    themes.push(yield this.themesService.getThemeById(new mongoose_1.Types.ObjectId(theme)));
+                    themes.push(yield this.themesService.getThemeById(theme));
                 }
                 delete updateCommunityDto.themes;
                 updatedObject = { themes };
@@ -996,16 +996,14 @@ exports.ThemeSchema = mongoose_1.SchemaFactory.createForClass(Theme);
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g, _h;
+var _a, _b, _c, _d, _e, _f;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ThemesController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const mongoose_1 = __webpack_require__("mongoose");
 const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
 const create_theme_dto_1 = __webpack_require__("./apps/gessit-api/src/app/themes/create-theme.dto.ts");
 const themes_service_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.service.ts");
-const update_theme_dto_1 = __webpack_require__("./apps/gessit-api/src/app/themes/update-theme.dto.ts");
 let ThemesController = class ThemesController {
     constructor(themeService) {
         this.themeService = themeService;
@@ -1017,7 +1015,7 @@ let ThemesController = class ThemesController {
     }
     getThemeById(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.themeService.getThemeById(new mongoose_1.Types.ObjectId(id));
+            return yield this.themeService.getThemeById(id);
         });
     }
     createTheme(createThemeDto) {
@@ -1025,14 +1023,9 @@ let ThemesController = class ThemesController {
             return yield this.themeService.createTheme(createThemeDto.name);
         });
     }
-    updateTheme(id, updateThemeDto) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.themeService.updateTheme(id, updateThemeDto);
-        });
-    }
     deleteTheme(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.themeService.deleteTheme(new mongoose_1.Types.ObjectId(id));
+            return yield this.themeService.deleteTheme(id);
         });
     }
 };
@@ -1057,19 +1050,11 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], ThemesController.prototype, "createTheme", null);
 tslib_1.__decorate([
-    (0, common_1.Patch)(':id'),
-    tslib_1.__param(0, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
-    tslib_1.__param(1, (0, common_1.Body)()),
-    tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [String, typeof (_f = typeof update_theme_dto_1.UpdateThemeDto !== "undefined" && update_theme_dto_1.UpdateThemeDto) === "function" ? _f : Object]),
-    tslib_1.__metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
-], ThemesController.prototype, "updateTheme", null);
-tslib_1.__decorate([
     (0, common_1.Delete)(':id'),
     tslib_1.__param(0, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [String]),
-    tslib_1.__metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
+    tslib_1.__metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
 ], ThemesController.prototype, "deleteTheme", null);
 ThemesController = tslib_1.__decorate([
     (0, common_1.Controller)('theme'),
@@ -1147,15 +1132,6 @@ let ThemesService = class ThemesService {
             return newTheme.save();
         });
     }
-    updateTheme(id, theme) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            yield this.existing(id);
-            if ((yield this.getThemes()).filter(p => p.name === theme.name).length > 0) {
-                throw new validation_exception_1.ValidationException(['A Theme with this name already exists!']);
-            }
-            return this.themeModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, theme);
-        });
-    }
     deleteTheme(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(id);
@@ -1177,26 +1153,6 @@ ThemesService = tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof mongoose_1.Model !== "undefined" && mongoose_1.Model) === "function" ? _a : Object])
 ], ThemesService);
 exports.ThemesService = ThemesService;
-
-
-/***/ }),
-
-/***/ "./apps/gessit-api/src/app/themes/update-theme.dto.ts":
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UpdateThemeDto = void 0;
-const tslib_1 = __webpack_require__("tslib");
-const class_validator_1 = __webpack_require__("class-validator");
-class UpdateThemeDto {
-}
-tslib_1.__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    tslib_1.__metadata("design:type", String)
-], UpdateThemeDto.prototype, "name", void 0);
-exports.UpdateThemeDto = UpdateThemeDto;
 
 
 /***/ }),

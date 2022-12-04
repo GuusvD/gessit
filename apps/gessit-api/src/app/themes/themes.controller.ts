@@ -17,7 +17,7 @@ export class ThemesController {
 
   @Get(':id')
   async getThemeById(@Param('id', ObjectIdPipe) id: string): Promise<Theme> {
-    return await this.themeService.getThemeById(new Types.ObjectId(id));
+    return await this.themeService.getThemeById(id);
   }
 
   @Post()
@@ -25,13 +25,8 @@ export class ThemesController {
     return await this.themeService.createTheme(createThemeDto.name);
   }
 
-  @Patch(':id')
-  async updateTheme(@Param('id', ObjectIdPipe) id: string, @Body() updateThemeDto: UpdateThemeDto): Promise<Theme> {
-    return await this.themeService.updateTheme(id, updateThemeDto);
-  }
-
   @Delete(':id')
   async deleteTheme(@Param('id', ObjectIdPipe) id: string): Promise<Theme> {
-    return await this.themeService.deleteTheme(new Types.ObjectId(id));
+    return await this.themeService.deleteTheme(id);
   }
 }

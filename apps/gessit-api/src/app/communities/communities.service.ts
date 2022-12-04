@@ -83,7 +83,7 @@ export class CommunitiesService {
             const themes : Theme[] = [];
 
             for (const theme of updateCommunityDto.themes) {
-                themes.push(await this.themesService.getThemeById(new Types.ObjectId(theme)));
+                themes.push(await this.themesService.getThemeById(theme));
             }
 
             delete updateCommunityDto.themes;
