@@ -47,9 +47,4 @@ export class UsersController {
     async updateUser(@Req() req, @Param('id', ObjectIdPipe) id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
         return await this.userService.updateUser(req, id, updateUserDto);
     }
-
-    @Delete(':id')
-    async deleteUser(@Req() req, @Param('id', ObjectIdPipe) id: string): Promise<User> {
-        return await this.userService.deleteUser(req, id);
-    }
 }
