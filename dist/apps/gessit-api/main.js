@@ -576,7 +576,7 @@ let CommunitiesModule = class CommunitiesModule {
 };
 CommunitiesModule = tslib_1.__decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: community_schema_1.Community.name, schema: community_schema_1.CommunitySchema }]), themes_module_1.ThemesModule, users_module_1.UsersModule],
+        imports: [mongoose_1.MongooseModule.forFeature([{ name: community_schema_1.Community.name, schema: community_schema_1.CommunitySchema }]), themes_module_1.ThemesModule, (0, common_1.forwardRef)(() => users_module_1.UsersModule)],
         controllers: [communities_controller_1.CommunitiesController],
         providers: [communities_service_1.CommunitiesService],
         exports: [mongoose_1.MongooseModule, communities_service_1.CommunitiesService]
@@ -711,6 +711,7 @@ let CommunitiesService = class CommunitiesService {
 CommunitiesService = tslib_1.__decorate([
     (0, common_1.Injectable)(),
     tslib_1.__param(0, (0, mongoose_2.InjectModel)(community_schema_1.Community.name)),
+    tslib_1.__param(2, (0, common_1.Inject)((0, common_1.forwardRef)(() => users_service_1.UsersService))),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof mongoose_1.Model !== "undefined" && mongoose_1.Model) === "function" ? _a : Object, typeof (_b = typeof themes_service_1.ThemesService !== "undefined" && themes_service_1.ThemesService) === "function" ? _b : Object, typeof (_c = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _c : Object])
 ], CommunitiesService);
 exports.CommunitiesService = CommunitiesService;
@@ -1754,7 +1755,7 @@ exports.UserSchema = mongoose_1.SchemaFactory.createForClass(User);
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -1802,11 +1803,6 @@ let UsersController = class UsersController {
     updateUser(req, id, updateUserDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return yield this.userService.updateUser(req, id, updateUserDto);
-        });
-    }
-    deleteUser(req, id) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.userService.deleteUser(req, id);
         });
     }
 };
@@ -1863,14 +1859,6 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:paramtypes", [Object, String, typeof (_j = typeof update_user_dto_1.UpdateUserDto !== "undefined" && update_user_dto_1.UpdateUserDto) === "function" ? _j : Object]),
     tslib_1.__metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], UsersController.prototype, "updateUser", null);
-tslib_1.__decorate([
-    (0, common_1.Delete)(':id'),
-    tslib_1.__param(0, (0, common_1.Req)()),
-    tslib_1.__param(1, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
-    tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, String]),
-    tslib_1.__metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
-], UsersController.prototype, "deleteUser", null);
 UsersController = tslib_1.__decorate([
     (0, common_1.Controller)('user'),
     tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof users_service_1.UsersService !== "undefined" && users_service_1.UsersService) === "function" ? _a : Object])
@@ -1889,6 +1877,7 @@ exports.UsersModule = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("@nestjs/mongoose");
+const communities_module_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.module.ts");
 const user_schema_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.schema.ts");
 const users_controller_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.controller.ts");
 const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.service.ts");
@@ -1896,7 +1885,7 @@ let UsersModule = class UsersModule {
 };
 UsersModule = tslib_1.__decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: user_schema_1.User.name, schema: user_schema_1.UserSchema }])],
+        imports: [mongoose_1.MongooseModule.forFeature([{ name: user_schema_1.User.name, schema: user_schema_1.UserSchema }]), (0, common_1.forwardRef)(() => communities_module_1.CommunitiesModule)],
         controllers: [users_controller_1.UsersController],
         providers: [users_service_1.UsersService],
         exports: [users_service_1.UsersService]
@@ -1911,7 +1900,7 @@ exports.UsersModule = UsersModule;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersService = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -1922,9 +1911,13 @@ const bcrypt = __webpack_require__("bcrypt");
 const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
 const user_schema_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.schema.ts");
 const mongoose_2 = __webpack_require__("@nestjs/mongoose");
+const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.service.ts");
+const community_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/community.schema.ts");
 let UsersService = class UsersService {
-    constructor(userModel) {
+    constructor(userModel, communityModel, communitiesService) {
         this.userModel = userModel;
+        this.communityModel = communityModel;
+        this.communitiesService = communitiesService;
     }
     getUserByUsername(username) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -2031,18 +2024,11 @@ let UsersService = class UsersService {
                     user.password = yield bcrypt.hashSync(user.password, 10);
                 }
                 user._id = new mongoose_1.Types.ObjectId(id);
+                const ownedCommunities = (yield this.communitiesService.getCommunities()).filter(p => p.owner._id.equals(user._id));
+                ownedCommunities.forEach((comm) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+                    yield this.communityModel.updateOne({ _id: new mongoose_1.Types.ObjectId(comm._id) }, { $set: { owner: Object.assign(Object.assign({}, (yield this.getUserById(id))), user) } });
+                }));
                 return this.userModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, user);
-            }
-            else {
-                throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
-            }
-        });
-    }
-    deleteUser(req, id) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            yield this.existing(id);
-            if (req.user.id.equals(new mongoose_1.Types.ObjectId(id)) || req.user.roles.includes(role_enum_1.Role.Admin)) {
-                return this.userModel.findOneAndDelete({ _id: new mongoose_1.Types.ObjectId(id) });
             }
             else {
                 throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
@@ -2061,7 +2047,9 @@ let UsersService = class UsersService {
 UsersService = tslib_1.__decorate([
     (0, common_1.Injectable)(),
     tslib_1.__param(0, (0, mongoose_2.InjectModel)(user_schema_1.User.name)),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof mongoose_1.Model !== "undefined" && mongoose_1.Model) === "function" ? _a : Object])
+    tslib_1.__param(1, (0, mongoose_2.InjectModel)(community_schema_1.Community.name)),
+    tslib_1.__param(2, (0, common_1.Inject)((0, common_1.forwardRef)(() => communities_service_1.CommunitiesService))),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof mongoose_1.Model !== "undefined" && mongoose_1.Model) === "function" ? _a : Object, typeof (_b = typeof mongoose_1.Model !== "undefined" && mongoose_1.Model) === "function" ? _b : Object, typeof (_c = typeof communities_service_1.CommunitiesService !== "undefined" && communities_service_1.CommunitiesService) === "function" ? _c : Object])
 ], UsersService);
 exports.UsersService = UsersService;
 

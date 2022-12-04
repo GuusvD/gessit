@@ -1,14 +1,16 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Model, Types } from 'mongoose';
 import { Role } from './role.enum';
 import * as bcrypt from 'bcrypt';
 import { ValidationException } from '../shared/filters/validation.exception';
 import { User, UserDocument } from './user.schema';
 import { InjectModel } from '@nestjs/mongoose';
+import { CommunitiesService } from '../communities/communities.service';
+import { Community, CommunityDocument } from '../communities/community.schema';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>, @InjectModel(Community.name) private communityModel: Model<CommunityDocument>, @Inject(forwardRef(() => CommunitiesService)) private readonly communitiesService: CommunitiesService) {}
 
   async getUserByUsername(username: string): Promise<User | undefined> {
     return this.userModel.findOne({ username: username });
@@ -122,17 +124,14 @@ export class UsersService {
       }
 
       user._id = new Types.ObjectId(id);
+
+      const ownedCommunities = (await this.communitiesService.getCommunities()).filter(p => p.owner._id.equals(user._id));
+
+      ownedCommunities.forEach(async comm => {
+        await this.communityModel.updateOne({ _id: new Types.ObjectId(comm._id)}, { $set: { owner: {...(await this.getUserById(id)), ...user} }});
+      });
+
       return this.userModel.findOneAndUpdate({ _id: new Types.ObjectId(id) }, user);
-    } else {
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-    }
-  }
-
-  async deleteUser(req, id: string): Promise<User> {
-    await this.existing(id);
-
-    if (req.user.id.equals(new Types.ObjectId(id)) || req.user.roles.includes(Role.Admin)) {
-      return this.userModel.findOneAndDelete({ _id: new Types.ObjectId(id) })
     } else {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
