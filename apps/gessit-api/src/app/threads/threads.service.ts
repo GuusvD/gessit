@@ -27,7 +27,7 @@ export class ThreadsService {
         await this.existing(communityId);
 
         if ((await this.communitiesService.getCommunityById(communityId)).members.filter(p => p._id.equals(req.user.id)).length === 0) {
-            if ((await this.communitiesService.getCommunityById(communityId)).owner._id.equals(req.user.id)) {
+            if ((await this.communitiesService.getCommunityById(communityId)).owner._id.equals(req.user.id) || req.user.roles.includes(Role.Admin)) {
                 const newThread = new this.threadModel({
                     ...createThreadDto,
                     _id: new Types.ObjectId(),

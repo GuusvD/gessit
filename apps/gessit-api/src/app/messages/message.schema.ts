@@ -21,16 +21,11 @@ export class Message {
     })
     likes: [Types.ObjectId];
 
-    @Prop({
-        default: []
-    })
-    replies: [Message]
-
     @Prop()
     creationDate: Date;
 
     @Prop()
-    containsReplies: boolean;
+    hasLikes: boolean;
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);

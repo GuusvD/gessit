@@ -33,6 +33,15 @@ export class MessagesController {
         return await this.messagesService.createMessage(req, communityId, threadId, createMessageDto);
     }
 
+    @Post(':communityId/thread/:threadId/message/:messageId/like')
+    async likeMessage(
+        @Req() req,
+        @Param('communityId', ObjectIdPipe) communityId: string, 
+        @Param('threadId', ObjectIdPipe) threadId: string, 
+        @Param('messageId', ObjectIdPipe) messageId: string): Promise<Message> {
+        return await this.messagesService.likeMessage(req, communityId, threadId, messageId);
+    }
+
     @Patch(':communityId/thread/:threadId/message/:messageId')
     async updateMessage(
         @Req() req,
@@ -42,7 +51,6 @@ export class MessagesController {
         @Body() updateMessageDto: UpdateMessageDto): Promise<Message> {
         return await this.messagesService.updateMessage(req, communityId, threadId, messageId, updateMessageDto);
     }
-    
 
     @Delete(':communityId/thread/:threadId/message/:messageId')
     async deleteMessage(

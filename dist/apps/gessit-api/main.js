@@ -932,19 +932,13 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:type", Array)
 ], Message.prototype, "likes", void 0);
 tslib_1.__decorate([
-    (0, mongoose_1.Prop)({
-        default: []
-    }),
-    tslib_1.__metadata("design:type", Array)
-], Message.prototype, "replies", void 0);
-tslib_1.__decorate([
     (0, mongoose_1.Prop)(),
     tslib_1.__metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
 ], Message.prototype, "creationDate", void 0);
 tslib_1.__decorate([
     (0, mongoose_1.Prop)(),
     tslib_1.__metadata("design:type", Boolean)
-], Message.prototype, "containsReplies", void 0);
+], Message.prototype, "hasLikes", void 0);
 Message = tslib_1.__decorate([
     (0, mongoose_1.Schema)()
 ], Message);
@@ -958,7 +952,7 @@ exports.MessageSchema = mongoose_1.SchemaFactory.createForClass(Message);
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g;
+var _a, _b, _c, _d, _e, _f, _g, _h;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MessagesController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -984,6 +978,11 @@ let MessagesController = class MessagesController {
     createMessage(req, communityId, threadId, createMessageDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return yield this.messagesService.createMessage(req, communityId, threadId, createMessageDto);
+        });
+    }
+    likeMessage(req, communityId, threadId, messageId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.messagesService.likeMessage(req, communityId, threadId, messageId);
         });
     }
     updateMessage(req, communityId, threadId, messageId, updateMessageDto) {
@@ -1025,6 +1024,16 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], MessagesController.prototype, "createMessage", null);
 tslib_1.__decorate([
+    (0, common_1.Post)(':communityId/thread/:threadId/message/:messageId/like'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(2, (0, common_1.Param)('threadId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(3, (0, common_1.Param)('messageId', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object, String, String, String]),
+    tslib_1.__metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+], MessagesController.prototype, "likeMessage", null);
+tslib_1.__decorate([
     (0, common_1.Patch)(':communityId/thread/:threadId/message/:messageId'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
@@ -1032,8 +1041,8 @@ tslib_1.__decorate([
     tslib_1.__param(3, (0, common_1.Param)('messageId', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__param(4, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, String, String, String, typeof (_f = typeof update_message_dto_1.UpdateMessageDto !== "undefined" && update_message_dto_1.UpdateMessageDto) === "function" ? _f : Object]),
-    tslib_1.__metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+    tslib_1.__metadata("design:paramtypes", [Object, String, String, String, typeof (_g = typeof update_message_dto_1.UpdateMessageDto !== "undefined" && update_message_dto_1.UpdateMessageDto) === "function" ? _g : Object]),
+    tslib_1.__metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], MessagesController.prototype, "updateMessage", null);
 tslib_1.__decorate([
     (0, common_1.Delete)(':communityId/thread/:threadId/message/:messageId'),
@@ -1122,7 +1131,7 @@ let MessagesService = class MessagesService {
             if (currentCommunity.members.filter(p => p._id.equals(req.user.id)).length === 0) {
                 if (currentCommunity.owner._id.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
                     const id = new mongoose_2.Types.ObjectId();
-                    const newMessage = new this.messageModel(Object.assign(Object.assign({ _id: id, creator: req.user.id }, createMessageDto), { likes: [], replies: [], creationDate: new Date(), containsReplies: false }));
+                    const newMessage = new this.messageModel(Object.assign(Object.assign({ _id: id, creator: req.user.id }, createMessageDto), { likes: [], creationDate: new Date(), hasLikes: false }));
                     const community = yield this.communityModel.findOneAndUpdate({ _id: new mongoose_2.Types.ObjectId(communityId), "threads._id": new mongoose_2.Types.ObjectId(threadId) }, { $push: { "threads.$.messages": newMessage } }, { new: true });
                     return community.threads.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(threadId)))[0].messages.filter(p => p._id.equals(id))[0];
                 }
@@ -1132,10 +1141,30 @@ let MessagesService = class MessagesService {
             }
             else {
                 const id = new mongoose_2.Types.ObjectId();
-                const newMessage = new this.messageModel(Object.assign(Object.assign({ _id: id, creator: req.user.id }, createMessageDto), { likes: [], replies: [], creationDate: new Date(), containsReplies: false }));
+                const newMessage = new this.messageModel(Object.assign(Object.assign({ _id: id, creator: req.user.id }, createMessageDto), { likes: [], creationDate: new Date(), hasLikes: false }));
                 const community = yield this.communityModel.findOneAndUpdate({ _id: new mongoose_2.Types.ObjectId(communityId), "threads._id": new mongoose_2.Types.ObjectId(threadId) }, { $push: { "threads.$.messages": newMessage } }, { new: true });
                 return community.threads.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(threadId)))[0].messages.filter(p => p._id.equals(id))[0];
             }
+        });
+    }
+    likeMessage(req, communityId, threadId, messageId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(communityId, threadId, messageId);
+            const message = yield this.getMessageById(communityId, threadId, messageId);
+            let result;
+            if (message.likes.filter(p => p.equals(req.user.id)).length === 0) {
+                result = (yield this.communityModel.findOneAndUpdate({ _id: new mongoose_2.Types.ObjectId(communityId), "threads._id": new mongoose_2.Types.ObjectId(threadId) }, { $push: { "threads.$.messages.$[message].likes": req.user.id } }, { arrayFilters: [{ "message._id": new mongoose_2.Types.ObjectId(messageId) }], new: true }));
+            }
+            else {
+                result = (yield this.communityModel.findOneAndUpdate({ _id: new mongoose_2.Types.ObjectId(communityId), "threads._id": new mongoose_2.Types.ObjectId(threadId) }, { $pull: { "threads.$.messages.$[message].likes": req.user.id } }, { arrayFilters: [{ "message._id": new mongoose_2.Types.ObjectId(messageId) }], new: true }));
+            }
+            if ((result.threads.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(threadId))))[0].messages.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(messageId)))[0].likes.length > 0) {
+                result = (yield this.communityModel.findOneAndUpdate({ _id: new mongoose_2.Types.ObjectId(communityId), "threads._id": new mongoose_2.Types.ObjectId(threadId) }, { $set: { "threads.$.messages.$[message].hasLikes": true } }, { arrayFilters: [{ "message._id": new mongoose_2.Types.ObjectId(messageId) }], new: true }));
+            }
+            else {
+                result = (yield this.communityModel.findOneAndUpdate({ _id: new mongoose_2.Types.ObjectId(communityId), "threads._id": new mongoose_2.Types.ObjectId(threadId) }, { $set: { "threads.$.messages.$[message].hasLikes": false } }, { arrayFilters: [{ "message._id": new mongoose_2.Types.ObjectId(messageId) }], new: true }));
+            }
+            return result.threads.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(threadId)))[0].messages.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(messageId)))[0];
         });
     }
     updateMessage(req, communityId, threadId, messageId, message) {
@@ -1796,7 +1825,7 @@ let ThreadsService = class ThreadsService {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(communityId);
             if ((yield this.communitiesService.getCommunityById(communityId)).members.filter(p => p._id.equals(req.user.id)).length === 0) {
-                if ((yield this.communitiesService.getCommunityById(communityId)).owner._id.equals(req.user.id)) {
+                if ((yield this.communitiesService.getCommunityById(communityId)).owner._id.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
                     const newThread = new this.threadModel(Object.assign(Object.assign({}, createThreadDto), { _id: new mongoose_1.Types.ObjectId(), views: 0, creationDate: new Date(), creator: yield this.usersService.getUserById(req.user.id) }));
                     return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $push: { threads: newThread } });
                 }

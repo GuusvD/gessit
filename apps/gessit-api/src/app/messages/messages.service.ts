@@ -38,9 +38,8 @@ export class MessagesService {
                     creator: req.user.id,
                     ...createMessageDto,
                     likes: [],
-                    replies: [],
                     creationDate: new Date(),
-                    containsReplies: false
+                    hasLikes: false
                 });
         
                 const community = await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId), "threads._id": new Types.ObjectId(threadId)}, {$push: {"threads.$.messages": newMessage}}, {new: true});
@@ -55,14 +54,35 @@ export class MessagesService {
                 creator: req.user.id,
                 ...createMessageDto,
                 likes: [],
-                replies: [],
                 creationDate: new Date(),
-                containsReplies: false
+                hasLikes: false
             });
 
             const community = await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId), "threads._id": new Types.ObjectId(threadId)}, {$push: {"threads.$.messages": newMessage}}, {new: true});
             return community.threads.filter(p => p._id.equals(new Types.ObjectId(threadId)))[0].messages.filter(p => p._id.equals(id))[0];
         }
+    }
+
+    async likeMessage(req, communityId: string, threadId: string, messageId: string): Promise<Message> {
+        await this.existing(communityId, threadId, messageId);
+
+        const message = await this.getMessageById(communityId, threadId, messageId);
+
+        let result;
+
+        if (message.likes.filter(p => p.equals(req.user.id)).length === 0) {
+            result = (await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId), "threads._id": new Types.ObjectId(threadId)}, {$push: {"threads.$.messages.$[message].likes": req.user.id}}, {arrayFilters: [{ "message._id": new Types.ObjectId(messageId) }], new: true}));
+        } else {
+            result = (await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId), "threads._id": new Types.ObjectId(threadId)}, {$pull: {"threads.$.messages.$[message].likes": req.user.id}}, {arrayFilters: [{ "message._id": new Types.ObjectId(messageId) }], new: true}));
+        }
+
+        if ((result.threads.filter(p => p._id.equals(new Types.ObjectId(threadId))))[0].messages.filter(p => p._id.equals(new Types.ObjectId(messageId)))[0].likes.length > 0) {
+            result = (await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId), "threads._id": new Types.ObjectId(threadId)}, {$set: {"threads.$.messages.$[message].hasLikes": true}}, {arrayFilters: [{ "message._id": new Types.ObjectId(messageId) }], new: true}));
+        } else {
+            result = (await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId), "threads._id": new Types.ObjectId(threadId)}, {$set: {"threads.$.messages.$[message].hasLikes": false}}, {arrayFilters: [{ "message._id": new Types.ObjectId(messageId) }], new: true}));
+        }
+
+        return result.threads.filter(p => p._id.equals(new Types.ObjectId(threadId)))[0].messages.filter(p => p._id.equals(new Types.ObjectId(messageId)))[0];
     }
 
     async updateMessage(req, communityId: string, threadId: string, messageId: string, message: Partial<Message>): Promise<Message> {
