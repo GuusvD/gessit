@@ -4,9 +4,6 @@ import {
 
 export class CreateThreadDto {
     @IsString()
-    communityId: string
-
-    @IsString()
     title: string;
 
     @IsString()

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types } from "mongoose";
+import { Message } from "../messages/message.schema";
 
 export type ThreadDocument = Thread & Document;
 
@@ -7,9 +8,6 @@ export type ThreadDocument = Thread & Document;
 export class Thread {
     @Prop()
     _id: Types.ObjectId;
-
-    @Prop()
-    communityId: string;
 
     @Prop()
     title: string;
@@ -20,17 +18,26 @@ export class Thread {
     @Prop()
     views: number;
 
-    @Prop()
-    likes: number;
-
-    @Prop()
-    dislikes: number;
+    @Prop({
+        ref: 'User'
+    })
+    likes: [Types.ObjectId];
 
     @Prop()
     creationDate: Date;
 
     @Prop()
     image: string;
+
+    @Prop({
+        default: []
+    })
+    messages: [Message]
+
+    @Prop({
+        ref: 'User'
+    })
+    creator: Types.ObjectId;
 }
 
 export const ThreadSchema = SchemaFactory.createForClass(Thread);

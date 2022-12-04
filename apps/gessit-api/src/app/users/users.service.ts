@@ -1,38 +1,43 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Types } from 'mongoose';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { Model, Types } from 'mongoose';
 import { Role } from './role.enum';
-import { UsersRepository } from './users.repository';
 import * as bcrypt from 'bcrypt';
 import { ValidationException } from '../shared/filters/validation.exception';
-import { User } from './user.schema';
+import { User, UserDocument } from './user.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { CommunitiesService } from '../communities/communities.service';
+import { Community, CommunityDocument } from '../communities/community.schema';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly userRepository : UsersRepository) {}
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>, @InjectModel(Community.name) private communityModel: Model<CommunityDocument>, @Inject(forwardRef(() => CommunitiesService)) private readonly communitiesService: CommunitiesService) {}
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ username: username });
+    return this.userModel.findOne({ username: username });
   }
 
   async getUsers(): Promise<User[]> {
-    return this.userRepository.find({});
+    return this.userModel.find({});
   }
 
   async getUserById(id: string): Promise<User> {
-    return this.userRepository.findOne({ _id: new Types.ObjectId(id) });
+    await this.existing(id);
+    return this.userModel.findOne({ _id: new Types.ObjectId(id) });
   }
 
   async followUser(req, id: string): Promise<User[]> {
+    await this.existing(id);
+
     const user = await this.getUserById(id);
     const loggedInUser = await this.getUserById(req.user.id);
 
     if (!(loggedInUser._id.equals(user._id))) {
-      if (!(await (await this.userRepository.find({ $and: [ {_id: req.user.id}, {following: { $in : id}} ] })).length > 0)) {
+      if (!((await this.userModel.find({ $and: [ {_id: req.user.id}, {following: { $in : new Types.ObjectId(id)}} ] })).length > 0)) {
         (loggedInUser.following as any).push(user._id);
         (user.followers as any).push(loggedInUser._id);
     
-        const loggedInUserNew = await this.userRepository.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
-        const userNew = await this.userRepository.findOneAndUpdate({ _id: user._id }, user);
+        const loggedInUserNew = await this.userModel.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
+        const userNew = await this.userModel.findOneAndUpdate({ _id: user._id }, user);
     
         return [loggedInUserNew, userNew];
       } else {
@@ -44,16 +49,18 @@ export class UsersService {
   }
 
   async unfollowUser(req, id: string): Promise<User[]> {
+    await this.existing(id);
+
     const user = await this.getUserById(id);
     const loggedInUser = await this.getUserById(req.user.id);
 
     if (!(loggedInUser._id.equals(user._id))) {
-      if (!(await (await this.userRepository.find({ $and: [ {_id: req.user.id}, {following: { $in : id}} ] })).length === 0)) {
+      if (!((await this.userModel.find({ $and: [ {_id: req.user.id}, {following: { $in : new Types.ObjectId(id)}} ] })).length === 0)) {
         (loggedInUser.following as any).pull(user._id);
         (user.followers as any).pull(loggedInUser._id);
         
-        const loggedInUserNew = await this.userRepository.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
-        const userNew = await this.userRepository.findOneAndUpdate({ _id: user._id }, user);
+        const loggedInUserNew = await this.userModel.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
+        const userNew = await this.userModel.findOneAndUpdate({ _id: user._id }, user);
 
         return [loggedInUserNew, userNew];
       } else {
@@ -78,7 +85,7 @@ export class UsersService {
       throw new ValidationException([`Username ${username} already in use!`]);
     }
 
-    return this.userRepository.create({
+    const newUser = new this.userModel({
       _id: new Types.ObjectId(),
       username,
       birthDate,
@@ -87,13 +94,15 @@ export class UsersService {
       password,
       registerDate: new Date(),
       image,
-      roles: [Role.User],
-      following: [null],
-      followers: [null]
+      roles: [Role.User]
     });
+
+    return this.userModel.create(newUser);
   }
 
   async updateUser(req, id: string, user: Partial<User>): Promise<User> {
+    await this.existing(id);
+
     if (req.user.id.equals(new Types.ObjectId(id)) || req.user.roles.includes(Role.Admin)) {
       if (user.username) {
         if ((await this.getUsers()).filter(p => p.username === user.username && !(p._id.equals(new Types.ObjectId(id)))).length > 0) {
@@ -115,17 +124,24 @@ export class UsersService {
       }
 
       user._id = new Types.ObjectId(id);
-      return this.userRepository.findOneAndUpdate({ _id: new Types.ObjectId(id) }, user);
+
+      const ownedCommunities = (await this.communitiesService.getCommunities()).filter(p => p.owner._id.equals(user._id));
+
+      ownedCommunities.forEach(async comm => {
+        await this.communityModel.updateOne({ _id: new Types.ObjectId(comm._id)}, { $set: { owner: {...(await this.getUserById(id)), ...user} }});
+      });
+
+      return this.userModel.findOneAndUpdate({ _id: new Types.ObjectId(id) }, user);
     } else {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
   }
 
-  async deleteUser(req, id: Types.ObjectId): Promise<User> {
-    if (req.user.id.equals(new Types.ObjectId(id)) || req.user.roles.includes(Role.Admin)) {
-      return this.userRepository.findOneAndDelete({ _id: id })
-    } else {
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+  async existing(userId: string): Promise<void> {
+    const user = await this.userModel.findOne({ _id: new Types.ObjectId(userId) });
+
+    if (!user) {
+      throw new ValidationException([`User with id ${userId} does not exist!`]);
     }
   }
 }

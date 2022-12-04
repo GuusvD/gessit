@@ -1,24 +1,18 @@
 import {
     IsString,
-    IsNumber
+    IsOptional
 } from 'class-validator';
 
 export class UpdateThreadDto {
     @IsString()
+    @IsOptional()
     title: string;
 
     @IsString()
+    @IsOptional()
     content: string;
 
-    @IsNumber()
-    views: number;
-
-    @IsNumber()
-    likes: number;
-
-    @IsNumber()
-    dislikes: number;
-
     @IsString()
+    @IsOptional()
     image: string;
 }

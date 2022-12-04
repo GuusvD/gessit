@@ -1,7 +1,5 @@
 import { Body, Controller, Get, Post, Request, UseGuards } from "@nestjs/common";
 import { Public } from "../app.module";
-import { Role } from "../users/role.enum";
-import { Roles } from "./roles.decorator";
 import { AuthService } from "./auth.service";
 import { LocalAuthGuard } from "./local-auth.guard";
 import { CreateUserDto } from "../users/create-user.dto";
@@ -23,9 +21,8 @@ export class AuthController {
         return this.authService.register(user);
     }
     
-    @Roles(Role.User)
     @Get('profile')
     getProfile(@Request() req) {
-        return req.body;
+        return req.user;
     }
 }

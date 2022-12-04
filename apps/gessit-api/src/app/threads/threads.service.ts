@@ -1,40 +1,110 @@
-import { Injectable } from "@nestjs/common";
-import { Types } from "mongoose";
-import { ThreadsRepository } from "./threads.repository";
-import { Thread } from "./thread.schema";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { Model, Types } from "mongoose";
+import { Thread, ThreadDocument } from "./thread.schema";
+import { UsersService } from "../users/users.service";
+import { InjectModel } from "@nestjs/mongoose";
+import { Community, CommunityDocument } from "../communities/community.schema";
+import { CommunitiesService } from "../communities/communities.service";
+import { CreateThreadDto } from "./create-thread.dto";
+import { ValidationException } from "../shared/filters/validation.exception";
+import { Role } from "../users/role.enum";
 
 @Injectable()
 export class ThreadsService {
-    constructor(private readonly threadRepository : ThreadsRepository) {}
+    constructor(@InjectModel(Community.name) private communityModel: Model<CommunityDocument>, @InjectModel(Thread.name) private threadModel: Model<ThreadDocument>, private readonly usersService: UsersService, private readonly communitiesService: CommunitiesService) {}
 
-    async getThreadById(id: Types.ObjectId): Promise<Thread> {
-        return this.threadRepository.findOne({ _id: id });
+    async getThreadById(communityId: string, threadId: string): Promise<Thread> {
+        await this.existing(communityId, threadId);
+        return (await this.communitiesService.getCommunityById(communityId)).threads.filter(p => p._id.equals(new Types.ObjectId(threadId)))[0];
     }
 
-    async getThreads(): Promise<Thread[]> {
-        return this.threadRepository.find({});
+    async getThreads(communityId: string): Promise<Thread[]> {
+        return (await this.communitiesService.getCommunityById(communityId)).threads;
     }
 
-    async createThread(communityId: string, title: string, content: string, image: string): Promise<Thread> {
-        return this.threadRepository.create({
-            _id: new Types.ObjectId(),
-            communityId,
-            title,
-            content,
-            views: 0,
-            likes: 0,
-            dislikes: 0,
-            creationDate: new Date(),
-            image 
-        });
+    async createThread(req, communityId: string, createThreadDto: CreateThreadDto): Promise<Thread> {
+        if ((await this.communitiesService.getCommunityById(communityId)).members.filter(p => p._id.equals(req.user.id)).length === 0) {
+            if ((await this.communitiesService.getCommunityById(communityId)).owner._id.equals(req.user.id)) {
+                const newThread = new this.threadModel({
+                    ...createThreadDto,
+                    _id: new Types.ObjectId(),
+                    views: 0,
+                    creationDate: new Date(),
+                    creator: await this.usersService.getUserById(req.user.id)
+                });
+        
+                return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$push: {threads: newThread}});
+            } else {
+                throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+            }
+        } else {
+            const newThread = new this.threadModel({
+                ...createThreadDto,
+                _id: new Types.ObjectId(),
+                views: 0,
+                creationDate: new Date(),
+                creator: await this.usersService.getUserById(req.user.id)
+            });
+    
+            return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$push: {threads: newThread}});
+        }
     }
 
-    async updateThread(id: string, thread: Partial<Thread>): Promise<Thread> {
-        thread._id = new Types.ObjectId(thread._id);
-        return this.threadRepository.findOneAndUpdate({ _id: new Types.ObjectId(id) }, thread);
+    async likeThread(req, communityId: string, threadId: string): Promise<Thread> {
+        await this.existing(communityId, threadId);
+
+        let community;
+
+        if ((await this.getThreadById(communityId, threadId)).likes.filter(p => p._id.equals(req.user.id)).length === 0) {
+            community = await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId), "threads._id": new Types.ObjectId(threadId)}, {$push: {"threads.$.likes": req.user.id}}, {new: true});
+        } else {
+            community = await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId), "threads._id": new Types.ObjectId(threadId)}, {$pull: {"threads.$.likes": req.user.id}}, {new: true});
+        }
+        
+        return community.threads.filter(p => p._id.equals(new Types.ObjectId(threadId)))[0];
     }
 
-    async deleteThread(id: Types.ObjectId): Promise<Thread> {
-        return this.threadRepository.findOneAndDelete({ _id: id });
+    async viewThread(communityId: string, threadId: string): Promise<Thread> {
+        let community = await this.communityModel.findOneAndUpdate({_id : new Types.ObjectId(communityId), "threads._id" : new Types.ObjectId(threadId)}, {$inc: {"threads.$.views" : 1}});
+        return community.threads.filter(p => p._id.equals(new Types.ObjectId(threadId)))[0];
+    }
+
+    async updateThread(req, communityId: string, threadId: string, thread: Partial<Thread>): Promise<Thread> {
+        await this.existing(communityId, threadId);
+
+        if ((await this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id) || req.user.roles.includes(Role.Admin)) {
+            const oldThread = await this.getThreadById(communityId, threadId);
+            const newThread = { ...oldThread, ...thread };
+    
+            await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$pull: {threads: oldThread}});
+            return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$push: {threads: newThread}});
+        } else {
+            throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    async deleteThread(req, communityId: string, threadId: string): Promise<Thread> {
+        await this.existing(communityId, threadId);
+
+        if ((await this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id) || req.user.roles.includes(Role.Admin)) {
+            const thread = await this.getThreadById(communityId, threadId);
+            return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$pull: {threads: thread}});
+        } else {
+            throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    async existing(communityId : string, threadId? : string) : Promise<void> {
+        const community = await this.communityModel.findOne({ _id : new Types.ObjectId(communityId) });
+
+        if(!community) {
+            throw new ValidationException([`Community with id ${communityId} does not exist!`]);
+        }
+
+        if(threadId) {
+            if(!(community.threads.filter(thread => thread._id.equals(new Types.ObjectId(threadId))).length > 0)) {
+                throw new ValidationException([`Thread with id ${threadId} doesn't exist in the community with id ${communityId}!`]);
+            }
+        }
     }
 }
