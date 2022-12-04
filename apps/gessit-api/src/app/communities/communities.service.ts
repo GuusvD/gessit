@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { Community, CommunityDocument } from "./community.schema";
 import { Model, Types } from "mongoose";
 import { ThemesService } from "../themes/themes.service";
@@ -9,6 +9,7 @@ import { CreateCommunityDto } from "./create-community.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { ValidationException } from "../shared/filters/validation.exception";
 import { ObjectIdPipe } from "../shared/pipes/object.id.pipe";
+import { Role } from "../users/role.enum";
 
 @Injectable()
 export class CommunitiesService {
@@ -72,7 +73,7 @@ export class CommunitiesService {
         return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(id)}, {$pull: {members: (await this.usersService.getUserById(req.user.id))._id}});
     }
 
-    async updateCommunity(id: string, updateCommunityDto: UpdateCommunityDto): Promise<Community> {
+    async updateCommunity(req, id: string, updateCommunityDto: UpdateCommunityDto): Promise<Community> {
         if (updateCommunityDto.themes) {
             if (!(await this.areValidObjectIds(updateCommunityDto.themes as string[]))) {
                 throw new ValidationException(['Themes attribute data must be of type ObjectId!'])
@@ -81,28 +82,37 @@ export class CommunitiesService {
 
         await this.existing(id);
 
-        let updatedObject = {};
+        if ((await this.getCommunityById(id)).owner._id.equals(req.user.id) || req.user.roles.includes(Role.Admin)) {
+            let updatedObject = {};
 
-        if (updateCommunityDto.themes) {
-            const themes : Theme[] = [];
-
-            for (const theme of updateCommunityDto.themes) {
-                themes.push(await this.themesService.getThemeById(theme));
+            if (updateCommunityDto.themes) {
+                const themes : Theme[] = [];
+    
+                for (const theme of updateCommunityDto.themes) {
+                    themes.push(await this.themesService.getThemeById(theme));
+                }
+    
+                delete updateCommunityDto.themes;
+    
+                updatedObject = { themes };
             }
-
-            delete updateCommunityDto.themes;
-
-            updatedObject = { themes };
+    
+            updatedObject = { ...updateCommunityDto, ...updatedObject };
+    
+            return this.communityModel.findOneAndUpdate({ _id: new Types.ObjectId(id) }, updatedObject);
+        } else {
+            throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
         }
-
-        updatedObject = { ...updateCommunityDto, ...updatedObject };
-
-        return this.communityModel.findOneAndUpdate({ _id: new Types.ObjectId(id) }, updatedObject);
     }
 
-    async deleteCommunity(id: string): Promise<Community> {
+    async deleteCommunity(req, id: string): Promise<Community> {
         await this.existing(id);
-        return this.communityModel.findOneAndDelete({ _id: new Types.ObjectId(id) });
+
+        if ((await this.getCommunityById(id)).owner._id.equals(req.user.id) || req.user.roles.includes(Role.Admin)) {
+            return this.communityModel.findOneAndDelete({ _id: new Types.ObjectId(id) });
+        } else {
+            throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+        }
     }
 
     async areValidObjectIds(value: string[]) {

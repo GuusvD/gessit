@@ -487,14 +487,14 @@ let CommunitiesController = class CommunitiesController {
             return yield this.communityService.leaveCommunity(req, id);
         });
     }
-    updateCommunity(id, updateCommunityDto) {
+    updateCommunity(req, id, updateCommunityDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.communityService.updateCommunity(id, updateCommunityDto);
+            return yield this.communityService.updateCommunity(req, id, updateCommunityDto);
         });
     }
-    deleteCommunity(id) {
+    deleteCommunity(req, id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.communityService.deleteCommunity(id);
+            return yield this.communityService.deleteCommunity(req, id);
         });
     }
 };
@@ -537,17 +537,19 @@ tslib_1.__decorate([
 ], CommunitiesController.prototype, "leaveCommunity", null);
 tslib_1.__decorate([
     (0, common_1.Patch)(':id'),
-    tslib_1.__param(0, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
-    tslib_1.__param(1, (0, common_1.Body)()),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(2, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [String, typeof (_h = typeof update_community_dto_1.UpdateCommunityDto !== "undefined" && update_community_dto_1.UpdateCommunityDto) === "function" ? _h : Object]),
+    tslib_1.__metadata("design:paramtypes", [Object, String, typeof (_h = typeof update_community_dto_1.UpdateCommunityDto !== "undefined" && update_community_dto_1.UpdateCommunityDto) === "function" ? _h : Object]),
     tslib_1.__metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
 ], CommunitiesController.prototype, "updateCommunity", null);
 tslib_1.__decorate([
     (0, common_1.Delete)(':id'),
-    tslib_1.__param(0, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__param(1, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [String]),
+    tslib_1.__metadata("design:paramtypes", [Object, String]),
     tslib_1.__metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
 ], CommunitiesController.prototype, "deleteCommunity", null);
 CommunitiesController = tslib_1.__decorate([
@@ -604,6 +606,7 @@ const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/use
 const mongoose_2 = __webpack_require__("@nestjs/mongoose");
 const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
 const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
+const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
 let CommunitiesService = class CommunitiesService {
     constructor(communityModel, themesService, usersService) {
         this.communityModel = communityModel;
@@ -657,7 +660,7 @@ let CommunitiesService = class CommunitiesService {
             return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $pull: { members: (yield this.usersService.getUserById(req.user.id))._id } });
         });
     }
-    updateCommunity(id, updateCommunityDto) {
+    updateCommunity(req, id, updateCommunityDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             if (updateCommunityDto.themes) {
                 if (!(yield this.areValidObjectIds(updateCommunityDto.themes))) {
@@ -665,23 +668,33 @@ let CommunitiesService = class CommunitiesService {
                 }
             }
             yield this.existing(id);
-            let updatedObject = {};
-            if (updateCommunityDto.themes) {
-                const themes = [];
-                for (const theme of updateCommunityDto.themes) {
-                    themes.push(yield this.themesService.getThemeById(theme));
+            if ((yield this.getCommunityById(id)).owner._id.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
+                let updatedObject = {};
+                if (updateCommunityDto.themes) {
+                    const themes = [];
+                    for (const theme of updateCommunityDto.themes) {
+                        themes.push(yield this.themesService.getThemeById(theme));
+                    }
+                    delete updateCommunityDto.themes;
+                    updatedObject = { themes };
                 }
-                delete updateCommunityDto.themes;
-                updatedObject = { themes };
+                updatedObject = Object.assign(Object.assign({}, updateCommunityDto), updatedObject);
+                return this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, updatedObject);
             }
-            updatedObject = Object.assign(Object.assign({}, updateCommunityDto), updatedObject);
-            return this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, updatedObject);
+            else {
+                throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
+            }
         });
     }
-    deleteCommunity(id) {
+    deleteCommunity(req, id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(id);
-            return this.communityModel.findOneAndDelete({ _id: new mongoose_1.Types.ObjectId(id) });
+            if ((yield this.getCommunityById(id)).owner._id.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
+                return this.communityModel.findOneAndDelete({ _id: new mongoose_1.Types.ObjectId(id) });
+            }
+            else {
+                throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
+            }
         });
     }
     areValidObjectIds(value) {

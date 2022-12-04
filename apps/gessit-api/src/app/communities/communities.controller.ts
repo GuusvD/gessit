@@ -35,12 +35,12 @@ export class CommunitiesController {
   }
 
   @Patch(':id')
-  async updateCommunity(@Param('id', ObjectIdPipe) id: string, @Body() updateCommunityDto: UpdateCommunityDto): Promise<Community> {
-    return await this.communityService.updateCommunity(id, updateCommunityDto);
+  async updateCommunity(@Req() req, @Param('id', ObjectIdPipe) id: string, @Body() updateCommunityDto: UpdateCommunityDto): Promise<Community> {
+    return await this.communityService.updateCommunity(req, id, updateCommunityDto);
   }
 
   @Delete(':id')
-  async deleteCommunity(@Param('id', ObjectIdPipe) id: string): Promise<Community> {
-    return await this.communityService.deleteCommunity(id);
+  async deleteCommunity(@Req() req, @Param('id', ObjectIdPipe) id: string): Promise<Community> {
+    return await this.communityService.deleteCommunity(req, id);
   }
 }
