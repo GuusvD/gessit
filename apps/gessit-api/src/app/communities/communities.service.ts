@@ -45,6 +45,8 @@ export class CommunitiesService {
     }
 
     async joinCommunity(req, id: string): Promise<Community> {
+        await this.existing(id);
+
         if ((await this.getCommunityById(id)).owner._id.equals(req.user.id)) {
             throw new ValidationException(['Can not join your own created community!']);
         }
@@ -57,6 +59,8 @@ export class CommunitiesService {
     }
 
     async leaveCommunity(req, id: string): Promise<Community> {
+        await this.existing(id);
+
         if ((await this.getCommunityById(id)).owner._id.equals(req.user.id)) {
             throw new ValidationException(['Can not leave your own created community!']);
         }

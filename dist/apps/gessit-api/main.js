@@ -635,6 +635,7 @@ let CommunitiesService = class CommunitiesService {
     }
     joinCommunity(req, id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(id);
             if ((yield this.getCommunityById(id)).owner._id.equals(req.user.id)) {
                 throw new validation_exception_1.ValidationException(['Can not join your own created community!']);
             }
@@ -646,6 +647,7 @@ let CommunitiesService = class CommunitiesService {
     }
     leaveCommunity(req, id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(id);
             if ((yield this.getCommunityById(id)).owner._id.equals(req.user.id)) {
                 throw new validation_exception_1.ValidationException(['Can not leave your own created community!']);
             }
