@@ -16,14 +16,21 @@ export class Message {
     @Prop()
     content: string;
     
-    @Prop()
-    likes: number;
+    @Prop({
+        ref: 'User'
+    })
+    likes: [Types.ObjectId];
+
+    @Prop({
+        default: []
+    })
+    replies: [Message]
 
     @Prop()
-    dislikes: number;
+    creationDate: Date;
 
     @Prop()
-    sendDate: Date;
+    containsReplies: boolean;
 }
 
-export const ThemeSchema = SchemaFactory.createForClass(Message);
+export const MessageSchema = SchemaFactory.createForClass(Message);
