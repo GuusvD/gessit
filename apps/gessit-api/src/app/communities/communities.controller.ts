@@ -1,9 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from '@nestjs/common';
 import { CommunitiesService } from './communities.service';
 import { CreateCommunityDto } from './create-community.dto';
 import { Community } from './community.schema';
 import { UpdateCommunityDto } from './update-community.dto';
-import { Types } from 'mongoose';
+import { ObjectIdPipe } from '../shared/pipes/object.id.pipe';
 
 @Controller('community')
 export class CommunitiesController {
@@ -15,22 +15,32 @@ export class CommunitiesController {
   }
 
   @Get(':id')
-  async getCommunityById(@Param('id') id: string): Promise<Community> {
-    return await this.communityService.getCommunityById(new Types.ObjectId(id));
+  async getCommunityById(@Param('id', ObjectIdPipe) id: string): Promise<Community> {
+    return await this.communityService.getCommunityById(id);
   }
 
   @Post()
-  async createCommunity(@Body() createCommunityDto: CreateCommunityDto): Promise<Community> {
-    return await this.communityService.createCommunity(createCommunityDto.name, createCommunityDto.description, createCommunityDto.image, createCommunityDto.isOpen);
+  async createCommunity(@Req() req, @Body() createCommunityDto: CreateCommunityDto): Promise<Community> {
+    return await this.communityService.createCommunity(req, createCommunityDto);
+  }
+
+  @Post(':id/join')
+  async joinCommunity(@Req() req, @Param('id', ObjectIdPipe) id: string): Promise<Community> {
+    return await this.communityService.joinCommunity(req, id);
+  }
+
+  @Post(':id/leave')
+  async leaveCommunity(@Req() req, @Param('id', ObjectIdPipe) id: string): Promise<Community> {
+    return await this.communityService.leaveCommunity(req, id);
   }
 
   @Patch(':id')
-  async updateCommunity(@Param('id') id: string, @Body() updateCommunityDto: UpdateCommunityDto): Promise<Community> {
-    return await this.communityService.updateCommunity(id, updateCommunityDto);
+  async updateCommunity(@Req() req, @Param('id', ObjectIdPipe) id: string, @Body() updateCommunityDto: UpdateCommunityDto): Promise<Community> {
+    return await this.communityService.updateCommunity(req, id, updateCommunityDto);
   }
 
   @Delete(':id')
-  async deleteCommunity(@Param('id') id: string): Promise<Community> {
-    return await this.communityService.deleteCommunity(new Types.ObjectId(id));
+  async deleteCommunity(@Req() req, @Param('id', ObjectIdPipe) id: string): Promise<Community> {
+    return await this.communityService.deleteCommunity(req, id);
   }
 }
