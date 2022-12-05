@@ -614,12 +614,12 @@ let CommunitiesService = class CommunitiesService {
     getCommunityById(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(id);
-            return this.communityModel.findOne({ _id: new mongoose_1.Types.ObjectId(id) });
+            return yield this.communityModel.findOne({ _id: new mongoose_1.Types.ObjectId(id) });
         });
     }
     getCommunities() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.communityModel.find({});
+            return yield this.communityModel.find({});
         });
     }
     createCommunity(req, createCommunityDto) {
@@ -631,7 +631,7 @@ let CommunitiesService = class CommunitiesService {
             }
             const themesArray = (yield this.themesService.getThemes()).filter(p => createCommunityDto.themes.includes(p._id.toString()));
             const mergedCommunity = new this.communityModel(Object.assign(Object.assign({}, createCommunityDto), { _id: new mongoose_1.Types.ObjectId(), creationDate: new Date(), ranking: 0, themes: themesArray, owner: yield this.usersService.getUserById(req.user.id) }));
-            return this.communityModel.create(mergedCommunity);
+            return yield this.communityModel.create(mergedCommunity);
         });
     }
     joinCommunity(req, id) {
