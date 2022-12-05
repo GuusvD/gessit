@@ -14,12 +14,12 @@ export class ThreadsService {
     constructor(@InjectModel(Community.name) private communityModel: Model<CommunityDocument>, @InjectModel(Thread.name) private threadModel: Model<ThreadDocument>, private readonly usersService: UsersService, private readonly communitiesService: CommunitiesService) {}
 
     async getThreadById(communityId: string, threadId: string): Promise<Thread> {
-        //await this.existing(communityId, threadId);
-        //return (await this.communitiesService.getCommunityById(communityId)).threads.filter(p => p._id.equals(new Types.ObjectId(threadId)))[0];
+        await this.existing(communityId, threadId);
 
         return (await this.communityModel.aggregate([
             { $match : { _id : new Types.ObjectId(communityId)}},
             { $match : { "threads._id" : new Types.ObjectId(threadId)}},
+            { $unwind : { path: "$members", preserveNullAndEmptyArrays: true }},
             { $project : {
                 _id : 0,
                 "threads" : {
@@ -38,28 +38,52 @@ export class ThreadsService {
                 as : "threads.creator"
             }},
             { $unwind : { path: "$threads.messages", preserveNullAndEmptyArrays: true }},
-            { $unwind : { path: "$threads.messages.creator", preserveNullAndEmptyArrays: true }},
-            { $lookup : {
+            { $lookup : { 
                 from : "users",
                 localField : "threads.messages.creator",
                 foreignField : "_id",
                 as : "threads.messages.creator"
-             }},
-             { $unset: [
-                "threads.creator.password",
-                "threads.creator.__v",
-                "threads.messages.creator.password",
-                "threads.messages.creator.__v",
-            ]},
+            }},
+            { $set: {
+                "threads.messages.creator": "$threads.messages.creator" 
+            }},
+            { $group: {
+                _id: "$threads._id",
+                title: {
+                  $first: "$threads.title"
+                },
+                content: {
+                  $first: "$threads.content"
+                },
+                views: {
+                  $first: "$threads.views"
+                },
+                likes: {
+                  $first: "$threads.likes"
+                },
+                creationDate: {
+                  $first: "$threads.creationDate"
+                },
+                image: {
+                  $first: "$threads.image"
+                },
+                messages: {
+                  $push: "$threads.messages"   
+                },
+                creator: {
+                  $first: "$threads.creator"
+                }
+            }},
+            { $unset: ["creator.password", "creator.__v", "messages.creator.password", "messages.creator.__v"]}
         ]))[0];
     }
 
     async getThreads(communityId: string): Promise<Thread[]> {
-        //await this.existing(communityId);
-        //return (await this.communitiesService.getCommunityById(communityId)).threads;
+        await this.existing(communityId);
 
         return (await this.communityModel.aggregate([
             { $match : { _id : new Types.ObjectId(communityId)}},
+            { $unwind : { path: "$members", preserveNullAndEmptyArrays: true }},
             { $project : {
                 _id : 0,
                 "threads" : {
@@ -78,20 +102,44 @@ export class ThreadsService {
                 as : "threads.creator"
             }},
             { $unwind : { path: "$threads.messages", preserveNullAndEmptyArrays: true }},
-            { $unwind : { path: "$threads.messages.creator", preserveNullAndEmptyArrays: true }},
-            { $lookup : {
+            { $lookup : { 
                 from : "users",
                 localField : "threads.messages.creator",
                 foreignField : "_id",
                 as : "threads.messages.creator"
-             }},
-             { $unset: [
-                "threads.creator.password",
-                "threads.creator.__v",
-                "threads.messages.creator.password",
-                "threads.messages.creator.__v",
-            ]},
-        ])).map(thread => thread.threads);
+            }},
+            { $set: {
+                "threads.messages.creator": "$threads.messages.creator" 
+            }},
+            { $group: {
+                _id: "$threads._id",
+                title: {
+                  $first: "$threads.title"
+                },
+                content: {
+                  $first: "$threads.content"
+                },
+                views: {
+                  $first: "$threads.views"
+                },
+                likes: {
+                  $first: "$threads.likes"
+                },
+                creationDate: {
+                  $first: "$threads.creationDate"
+                },
+                image: {
+                  $first: "$threads.image"
+                },
+                messages: {
+                  $push: "$threads.messages"   
+                },
+                creator: {
+                  $first: "$threads.creator"
+                }
+            }},
+            { $unset: ["creator.password", "creator.__v", "messages.creator.password", "messages.creator.__v"]}
+        ]));
     }
 
     async createThread(req, communityId: string, createThreadDto: CreateThreadDto): Promise<Thread> {
