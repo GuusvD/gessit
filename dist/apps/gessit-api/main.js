@@ -2369,73 +2369,42 @@ let UsersService = class UsersService {
     getUsers() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             //return this.userModel.find({});
-            return (yield this.userModel.aggregate([
-                { $unwind: {
-                        path: "$followers",
-                        preserveNullAndEmptyArrays: true
+            return yield this.userModel.aggregate([
+                { $lookup: {
+                        from: "users",
+                        localField: "following",
+                        foreignField: "_id",
+                        as: "following"
                     } },
                 { $lookup: {
-                        from: 'users',
-                        localField: 'followers',
-                        foreignField: '_id',
-                        as: 'followers'
+                        from: "users",
+                        localField: "followers",
+                        foreignField: "_id",
+                        as: "followers"
                     } },
-                { $unwind: {
-                        path: "$following",
-                        preserveNullAndEmptyArrays: true
-                    } },
-                { $lookup: {
-                        from: 'users',
-                        localField: 'following',
-                        foreignField: '_id',
-                        as: 'following'
-                    } },
-                { $unset: [
-                        "following.__v",
-                        "followers.__v",
-                        "__v",
-                        "password",
-                        "following.password",
-                        "followers.password"
-                    ] }
-            ]));
+                { $unset: ["password", "__v"] }
+            ]);
         });
     }
     getUserById(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            // await this.existing(id);
-            // return this.userModel.findOne({ _id: new Types.ObjectId(id) });
+            //return this.userModel.findOne({ _id: new Types.ObjectId(id) });
+            yield this.existing(id);
             return (yield this.userModel.aggregate([
-                { $match: { _id: new mongoose_1.Types.ObjectId(id) }
-                },
-                { $unwind: {
-                        path: "$followers",
-                        preserveNullAndEmptyArrays: true
+                { $match: { "_id": new mongoose_1.Types.ObjectId(id) } },
+                { $lookup: {
+                        from: "users",
+                        localField: "following",
+                        foreignField: "_id",
+                        as: "following"
                     } },
                 { $lookup: {
-                        from: 'users',
-                        localField: 'followers',
-                        foreignField: '_id',
-                        as: 'followers'
+                        from: "users",
+                        localField: "followers",
+                        foreignField: "_id",
+                        as: "followers"
                     } },
-                { $unwind: {
-                        path: "$following",
-                        preserveNullAndEmptyArrays: true
-                    } },
-                { $lookup: {
-                        from: 'users',
-                        localField: 'following',
-                        foreignField: '_id',
-                        as: 'following'
-                    } },
-                { $unset: [
-                        "following.__v",
-                        "followers.__v",
-                        "__v",
-                        "password",
-                        "following.password",
-                        "followers.password"
-                    ] }
+                { $unset: ["password", "__v"] }
             ]))[0];
         });
     }
