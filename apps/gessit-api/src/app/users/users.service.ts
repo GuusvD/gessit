@@ -17,12 +17,45 @@ export class UsersService {
   }
 
   async getUsers(): Promise<User[]> {
-    return this.userModel.find({});
+    //return this.userModel.find({});
+
+    return await this.userModel.aggregate([
+      {$lookup: {
+        from: 'users',
+        localField: 'followers',
+        foreignField: '_id',
+        as: 'followers'
+      }},
+      {$lookup: {
+        from: 'users',
+        localField: 'following',
+        foreignField: '_id',
+        as: 'following'
+      }},
+    ]);
   }
 
   async getUserById(id: string): Promise<User> {
-    await this.existing(id);
-    return this.userModel.findOne({ _id: new Types.ObjectId(id) });
+    // await this.existing(id);
+    // return this.userModel.findOne({ _id: new Types.ObjectId(id) });
+
+    return (await this.userModel.aggregate([
+      {$match: 
+        {_id: new Types.ObjectId(id)}
+      },
+      {$lookup: {
+        from: 'users',
+        localField: 'followers',
+        foreignField: '_id',
+        as: 'followers'
+      }},
+      {$lookup: {
+        from: 'users',
+        localField: 'following',
+        foreignField: '_id',
+        as: 'following'
+      }},
+    ]))[0];
   }
 
   async followUser(req, id: string): Promise<User[]> {

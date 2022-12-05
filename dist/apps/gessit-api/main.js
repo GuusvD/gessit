@@ -2297,13 +2297,43 @@ let UsersService = class UsersService {
     }
     getUsers() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.userModel.find({});
+            //return this.userModel.find({});
+            return yield this.userModel.aggregate([
+                { $lookup: {
+                        from: 'users',
+                        localField: 'followers',
+                        foreignField: '_id',
+                        as: 'followers'
+                    } },
+                { $lookup: {
+                        from: 'users',
+                        localField: 'following',
+                        foreignField: '_id',
+                        as: 'following'
+                    } },
+            ]);
         });
     }
     getUserById(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            yield this.existing(id);
-            return this.userModel.findOne({ _id: new mongoose_1.Types.ObjectId(id) });
+            // await this.existing(id);
+            // return this.userModel.findOne({ _id: new Types.ObjectId(id) });
+            return (yield this.userModel.aggregate([
+                { $match: { _id: new mongoose_1.Types.ObjectId(id) }
+                },
+                { $lookup: {
+                        from: 'users',
+                        localField: 'followers',
+                        foreignField: '_id',
+                        as: 'followers'
+                    } },
+                { $lookup: {
+                        from: 'users',
+                        localField: 'following',
+                        foreignField: '_id',
+                        as: 'following'
+                    } },
+            ]))[0];
         });
     }
     followUser(req, id) {
