@@ -2368,7 +2368,6 @@ let UsersService = class UsersService {
     }
     getUsers() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            //return this.userModel.find({});
             return yield this.userModel.aggregate([
                 { $lookup: {
                         from: "users",
@@ -2388,7 +2387,6 @@ let UsersService = class UsersService {
     }
     getUserById(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            //return this.userModel.findOne({ _id: new Types.ObjectId(id) });
             yield this.existing(id);
             return (yield this.userModel.aggregate([
                 { $match: { "_id": new mongoose_1.Types.ObjectId(id) } },

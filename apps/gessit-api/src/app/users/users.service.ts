@@ -17,7 +17,6 @@ export class UsersService {
   }
 
   async getUsers(): Promise<User[]> {
-    //return this.userModel.find({});
     return await this.userModel.aggregate([
       {$lookup: {
         from: "users",
@@ -36,7 +35,6 @@ export class UsersService {
   }
 
   async getUserById(id: string): Promise<User> {
-    //return this.userModel.findOne({ _id: new Types.ObjectId(id) });
     await this.existing(id);
 
     return (await this.userModel.aggregate([
