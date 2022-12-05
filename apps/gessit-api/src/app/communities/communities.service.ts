@@ -17,11 +17,11 @@ export class CommunitiesService {
 
     async getCommunityById(id: string): Promise<Community> {
         await this.existing(id);
-        return this.communityModel.findOne({ _id: new Types.ObjectId(id) });
+        return await this.communityModel.findOne({ _id: new Types.ObjectId(id) });
     }
 
     async getCommunities(): Promise<Community[]> {
-        return this.communityModel.find({});
+        return await this.communityModel.find({});
     }
 
     async createCommunity(req, createCommunityDto: CreateCommunityDto): Promise<Community> {
@@ -42,7 +42,7 @@ export class CommunitiesService {
             owner: await this.usersService.getUserById(req.user.id)
         });
         
-        return this.communityModel.create(mergedCommunity);
+        return await this.communityModel.create(mergedCommunity);
     }
 
     async joinCommunity(req, id: string): Promise<Community> {
