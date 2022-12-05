@@ -148,7 +148,7 @@ export class ThreadsService {
     async updateThread(req, communityId: string, threadId: string, thread: Partial<Thread>): Promise<Thread> {
         await this.existing(communityId, threadId);
 
-        if ((await this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id) || req.user.roles.includes(Role.Admin)) {
+        if ((await this.getThreadById(communityId, threadId)).creator.equals(req.user.id) || req.user.roles.includes(Role.Admin)) {
             const oldThread = await this.getThreadById(communityId, threadId);
             const newThread = { ...oldThread, ...thread };
     

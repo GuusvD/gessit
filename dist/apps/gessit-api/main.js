@@ -1999,7 +1999,7 @@ let ThreadsService = class ThreadsService {
     updateThread(req, communityId, threadId, thread) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(communityId, threadId);
-            if ((yield this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
+            if ((yield this.getThreadById(communityId, threadId)).creator.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
                 const oldThread = yield this.getThreadById(communityId, threadId);
                 const newThread = Object.assign(Object.assign({}, oldThread), thread);
                 yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $pull: { threads: oldThread } });
