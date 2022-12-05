@@ -613,79 +613,13 @@ let CommunitiesService = class CommunitiesService {
     }
     getCommunityById(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            //await this.existing(id);
-            //return this.communityModel.findOne({ _id: new Types.ObjectId(id) });
-            return (yield this.communityModel.aggregate([
-                { $match: { _id: new mongoose_1.Types.ObjectId(id) }
-                },
-                { $unwind: {
-                        path: "$members",
-                        preserveNullAndEmptyArrays: true
-                    } },
-                { $lookup: {
-                        from: 'users',
-                        localField: 'members',
-                        foreignField: '_id',
-                        as: 'members'
-                    } },
-                { $unwind: {
-                        path: "$threads",
-                        preserveNullAndEmptyArrays: true
-                    } },
-                { $lookup: {
-                        from: 'users',
-                        localField: 'threads.creator',
-                        foreignField: '_id',
-                        as: "threads.creator"
-                    } },
-                { $unset: [
-                        "members.__v",
-                        "owner.__v",
-                        "threads.creator.__v",
-                        "themes.__v",
-                        "__v",
-                        "members.password",
-                        "owner.password",
-                        "threads.creator.password",
-                    ] }
-            ]))[0];
+            yield this.existing(id);
+            return this.communityModel.findOne({ _id: new mongoose_1.Types.ObjectId(id) });
         });
     }
     getCommunities() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            //return this.communityModel.find({});
-            return (yield this.communityModel.aggregate([
-                { $unwind: {
-                        path: "$members",
-                        preserveNullAndEmptyArrays: true
-                    } },
-                { $lookup: {
-                        from: 'users',
-                        localField: 'members',
-                        foreignField: '_id',
-                        as: 'members'
-                    } },
-                { $unwind: {
-                        path: "$threads",
-                        preserveNullAndEmptyArrays: true
-                    } },
-                { $lookup: {
-                        from: 'users',
-                        localField: 'threads.creator',
-                        foreignField: '_id',
-                        as: "threads.creator"
-                    } },
-                { $unset: [
-                        "members.__v",
-                        "owner.__v",
-                        "threads.creator.__v",
-                        "themes.__v",
-                        "__v",
-                        "members.password",
-                        "owner.password",
-                        "threads.creator.password",
-                    ] }
-            ]));
+            return this.communityModel.find({});
         });
     }
     createCommunity(req, createCommunityDto) {

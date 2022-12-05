@@ -16,81 +16,12 @@ export class CommunitiesService {
     constructor(@InjectModel(Community.name) private communityModel: Model<CommunityDocument>, private readonly themesService : ThemesService, @Inject(forwardRef(() => UsersService)) private readonly usersService : UsersService) {}
 
     async getCommunityById(id: string): Promise<Community> {
-        //await this.existing(id);
-        //return this.communityModel.findOne({ _id: new Types.ObjectId(id) });
-
-        return (await this.communityModel.aggregate([
-            {$match: 
-                {_id: new Types.ObjectId(id)}
-            },
-            {$unwind: {
-                path: "$members",
-                preserveNullAndEmptyArrays: true
-            }},
-            {$lookup: {
-                from: 'users',
-                localField: 'members',
-                foreignField: '_id',
-                as: 'members'
-            }},
-            {$unwind: {
-                path: "$threads",
-                preserveNullAndEmptyArrays: true
-            }},
-            {$lookup: {
-                from: 'users',
-                localField: 'threads.creator',
-                foreignField: '_id',
-                as: "threads.creator"
-            }},
-            {$unset: [
-                "members.__v",
-                "owner.__v",
-                "threads.creator.__v",
-                "themes.__v",
-                "__v",
-                "members.password",
-                "owner.password",
-                "threads.creator.password",
-            ]}
-        ]))[0];
+        await this.existing(id);
+        return this.communityModel.findOne({ _id: new Types.ObjectId(id) });
     }
 
     async getCommunities(): Promise<Community[]> {
-        //return this.communityModel.find({});
-
-        return (await this.communityModel.aggregate([
-            {$unwind: {
-                path: "$members",
-                preserveNullAndEmptyArrays: true
-            }},
-            {$lookup: {
-                from: 'users',
-                localField: 'members',
-                foreignField: '_id',
-                as: 'members'
-            }},
-            {$unwind: {
-                path: "$threads",
-                preserveNullAndEmptyArrays: true
-            }},
-            {$lookup: {
-                from: 'users',
-                localField: 'threads.creator',
-                foreignField: '_id',
-                as: "threads.creator"
-            }},
-            {$unset: [
-                "members.__v",
-                "owner.__v",
-                "threads.creator.__v",
-                "themes.__v",
-                "__v",
-                "members.password",
-                "owner.password",
-                "threads.creator.password",
-            ]}
-        ]));
+        return this.communityModel.find({});
     }
 
     async createCommunity(req, createCommunityDto: CreateCommunityDto): Promise<Community> {
