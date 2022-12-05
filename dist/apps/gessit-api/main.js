@@ -456,6 +456,7 @@ const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/com
 const create_community_dto_1 = __webpack_require__("./apps/gessit-api/src/app/communities/create-community.dto.ts");
 const update_community_dto_1 = __webpack_require__("./apps/gessit-api/src/app/communities/update-community.dto.ts");
 const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
+const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
 let CommunitiesController = class CommunitiesController {
     constructor(communityService) {
         this.communityService = communityService;
@@ -497,12 +498,14 @@ let CommunitiesController = class CommunitiesController {
     }
 };
 tslib_1.__decorate([
+    (0, app_module_1.Public)(),
     (0, common_1.Get)(),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", []),
     tslib_1.__metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
 ], CommunitiesController.prototype, "getCommunities", null);
 tslib_1.__decorate([
+    (0, app_module_1.Public)(),
     (0, common_1.Get)(':id'),
     tslib_1.__param(0, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
@@ -957,6 +960,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MessagesController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
+const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
 const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
 const create_message_dto_1 = __webpack_require__("./apps/gessit-api/src/app/messages/create-message.dto.ts");
 const messages_service_1 = __webpack_require__("./apps/gessit-api/src/app/messages/messages.service.ts");
@@ -997,6 +1001,7 @@ let MessagesController = class MessagesController {
     }
 };
 tslib_1.__decorate([
+    (0, app_module_1.Public)(),
     (0, common_1.Get)(':communityId/thread/:threadId/message'),
     tslib_1.__param(0, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__param(1, (0, common_1.Param)('threadId', object_id_pipe_1.ObjectIdPipe)),
@@ -1005,6 +1010,7 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
 ], MessagesController.prototype, "getMessages", null);
 tslib_1.__decorate([
+    (0, app_module_1.Public)(),
     (0, common_1.Get)(':communityId/thread/:threadId/message/:messageId'),
     tslib_1.__param(0, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__param(1, (0, common_1.Param)('threadId', object_id_pipe_1.ObjectIdPipe)),
@@ -1382,6 +1388,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ThemesController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
+const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
 const roles_decorator_1 = __webpack_require__("./apps/gessit-api/src/app/auth/roles.decorator.ts");
 const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
 const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
@@ -1413,12 +1420,14 @@ let ThemesController = class ThemesController {
     }
 };
 tslib_1.__decorate([
+    (0, app_module_1.Public)(),
     (0, common_1.Get)(),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", []),
     tslib_1.__metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
 ], ThemesController.prototype, "getThemes", null);
 tslib_1.__decorate([
+    (0, app_module_1.Public)(),
     (0, common_1.Get)(':id'),
     tslib_1.__param(0, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
@@ -1722,6 +1731,7 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", Promise)
 ], ThreadsController.prototype, "likeThread", null);
 tslib_1.__decorate([
+    (0, app_module_1.Public)(),
     (0, common_1.Post)(':communityId/thread/:threadId/view'),
     tslib_1.__param(0, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__param(1, (0, common_1.Param)('threadId', object_id_pipe_1.ObjectIdPipe)),
