@@ -104,7 +104,7 @@ export class ThreadsService {
                     _id: new Types.ObjectId(),
                     views: 0,
                     creationDate: new Date(),
-                    creator: await this.usersService.getUserById(req.user.id)
+                    creator: (await this.usersService.getUserById(req.user.id))._id
                 });
         
                 return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$push: {threads: newThread}});
@@ -117,7 +117,7 @@ export class ThreadsService {
                 _id: new Types.ObjectId(),
                 views: 0,
                 creationDate: new Date(),
-                creator: await this.usersService.getUserById(req.user.id)
+                creator: (await this.usersService.getUserById(req.user.id))._id
             });
     
             return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$push: {threads: newThread}});
