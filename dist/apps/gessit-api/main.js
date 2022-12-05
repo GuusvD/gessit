@@ -2415,11 +2415,9 @@ let UsersService = class UsersService {
             const loggedInUser = yield this.getUserById(req.user.id);
             if (!(loggedInUser._id.equals(user._id))) {
                 if (!((yield this.userModel.find({ $and: [{ _id: req.user.id }, { following: { $in: new mongoose_1.Types.ObjectId(id) } }] })).length > 0)) {
-                    loggedInUser.following.push(user._id);
-                    user.followers.push(loggedInUser._id);
-                    const loggedInUserNew = yield this.userModel.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
-                    const userNew = yield this.userModel.findOneAndUpdate({ _id: user._id }, user);
-                    return [loggedInUserNew, userNew];
+                    const resultUser = yield this.userModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $push: { "followers": new mongoose_1.Types.ObjectId(req.user.id) } }, { new: true });
+                    const resultLoggedIn = yield this.userModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(req.user.id) }, { $push: { "following": new mongoose_1.Types.ObjectId(id) } }, { new: true });
+                    return [resultLoggedIn, resultUser];
                 }
                 else {
                     throw new validation_exception_1.ValidationException(['Already following this user!']);
@@ -2437,11 +2435,9 @@ let UsersService = class UsersService {
             const loggedInUser = yield this.getUserById(req.user.id);
             if (!(loggedInUser._id.equals(user._id))) {
                 if (!((yield this.userModel.find({ $and: [{ _id: req.user.id }, { following: { $in: new mongoose_1.Types.ObjectId(id) } }] })).length === 0)) {
-                    loggedInUser.following.pull(user._id);
-                    user.followers.pull(loggedInUser._id);
-                    const loggedInUserNew = yield this.userModel.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
-                    const userNew = yield this.userModel.findOneAndUpdate({ _id: user._id }, user);
-                    return [loggedInUserNew, userNew];
+                    const resultUser = yield this.userModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $pull: { "followers": new mongoose_1.Types.ObjectId(req.user.id) } }, { new: true });
+                    const resultLoggedIn = yield this.userModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(req.user.id) }, { $pull: { "following": new mongoose_1.Types.ObjectId(id) } }, { new: true });
+                    return [resultLoggedIn, resultUser];
                 }
                 else {
                     throw new validation_exception_1.ValidationException(['You do not follow this user!']);

@@ -65,13 +65,10 @@ export class UsersService {
 
     if (!(loggedInUser._id.equals(user._id))) {
       if (!((await this.userModel.find({ $and: [ {_id: req.user.id}, {following: { $in : new Types.ObjectId(id)}} ] })).length > 0)) {
-        (loggedInUser.following as any).push(user._id);
-        (user.followers as any).push(loggedInUser._id);
+        const resultUser = await this.userModel.findOneAndUpdate({_id: new Types.ObjectId(id)}, {$push: {"followers": new Types.ObjectId(req.user.id)}}, {new: true});
+        const resultLoggedIn = await this.userModel.findOneAndUpdate({_id: new Types.ObjectId(req.user.id)}, {$push: {"following": new Types.ObjectId(id)}}, {new: true});
     
-        const loggedInUserNew = await this.userModel.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
-        const userNew = await this.userModel.findOneAndUpdate({ _id: user._id }, user);
-    
-        return [loggedInUserNew, userNew];
+        return [resultLoggedIn, resultUser];
       } else {
         throw new ValidationException(['Already following this user!']);
       }
@@ -88,13 +85,10 @@ export class UsersService {
 
     if (!(loggedInUser._id.equals(user._id))) {
       if (!((await this.userModel.find({ $and: [ {_id: req.user.id}, {following: { $in : new Types.ObjectId(id)}} ] })).length === 0)) {
-        (loggedInUser.following as any).pull(user._id);
-        (user.followers as any).pull(loggedInUser._id);
-        
-        const loggedInUserNew = await this.userModel.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
-        const userNew = await this.userModel.findOneAndUpdate({ _id: user._id }, user);
+        const resultUser = await this.userModel.findOneAndUpdate({_id: new Types.ObjectId(id)}, {$pull: {"followers": new Types.ObjectId(req.user.id)}}, {new: true});
+        const resultLoggedIn = await this.userModel.findOneAndUpdate({_id: new Types.ObjectId(req.user.id)}, {$pull: {"following": new Types.ObjectId(id)}}, {new: true});
 
-        return [loggedInUserNew, userNew];
+        return [resultLoggedIn, resultUser];
       } else {
         throw new ValidationException(['You do not follow this user!']);
       }
