@@ -613,13 +613,79 @@ let CommunitiesService = class CommunitiesService {
     }
     getCommunityById(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            yield this.existing(id);
-            return this.communityModel.findOne({ _id: new mongoose_1.Types.ObjectId(id) });
+            //await this.existing(id);
+            //return this.communityModel.findOne({ _id: new Types.ObjectId(id) });
+            return (yield this.communityModel.aggregate([
+                { $match: { _id: new mongoose_1.Types.ObjectId(id) }
+                },
+                { $unwind: {
+                        path: "$members",
+                        preserveNullAndEmptyArrays: true
+                    } },
+                { $lookup: {
+                        from: 'users',
+                        localField: 'members',
+                        foreignField: '_id',
+                        as: 'members'
+                    } },
+                { $unwind: {
+                        path: "$threads",
+                        preserveNullAndEmptyArrays: true
+                    } },
+                { $lookup: {
+                        from: 'users',
+                        localField: 'threads.creator',
+                        foreignField: '_id',
+                        as: "threads.creator"
+                    } },
+                { $unset: [
+                        "members.__v",
+                        "owner.__v",
+                        "threads.creator.__v",
+                        "themes.__v",
+                        "__v",
+                        "members.password",
+                        "owner.password",
+                        "threads.creator.password",
+                    ] }
+            ]))[0];
         });
     }
     getCommunities() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.communityModel.find({});
+            //return this.communityModel.find({});
+            return (yield this.communityModel.aggregate([
+                { $unwind: {
+                        path: "$members",
+                        preserveNullAndEmptyArrays: true
+                    } },
+                { $lookup: {
+                        from: 'users',
+                        localField: 'members',
+                        foreignField: '_id',
+                        as: 'members'
+                    } },
+                { $unwind: {
+                        path: "$threads",
+                        preserveNullAndEmptyArrays: true
+                    } },
+                { $lookup: {
+                        from: 'users',
+                        localField: 'threads.creator',
+                        foreignField: '_id',
+                        as: "threads.creator"
+                    } },
+                { $unset: [
+                        "members.__v",
+                        "owner.__v",
+                        "threads.creator.__v",
+                        "themes.__v",
+                        "__v",
+                        "members.password",
+                        "owner.password",
+                        "threads.creator.password",
+                    ] }
+            ]));
         });
     }
     createCommunity(req, createCommunityDto) {
@@ -2298,12 +2364,20 @@ let UsersService = class UsersService {
     getUsers() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             //return this.userModel.find({});
-            return yield this.userModel.aggregate([
+            return (yield this.userModel.aggregate([
+                { $unwind: {
+                        path: "$followers",
+                        preserveNullAndEmptyArrays: true
+                    } },
                 { $lookup: {
                         from: 'users',
                         localField: 'followers',
                         foreignField: '_id',
                         as: 'followers'
+                    } },
+                { $unwind: {
+                        path: "$following",
+                        preserveNullAndEmptyArrays: true
                     } },
                 { $lookup: {
                         from: 'users',
@@ -2311,7 +2385,15 @@ let UsersService = class UsersService {
                         foreignField: '_id',
                         as: 'following'
                     } },
-            ]);
+                { $unset: [
+                        "following.__v",
+                        "followers.__v",
+                        "__v",
+                        "password",
+                        "following.password",
+                        "followers.password"
+                    ] }
+            ]));
         });
     }
     getUserById(id) {
@@ -2321,11 +2403,19 @@ let UsersService = class UsersService {
             return (yield this.userModel.aggregate([
                 { $match: { _id: new mongoose_1.Types.ObjectId(id) }
                 },
+                { $unwind: {
+                        path: "$followers",
+                        preserveNullAndEmptyArrays: true
+                    } },
                 { $lookup: {
                         from: 'users',
                         localField: 'followers',
                         foreignField: '_id',
                         as: 'followers'
+                    } },
+                { $unwind: {
+                        path: "$following",
+                        preserveNullAndEmptyArrays: true
                     } },
                 { $lookup: {
                         from: 'users',
@@ -2333,6 +2423,14 @@ let UsersService = class UsersService {
                         foreignField: '_id',
                         as: 'following'
                     } },
+                { $unset: [
+                        "following.__v",
+                        "followers.__v",
+                        "__v",
+                        "password",
+                        "following.password",
+                        "followers.password"
+                    ] }
             ]))[0];
         });
     }

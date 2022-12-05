@@ -19,12 +19,20 @@ export class UsersService {
   async getUsers(): Promise<User[]> {
     //return this.userModel.find({});
 
-    return await this.userModel.aggregate([
+    return (await this.userModel.aggregate([
+      {$unwind: {
+        path: "$followers",
+        preserveNullAndEmptyArrays: true
+      }},
       {$lookup: {
         from: 'users',
         localField: 'followers',
         foreignField: '_id',
         as: 'followers'
+      }},
+      {$unwind: {
+        path: "$following",
+        preserveNullAndEmptyArrays: true
       }},
       {$lookup: {
         from: 'users',
@@ -32,7 +40,15 @@ export class UsersService {
         foreignField: '_id',
         as: 'following'
       }},
-    ]);
+      {$unset: [
+        "following.__v",
+        "followers.__v",
+        "__v",
+        "password",
+        "following.password",
+        "followers.password"
+      ]}
+    ]));
   }
 
   async getUserById(id: string): Promise<User> {
@@ -43,11 +59,19 @@ export class UsersService {
       {$match: 
         {_id: new Types.ObjectId(id)}
       },
+      {$unwind: {
+        path: "$followers",
+        preserveNullAndEmptyArrays: true
+      }},
       {$lookup: {
         from: 'users',
         localField: 'followers',
         foreignField: '_id',
         as: 'followers'
+      }},
+      {$unwind: {
+        path: "$following",
+        preserveNullAndEmptyArrays: true
       }},
       {$lookup: {
         from: 'users',
@@ -55,6 +79,14 @@ export class UsersService {
         foreignField: '_id',
         as: 'following'
       }},
+      {$unset: [
+        "following.__v",
+        "followers.__v",
+        "__v",
+        "password",
+        "following.password",
+        "followers.password"
+      ]}
     ]))[0];
   }
 
