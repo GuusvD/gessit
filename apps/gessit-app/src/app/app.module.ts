@@ -21,6 +21,7 @@ import { ThreadsComponent } from './pages/threads/threads/threads.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { AlertModule } from './shared/alert/alert.module';
+import { AuthModule } from './auth/auth.module';
 
 @NgModule({
   declarations: [
@@ -46,9 +47,11 @@ import { AlertModule } from './shared/alert/alert.module';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    AlertModule
+    AlertModule,
+    AuthModule
   ],
   providers: [],
   bootstrap: [AppComponent],
+  exports: []
 })
 export class AppModule {}
