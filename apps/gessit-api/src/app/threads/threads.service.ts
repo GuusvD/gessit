@@ -14,13 +14,84 @@ export class ThreadsService {
     constructor(@InjectModel(Community.name) private communityModel: Model<CommunityDocument>, @InjectModel(Thread.name) private threadModel: Model<ThreadDocument>, private readonly usersService: UsersService, private readonly communitiesService: CommunitiesService) {}
 
     async getThreadById(communityId: string, threadId: string): Promise<Thread> {
-        await this.existing(communityId, threadId);
-        return (await this.communitiesService.getCommunityById(communityId)).threads.filter(p => p._id.equals(new Types.ObjectId(threadId)))[0];
+        //await this.existing(communityId, threadId);
+        //return (await this.communitiesService.getCommunityById(communityId)).threads.filter(p => p._id.equals(new Types.ObjectId(threadId)))[0];
+
+        return (await this.communityModel.aggregate([
+            { $match : { _id : new Types.ObjectId(communityId)}},
+            { $match : { "threads._id" : new Types.ObjectId(threadId)}},
+            { $project : {
+                _id : 0,
+                "threads" : {
+                    $filter : {
+                        input : "$threads",
+                        as : "thread",
+                        cond : { $eq : ["$$thread._id", new Types.ObjectId(threadId)]}
+                    }
+                }}
+            },
+            { $unwind : { path: "$threads", preserveNullAndEmptyArrays: true }},
+            { $lookup : { 
+                from : "users",
+                localField : "threads.creator",
+                foreignField : "_id",
+                as : "threads.creator"
+            }},
+            { $unwind : { path: "$threads.messages", preserveNullAndEmptyArrays: true }},
+            { $unwind : { path: "$threads.messages.creator", preserveNullAndEmptyArrays: true }},
+            { $lookup : {
+                from : "users",
+                localField : "threads.messages.creator",
+                foreignField : "_id",
+                as : "threads.messages.creator"
+             }},
+             { $unset: [
+                "threads.creator.password",
+                "threads.creator.__v",
+                "threads.messages.creator.password",
+                "threads.messages.creator.__v",
+            ]},
+        ]))[0];
     }
 
     async getThreads(communityId: string): Promise<Thread[]> {
-        await this.existing(communityId);
-        return (await this.communitiesService.getCommunityById(communityId)).threads;
+        //await this.existing(communityId);
+        //return (await this.communitiesService.getCommunityById(communityId)).threads;
+
+        return (await this.communityModel.aggregate([
+            { $match : { _id : new Types.ObjectId(communityId)}},
+            { $project : {
+                _id : 0,
+                "threads" : {
+                    $filter : {
+                        input : "$threads",
+                        as : "thread",
+                        cond : true
+                    }
+                }}
+            },
+            { $unwind : { path: "$threads", preserveNullAndEmptyArrays: true }},
+            { $lookup : { 
+                from : "users",
+                localField : "threads.creator",
+                foreignField : "_id",
+                as : "threads.creator"
+            }},
+            { $unwind : { path: "$threads.messages", preserveNullAndEmptyArrays: true }},
+            { $unwind : { path: "$threads.messages.creator", preserveNullAndEmptyArrays: true }},
+            { $lookup : {
+                from : "users",
+                localField : "threads.messages.creator",
+                foreignField : "_id",
+                as : "threads.messages.creator"
+             }},
+             { $unset: [
+                "threads.creator.password",
+                "threads.creator.__v",
+                "threads.messages.creator.password",
+                "threads.messages.creator.__v",
+            ]},
+        ])).map(thread => thread.threads);
     }
 
     async createThread(req, communityId: string, createThreadDto: CreateThreadDto): Promise<Thread> {

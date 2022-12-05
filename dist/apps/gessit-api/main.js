@@ -1877,14 +1877,85 @@ let ThreadsService = class ThreadsService {
     }
     getThreadById(communityId, threadId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            yield this.existing(communityId, threadId);
-            return (yield this.communitiesService.getCommunityById(communityId)).threads.filter(p => p._id.equals(new mongoose_1.Types.ObjectId(threadId)))[0];
+            //await this.existing(communityId, threadId);
+            //return (await this.communitiesService.getCommunityById(communityId)).threads.filter(p => p._id.equals(new Types.ObjectId(threadId)))[0];
+            return (yield this.communityModel.aggregate([
+                { $match: { _id: new mongoose_1.Types.ObjectId(communityId) } },
+                { $match: { "threads._id": new mongoose_1.Types.ObjectId(threadId) } },
+                { $project: {
+                        _id: 0,
+                        "threads": {
+                            $filter: {
+                                input: "$threads",
+                                as: "thread",
+                                cond: { $eq: ["$$thread._id", new mongoose_1.Types.ObjectId(threadId)] }
+                            }
+                        }
+                    }
+                },
+                { $unwind: { path: "$threads", preserveNullAndEmptyArrays: true } },
+                { $lookup: {
+                        from: "users",
+                        localField: "threads.creator",
+                        foreignField: "_id",
+                        as: "threads.creator"
+                    } },
+                { $unwind: { path: "$threads.messages", preserveNullAndEmptyArrays: true } },
+                { $unwind: { path: "$threads.messages.creator", preserveNullAndEmptyArrays: true } },
+                { $lookup: {
+                        from: "users",
+                        localField: "threads.messages.creator",
+                        foreignField: "_id",
+                        as: "threads.messages.creator"
+                    } },
+                { $unset: [
+                        "threads.creator.password",
+                        "threads.creator.__v",
+                        "threads.messages.creator.password",
+                        "threads.messages.creator.__v",
+                    ] },
+            ]))[0];
         });
     }
     getThreads(communityId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            yield this.existing(communityId);
-            return (yield this.communitiesService.getCommunityById(communityId)).threads;
+            //await this.existing(communityId);
+            //return (await this.communitiesService.getCommunityById(communityId)).threads;
+            return (yield this.communityModel.aggregate([
+                { $match: { _id: new mongoose_1.Types.ObjectId(communityId) } },
+                { $project: {
+                        _id: 0,
+                        "threads": {
+                            $filter: {
+                                input: "$threads",
+                                as: "thread",
+                                cond: true
+                            }
+                        }
+                    }
+                },
+                { $unwind: { path: "$threads", preserveNullAndEmptyArrays: true } },
+                { $lookup: {
+                        from: "users",
+                        localField: "threads.creator",
+                        foreignField: "_id",
+                        as: "threads.creator"
+                    } },
+                { $unwind: { path: "$threads.messages", preserveNullAndEmptyArrays: true } },
+                { $unwind: { path: "$threads.messages.creator", preserveNullAndEmptyArrays: true } },
+                { $lookup: {
+                        from: "users",
+                        localField: "threads.messages.creator",
+                        foreignField: "_id",
+                        as: "threads.messages.creator"
+                    } },
+                { $unset: [
+                        "threads.creator.password",
+                        "threads.creator.__v",
+                        "threads.messages.creator.password",
+                        "threads.messages.creator.__v",
+                    ] },
+            ])).map(thread => thread.threads);
         });
     }
     createThread(req, communityId, createThreadDto) {
