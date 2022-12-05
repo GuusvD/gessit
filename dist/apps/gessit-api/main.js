@@ -614,12 +614,12 @@ let CommunitiesService = class CommunitiesService {
     getCommunityById(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(id);
-            return this.communityModel.findOne({ _id: new mongoose_1.Types.ObjectId(id) });
+            return yield this.communityModel.findOne({ _id: new mongoose_1.Types.ObjectId(id) });
         });
     }
     getCommunities() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.communityModel.find({});
+            return yield this.communityModel.find({});
         });
     }
     createCommunity(req, createCommunityDto) {
@@ -631,7 +631,7 @@ let CommunitiesService = class CommunitiesService {
             }
             const themesArray = (yield this.themesService.getThemes()).filter(p => createCommunityDto.themes.includes(p._id.toString()));
             const mergedCommunity = new this.communityModel(Object.assign(Object.assign({}, createCommunityDto), { _id: new mongoose_1.Types.ObjectId(), creationDate: new Date(), ranking: 0, themes: themesArray, owner: yield this.usersService.getUserById(req.user.id) }));
-            return this.communityModel.create(mergedCommunity);
+            return yield this.communityModel.create(mergedCommunity);
         });
     }
     joinCommunity(req, id) {
@@ -1812,13 +1812,132 @@ let ThreadsService = class ThreadsService {
     getThreadById(communityId, threadId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(communityId, threadId);
-            return (yield this.communitiesService.getCommunityById(communityId)).threads.filter(p => p._id.equals(new mongoose_1.Types.ObjectId(threadId)))[0];
+            return (yield this.communityModel.aggregate([
+                { $match: { _id: new mongoose_1.Types.ObjectId(communityId) } },
+                { $match: { "threads._id": new mongoose_1.Types.ObjectId(threadId) } },
+                { $unwind: { path: "$members", preserveNullAndEmptyArrays: true } },
+                { $project: {
+                        _id: 0,
+                        "threads": {
+                            $filter: {
+                                input: "$threads",
+                                as: "thread",
+                                cond: { $eq: ["$$thread._id", new mongoose_1.Types.ObjectId(threadId)] }
+                            }
+                        }
+                    }
+                },
+                { $unwind: { path: "$threads", preserveNullAndEmptyArrays: true } },
+                { $lookup: {
+                        from: "users",
+                        localField: "threads.creator",
+                        foreignField: "_id",
+                        as: "threads.creator"
+                    } },
+                { $unwind: { path: "$threads.messages", preserveNullAndEmptyArrays: true } },
+                { $lookup: {
+                        from: "users",
+                        localField: "threads.messages.creator",
+                        foreignField: "_id",
+                        as: "threads.messages.creator"
+                    } },
+                { $set: {
+                        "threads.messages.creator": "$threads.messages.creator"
+                    } },
+                { $group: {
+                        _id: "$threads._id",
+                        title: {
+                            $first: "$threads.title"
+                        },
+                        content: {
+                            $first: "$threads.content"
+                        },
+                        views: {
+                            $first: "$threads.views"
+                        },
+                        likes: {
+                            $first: "$threads.likes"
+                        },
+                        creationDate: {
+                            $first: "$threads.creationDate"
+                        },
+                        image: {
+                            $first: "$threads.image"
+                        },
+                        messages: {
+                            $push: "$threads.messages"
+                        },
+                        creator: {
+                            $first: "$threads.creator"
+                        }
+                    } },
+                { $unset: ["creator.password", "creator.__v", "messages.creator.password", "messages.creator.__v"] }
+            ]))[0];
         });
     }
     getThreads(communityId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(communityId);
-            return (yield this.communitiesService.getCommunityById(communityId)).threads;
+            return (yield this.communityModel.aggregate([
+                { $match: { _id: new mongoose_1.Types.ObjectId(communityId) } },
+                { $unwind: { path: "$members", preserveNullAndEmptyArrays: true } },
+                { $project: {
+                        _id: 0,
+                        "threads": {
+                            $filter: {
+                                input: "$threads",
+                                as: "thread",
+                                cond: true
+                            }
+                        }
+                    }
+                },
+                { $unwind: { path: "$threads", preserveNullAndEmptyArrays: true } },
+                { $lookup: {
+                        from: "users",
+                        localField: "threads.creator",
+                        foreignField: "_id",
+                        as: "threads.creator"
+                    } },
+                { $unwind: { path: "$threads.messages", preserveNullAndEmptyArrays: true } },
+                { $lookup: {
+                        from: "users",
+                        localField: "threads.messages.creator",
+                        foreignField: "_id",
+                        as: "threads.messages.creator"
+                    } },
+                { $set: {
+                        "threads.messages.creator": "$threads.messages.creator"
+                    } },
+                { $group: {
+                        _id: "$threads._id",
+                        title: {
+                            $first: "$threads.title"
+                        },
+                        content: {
+                            $first: "$threads.content"
+                        },
+                        views: {
+                            $first: "$threads.views"
+                        },
+                        likes: {
+                            $first: "$threads.likes"
+                        },
+                        creationDate: {
+                            $first: "$threads.creationDate"
+                        },
+                        image: {
+                            $first: "$threads.image"
+                        },
+                        messages: {
+                            $push: "$threads.messages"
+                        },
+                        creator: {
+                            $first: "$threads.creator"
+                        }
+                    } },
+                { $unset: ["creator.password", "creator.__v", "messages.creator.password", "messages.creator.__v"] }
+            ]));
         });
     }
     createThread(req, communityId, createThreadDto) {
@@ -1826,7 +1945,7 @@ let ThreadsService = class ThreadsService {
             yield this.existing(communityId);
             if ((yield this.communitiesService.getCommunityById(communityId)).members.filter(p => p._id.equals(req.user.id)).length === 0) {
                 if ((yield this.communitiesService.getCommunityById(communityId)).owner._id.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
-                    const newThread = new this.threadModel(Object.assign(Object.assign({}, createThreadDto), { _id: new mongoose_1.Types.ObjectId(), views: 0, creationDate: new Date(), creator: yield this.usersService.getUserById(req.user.id) }));
+                    const newThread = new this.threadModel(Object.assign(Object.assign({}, createThreadDto), { _id: new mongoose_1.Types.ObjectId(), views: 0, creationDate: new Date(), creator: req.user.id }));
                     return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $push: { threads: newThread } });
                 }
                 else {
@@ -1834,7 +1953,7 @@ let ThreadsService = class ThreadsService {
                 }
             }
             else {
-                const newThread = new this.threadModel(Object.assign(Object.assign({}, createThreadDto), { _id: new mongoose_1.Types.ObjectId(), views: 0, creationDate: new Date(), creator: yield this.usersService.getUserById(req.user.id) }));
+                const newThread = new this.threadModel(Object.assign(Object.assign({}, createThreadDto), { _id: new mongoose_1.Types.ObjectId(), views: 0, creationDate: new Date(), creator: req.user.id }));
                 return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $push: { threads: newThread } });
             }
         });
@@ -1843,7 +1962,7 @@ let ThreadsService = class ThreadsService {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(communityId, threadId);
             let community;
-            if ((yield this.getThreadById(communityId, threadId)).likes.filter(p => p._id.equals(req.user.id)).length === 0) {
+            if ((yield this.communityModel.find({ $and: [{ _id: new mongoose_1.Types.ObjectId(communityId) }, { threads: { $elemMatch: { _id: new mongoose_1.Types.ObjectId(threadId), likes: { $in: [req.user.id] } } } }] })).length === 0) {
                 community = yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId), "threads._id": new mongoose_1.Types.ObjectId(threadId) }, { $push: { "threads.$.likes": req.user.id } }, { new: true });
             }
             else {
@@ -1862,7 +1981,7 @@ let ThreadsService = class ThreadsService {
     updateThread(req, communityId, threadId, thread) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(communityId, threadId);
-            if ((yield this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
+            if ((yield this.getThreadById(communityId, threadId)).creator.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
                 const oldThread = yield this.getThreadById(communityId, threadId);
                 const newThread = Object.assign(Object.assign({}, oldThread), thread);
                 yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $pull: { threads: oldThread } });
@@ -1876,7 +1995,7 @@ let ThreadsService = class ThreadsService {
     deleteThread(req, communityId, threadId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(communityId, threadId);
-            if ((yield this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
+            if ((yield this.getThreadById(communityId, threadId)).creator.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
                 const thread = yield this.getThreadById(communityId, threadId);
                 return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $pull: { threads: thread } });
             }
@@ -2297,13 +2416,42 @@ let UsersService = class UsersService {
     }
     getUsers() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return this.userModel.find({});
+            return yield this.userModel.aggregate([
+                { $lookup: {
+                        from: "users",
+                        localField: "following",
+                        foreignField: "_id",
+                        as: "following"
+                    } },
+                { $lookup: {
+                        from: "users",
+                        localField: "followers",
+                        foreignField: "_id",
+                        as: "followers"
+                    } },
+                { $unset: ["password", "__v"] }
+            ]);
         });
     }
     getUserById(id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(id);
-            return this.userModel.findOne({ _id: new mongoose_1.Types.ObjectId(id) });
+            return (yield this.userModel.aggregate([
+                { $match: { "_id": new mongoose_1.Types.ObjectId(id) } },
+                { $lookup: {
+                        from: "users",
+                        localField: "following",
+                        foreignField: "_id",
+                        as: "following"
+                    } },
+                { $lookup: {
+                        from: "users",
+                        localField: "followers",
+                        foreignField: "_id",
+                        as: "followers"
+                    } },
+                { $unset: ["password", "__v"] }
+            ]))[0];
         });
     }
     followUser(req, id) {
@@ -2313,11 +2461,9 @@ let UsersService = class UsersService {
             const loggedInUser = yield this.getUserById(req.user.id);
             if (!(loggedInUser._id.equals(user._id))) {
                 if (!((yield this.userModel.find({ $and: [{ _id: req.user.id }, { following: { $in: new mongoose_1.Types.ObjectId(id) } }] })).length > 0)) {
-                    loggedInUser.following.push(user._id);
-                    user.followers.push(loggedInUser._id);
-                    const loggedInUserNew = yield this.userModel.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
-                    const userNew = yield this.userModel.findOneAndUpdate({ _id: user._id }, user);
-                    return [loggedInUserNew, userNew];
+                    const resultUser = yield this.userModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $push: { "followers": new mongoose_1.Types.ObjectId(req.user.id) } }, { new: true });
+                    const resultLoggedIn = yield this.userModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(req.user.id) }, { $push: { "following": new mongoose_1.Types.ObjectId(id) } }, { new: true });
+                    return [resultLoggedIn, resultUser];
                 }
                 else {
                     throw new validation_exception_1.ValidationException(['Already following this user!']);
@@ -2335,11 +2481,9 @@ let UsersService = class UsersService {
             const loggedInUser = yield this.getUserById(req.user.id);
             if (!(loggedInUser._id.equals(user._id))) {
                 if (!((yield this.userModel.find({ $and: [{ _id: req.user.id }, { following: { $in: new mongoose_1.Types.ObjectId(id) } }] })).length === 0)) {
-                    loggedInUser.following.pull(user._id);
-                    user.followers.pull(loggedInUser._id);
-                    const loggedInUserNew = yield this.userModel.findOneAndUpdate({ _id: loggedInUser._id }, loggedInUser);
-                    const userNew = yield this.userModel.findOneAndUpdate({ _id: user._id }, user);
-                    return [loggedInUserNew, userNew];
+                    const resultUser = yield this.userModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $pull: { "followers": new mongoose_1.Types.ObjectId(req.user.id) } }, { new: true });
+                    const resultLoggedIn = yield this.userModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(req.user.id) }, { $pull: { "following": new mongoose_1.Types.ObjectId(id) } }, { new: true });
+                    return [resultLoggedIn, resultUser];
                 }
                 else {
                     throw new validation_exception_1.ValidationException(['You do not follow this user!']);
