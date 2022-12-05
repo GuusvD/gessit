@@ -104,7 +104,7 @@ export class ThreadsService {
                     _id: new Types.ObjectId(),
                     views: 0,
                     creationDate: new Date(),
-                    creator: (await this.usersService.getUserById(req.user.id))._id
+                    creator: req.user.id
                 });
         
                 return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$push: {threads: newThread}});
@@ -117,7 +117,7 @@ export class ThreadsService {
                 _id: new Types.ObjectId(),
                 views: 0,
                 creationDate: new Date(),
-                creator: (await this.usersService.getUserById(req.user.id))._id
+                creator: req.user.id
             });
     
             return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$push: {threads: newThread}});
@@ -129,7 +129,7 @@ export class ThreadsService {
 
         let community;
 
-        if ((await this.getThreadById(communityId, threadId)).likes.filter(p => p._id.equals(req.user.id)).length === 0) {
+        if ((await this.communityModel.find({ $and: [{_id: new Types.ObjectId(communityId)}, {threads: {$elemMatch: {_id: new Types.ObjectId(threadId), likes: {$in: [req.user.id]}}}}]})).length === 0) {
             community = await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId), "threads._id": new Types.ObjectId(threadId)}, {$push: {"threads.$.likes": req.user.id}}, {new: true});
         } else {
             community = await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId), "threads._id": new Types.ObjectId(threadId)}, {$pull: {"threads.$.likes": req.user.id}}, {new: true});
