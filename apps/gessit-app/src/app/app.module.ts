@@ -16,8 +16,11 @@ import * as CommunitiesDetailComponent from './pages/communities/detail/detail.c
 import * as ThreadsDetailComponent from './pages/threads/detail/detail.component';
 import * as CommunitiesEditComponent from './pages/communities/edit/edit.component';
 import * as ThreadsEditComponent from './pages/threads/edit/edit.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ThreadsComponent } from './pages/threads/threads/threads.component';
+import { LoginComponent } from './auth/login/login.component';
+import { RegisterComponent } from './auth/register/register.component';
+import { AlertModule } from './shared/alert/alert.module';
 
 @NgModule({
   declarations: [
@@ -29,6 +32,8 @@ import { ThreadsComponent } from './pages/threads/threads/threads.component';
     CommunitiesComponent,
     AboutComponent,
     ThreadsComponent,
+    LoginComponent,
+    RegisterComponent,
     CommunitiesDetailComponent.DetailComponent,
     ThreadsDetailComponent.DetailComponent,
     CommunitiesEditComponent.EditComponent,
@@ -40,6 +45,8 @@ import { ThreadsComponent } from './pages/threads/threads/threads.component';
     NgbModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
+    AlertModule
   ],
   providers: [],
   bootstrap: [AppComponent],

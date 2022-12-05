@@ -1,7 +1,9 @@
+import { Types } from 'mongoose';
+
 export * from '../lib/data.module';
 
 export interface IUser {
-    _id: string;
+    _id: Types.ObjectId;
     username: string;
     birthDate: Date;
     emailAddress: string;
@@ -9,10 +11,11 @@ export interface IUser {
     password: string;
     registerDate: Date;
     image: string;
+    token: string;
 }
 
 export class User implements IUser {
-    _id: string = '';
+    _id: Types.ObjectId = new Types.ObjectId();
     username: string = '';
     birthDate: Date = new Date();
     emailAddress: string = '';
@@ -20,4 +23,5 @@ export class User implements IUser {
     password: string = '';
     registerDate: Date = new Date();
     image: string = '';
+    token: string = '';
 }

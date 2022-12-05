@@ -6,8 +6,12 @@ import * as ThreadsDetailComponent from './pages/threads/detail/detail.component
 import * as CommunitiesEditComponent from './pages/communities/edit/edit.component';
 import * as ThreadsEditComponent from './pages/threads/edit/edit.component';
 import { HomepageComponent } from './pages/homepage/homepage.component';
+import { LoginComponent } from './auth/login/login.component';
+import { RegisterComponent } from './auth/register/register.component';
 
 export const appRoutes: Route[] = [
+    { path: 'login', pathMatch: 'full', component: LoginComponent },
+    { path: 'register', pathMatch: 'full', component: RegisterComponent },
     { path: 'homepage', pathMatch: 'full', component: HomepageComponent },
     { path: 'about', pathMatch: 'full', component: AboutComponent },
     { path: 'communities', pathMatch: 'full', component: CommunitiesComponent },

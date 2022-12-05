@@ -677,7 +677,7 @@ let CommunitiesService = class CommunitiesService {
                     updatedObject = { themes };
                 }
                 updatedObject = Object.assign(Object.assign({}, updateCommunityDto), updatedObject);
-                return this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, updatedObject);
+                return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, updatedObject);
             }
             else {
                 throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
@@ -688,7 +688,7 @@ let CommunitiesService = class CommunitiesService {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(id);
             if ((yield this.getCommunityById(id)).owner._id.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
-                return this.communityModel.findOneAndDelete({ _id: new mongoose_1.Types.ObjectId(id) });
+                return yield this.communityModel.findOneAndDelete({ _id: new mongoose_1.Types.ObjectId(id) });
             }
             else {
                 throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);

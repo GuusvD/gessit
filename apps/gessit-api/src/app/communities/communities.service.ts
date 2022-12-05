@@ -99,7 +99,7 @@ export class CommunitiesService {
     
             updatedObject = { ...updateCommunityDto, ...updatedObject };
     
-            return this.communityModel.findOneAndUpdate({ _id: new Types.ObjectId(id) }, updatedObject);
+            return await this.communityModel.findOneAndUpdate({ _id: new Types.ObjectId(id) }, updatedObject);
         } else {
             throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
         }
@@ -109,7 +109,7 @@ export class CommunitiesService {
         await this.existing(id);
 
         if ((await this.getCommunityById(id)).owner._id.equals(req.user.id) || req.user.roles.includes(Role.Admin)) {
-            return this.communityModel.findOneAndDelete({ _id: new Types.ObjectId(id) });
+            return await this.communityModel.findOneAndDelete({ _id: new Types.ObjectId(id) });
         } else {
             throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
         }
