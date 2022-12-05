@@ -162,7 +162,7 @@ export class ThreadsService {
     async deleteThread(req, communityId: string, threadId: string): Promise<Thread> {
         await this.existing(communityId, threadId);
 
-        if ((await this.getThreadById(communityId, threadId)).creator._id.equals(req.user.id) || req.user.roles.includes(Role.Admin)) {
+        if ((await this.getThreadById(communityId, threadId)).creator.equals(req.user.id) || req.user.roles.includes(Role.Admin)) {
             const thread = await this.getThreadById(communityId, threadId);
             return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$pull: {threads: thread}});
         } else {
