@@ -44,6 +44,18 @@ export class User {
         ref: 'User'
     })
     followers: [Types.ObjectId];
+
+    @Prop({
+        ref: 'Community',
+        default: []
+    })
+    createdCommunities: [Types.ObjectId];
+
+    @Prop({
+        ref: 'Community',
+        default: []
+    })
+    joinedCommunities: [Types.ObjectId];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -55,6 +55,41 @@ export class UsersService {
     ]))[0];
   }
 
+  async addJoinedCommunity(communityId: Types.ObjectId, userId: Types.ObjectId): Promise<User> {
+    await this.existing(userId.toString());
+
+    return await this.userModel.findOneAndUpdate({ _id: userId }, { $push: { joinedCommunities: communityId } }, {new: true});
+  }
+
+  async addCreatedCommunity(communityId: Types.ObjectId, userId: Types.ObjectId): Promise<User> {
+    await this.existing(userId.toString());
+    const user = await this.userModel.findOne({ _id: userId });
+
+    for await (const createdCommunityId of user.createdCommunities) {
+      await this.communityModel.updateMany({ _id: new Types.ObjectId(createdCommunityId), "owner._id": new Types.ObjectId(userId) }, { $push:  {"owner.$[_id]createdCommunities": communityId } } );
+    }
+
+    return await this.userModel.findOneAndUpdate({ _id: userId }, { $push: { createdCommunities: communityId } }, {new: true});
+  }
+
+  async removeJoinedCommunity(communityId: Types.ObjectId, userId: Types.ObjectId): Promise<User> {
+    await this.existing(userId.toString());
+
+    const community = await this.communityModel.findOne({ _id: communityId });
+
+    if(community.owner._id.equals(userId)) {
+      await this.communityModel.updateMany({ _id: communityId, "owner._id": userId }, { $pull:  {"owner.$.joinedCommunities": communityId } } );
+    }
+
+    return await this.userModel.findOneAndUpdate({ _id: userId }, { $pull: { joinedCommunities: communityId } }, {new: true});
+  }
+
+  async removeCreatedCommunity(communityId: Types.ObjectId, userId: Types.ObjectId): Promise<User> {
+    await this.existing(userId.toString());
+  
+    return await this.userModel.findOneAndUpdate({ _id: userId }, { $pull: { createdCommunities: communityId } }, {new: true});
+  }
+
   async followUser(req, id: string): Promise<User[]> {
     await this.existing(id);
 

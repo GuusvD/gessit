@@ -16,6 +16,16 @@ export class CommunitiesController {
     return await this.communityService.getCommunities();
   }
 
+  @Get('/joined')
+  async getAllJoinedCommunities(@Req() req): Promise<Community[]> {
+    return await this.communityService.getJoinedCommunities(req);
+  }
+
+  @Get('/created')
+  async getAllCreatedCommunities(@Req() req): Promise<Community[]> {
+    return await this.communityService.getCreatedCommunities(req);
+  }
+
   @Public()
   @Get(':id')
   async getCommunityById(@Param('id', ObjectIdPipe) id: string): Promise<Community> {

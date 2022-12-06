@@ -223,7 +223,7 @@ let AuthService = class AuthService {
     }
     login(user) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const payload = { username: user.username, sub: user.userId };
+            const payload = { id: user._id, username: user.username, roles: user.roles };
             return {
                 access_token: this.jwtService.sign(payload),
             };
@@ -447,7 +447,7 @@ exports.RolesGuard = RolesGuard;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommunitiesController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -464,6 +464,16 @@ let CommunitiesController = class CommunitiesController {
     getCommunities() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return yield this.communityService.getCommunities();
+        });
+    }
+    getAllJoinedCommunities(req) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.communityService.getJoinedCommunities(req);
+        });
+    }
+    getAllCreatedCommunities(req) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.communityService.getCreatedCommunities(req);
         });
     }
     getCommunityById(id) {
@@ -505,20 +515,34 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
 ], CommunitiesController.prototype, "getCommunities", null);
 tslib_1.__decorate([
+    (0, common_1.Get)('/joined'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object]),
+    tslib_1.__metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+], CommunitiesController.prototype, "getAllJoinedCommunities", null);
+tslib_1.__decorate([
+    (0, common_1.Get)('/created'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object]),
+    tslib_1.__metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+], CommunitiesController.prototype, "getAllCreatedCommunities", null);
+tslib_1.__decorate([
     (0, app_module_1.Public)(),
     (0, common_1.Get)(':id'),
     tslib_1.__param(0, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [String]),
-    tslib_1.__metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+    tslib_1.__metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], CommunitiesController.prototype, "getCommunityById", null);
 tslib_1.__decorate([
     (0, common_1.Post)(),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_d = typeof create_community_dto_1.CreateCommunityDto !== "undefined" && create_community_dto_1.CreateCommunityDto) === "function" ? _d : Object]),
-    tslib_1.__metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_f = typeof create_community_dto_1.CreateCommunityDto !== "undefined" && create_community_dto_1.CreateCommunityDto) === "function" ? _f : Object]),
+    tslib_1.__metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], CommunitiesController.prototype, "createCommunity", null);
 tslib_1.__decorate([
     (0, common_1.Post)(':id/join'),
@@ -526,7 +550,7 @@ tslib_1.__decorate([
     tslib_1.__param(1, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [Object, String]),
-    tslib_1.__metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+    tslib_1.__metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], CommunitiesController.prototype, "joinCommunity", null);
 tslib_1.__decorate([
     (0, common_1.Post)(':id/leave'),
@@ -534,7 +558,7 @@ tslib_1.__decorate([
     tslib_1.__param(1, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [Object, String]),
-    tslib_1.__metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+    tslib_1.__metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
 ], CommunitiesController.prototype, "leaveCommunity", null);
 tslib_1.__decorate([
     (0, common_1.Patch)(':id'),
@@ -542,8 +566,8 @@ tslib_1.__decorate([
     tslib_1.__param(1, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__param(2, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, String, typeof (_h = typeof update_community_dto_1.UpdateCommunityDto !== "undefined" && update_community_dto_1.UpdateCommunityDto) === "function" ? _h : Object]),
-    tslib_1.__metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+    tslib_1.__metadata("design:paramtypes", [Object, String, typeof (_k = typeof update_community_dto_1.UpdateCommunityDto !== "undefined" && update_community_dto_1.UpdateCommunityDto) === "function" ? _k : Object]),
+    tslib_1.__metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
 ], CommunitiesController.prototype, "updateCommunity", null);
 tslib_1.__decorate([
     (0, common_1.Delete)(':id'),
@@ -551,7 +575,7 @@ tslib_1.__decorate([
     tslib_1.__param(1, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [Object, String]),
-    tslib_1.__metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+    tslib_1.__metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
 ], CommunitiesController.prototype, "deleteCommunity", null);
 CommunitiesController = tslib_1.__decorate([
     (0, common_1.Controller)('community'),
@@ -625,6 +649,48 @@ let CommunitiesService = class CommunitiesService {
             return yield this.communityModel.find({});
         });
     }
+    getJoinedCommunities(req) {
+        var e_1, _a;
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const joinedCommunities = [];
+            const user = yield this.usersService.getUserById(req.user.id);
+            try {
+                for (var _b = tslib_1.__asyncValues(user.joinedCommunities), _c; _c = yield _b.next(), !_c.done;) {
+                    const communityId = _c.value;
+                    joinedCommunities.push(yield this.getCommunityById(communityId.toString()));
+                }
+            }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) yield _a.call(_b);
+                }
+                finally { if (e_1) throw e_1.error; }
+            }
+            return joinedCommunities;
+        });
+    }
+    getCreatedCommunities(req) {
+        var e_2, _a;
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const createdCommunities = [];
+            const user = yield this.usersService.getUserById(req.user.id);
+            try {
+                for (var _b = tslib_1.__asyncValues(user.createdCommunities), _c; _c = yield _b.next(), !_c.done;) {
+                    const communityId = _c.value;
+                    createdCommunities.push(yield this.getCommunityById(communityId.toString()));
+                }
+            }
+            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) yield _a.call(_b);
+                }
+                finally { if (e_2) throw e_2.error; }
+            }
+            return createdCommunities;
+        });
+    }
     createCommunity(req, createCommunityDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             if (createCommunityDto.themes) {
@@ -634,7 +700,10 @@ let CommunitiesService = class CommunitiesService {
             }
             const themesArray = (yield this.themesService.getThemes()).filter(p => createCommunityDto.themes.includes(p._id.toString()));
             const mergedCommunity = new this.communityModel(Object.assign(Object.assign({}, createCommunityDto), { _id: new mongoose_1.Types.ObjectId(), creationDate: new Date(), ranking: 0, themes: themesArray, owner: yield this.usersService.getUserById(req.user.id) }));
-            return yield this.communityModel.create(mergedCommunity);
+            yield this.usersService.addCreatedCommunity(mergedCommunity._id, new mongoose_1.Types.ObjectId(req.user.id));
+            const community = yield this.communityModel.create(mergedCommunity);
+            yield this.communityModel.updateMany({ _id: mergedCommunity._id, "owner._id": new mongoose_1.Types.ObjectId(req.user.id) }, { $push: { "owner.$[_id]createdCommunities": mergedCommunity._id } });
+            return community;
         });
     }
     joinCommunity(req, id) {
@@ -646,7 +715,10 @@ let CommunitiesService = class CommunitiesService {
             if ((yield this.getCommunityById(id)).members.filter(p => p._id.equals(req.user.id)).length > 0) {
                 throw new validation_exception_1.ValidationException(['Already part of this community!']);
             }
-            return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $push: { members: (yield this.usersService.getUserById(req.user.id))._id } });
+            yield this.usersService.addJoinedCommunity(new mongoose_1.Types.ObjectId(id), new mongoose_1.Types.ObjectId(req.user.id));
+            const community = yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $push: { members: (yield this.usersService.getUserById(req.user.id))._id } });
+            yield this.communityModel.updateMany({ _id: new mongoose_1.Types.ObjectId(id), "owner._id": new mongoose_1.Types.ObjectId(req.user.id) }, { $push: { "owner.$[_id]joinedCommunities": new mongoose_1.Types.ObjectId(id) } });
+            return community;
         });
     }
     leaveCommunity(req, id) {
@@ -658,7 +730,10 @@ let CommunitiesService = class CommunitiesService {
             if ((yield this.getCommunityById(id)).members.filter(p => p._id.equals(req.user.id)).length === 0) {
                 throw new validation_exception_1.ValidationException(['Not part of this community!']);
             }
-            return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $pull: { members: (yield this.usersService.getUserById(req.user.id))._id } });
+            yield this.usersService.removeJoinedCommunity(new mongoose_1.Types.ObjectId(id), new mongoose_1.Types.ObjectId(req.user.id));
+            const community = yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $pull: { members: (yield this.usersService.getUserById(req.user.id))._id } });
+            yield this.communityModel.updateMany({ _id: new mongoose_1.Types.ObjectId(id), "owner._id": new mongoose_1.Types.ObjectId(req.user.id) }, { $pull: { "owner.$[_id]joinedCommunities": new mongoose_1.Types.ObjectId(id) } });
+            return community;
         });
     }
     updateCommunity(req, id, updateCommunityDto) {
@@ -688,9 +763,27 @@ let CommunitiesService = class CommunitiesService {
         });
     }
     deleteCommunity(req, id) {
+        var e_3, _a;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(id);
+            const community = yield this.communityModel.findOne({ _id: new mongoose_1.Types.ObjectId(id) });
+            const creator = yield this.usersService.getUserById(community.owner._id.toString());
             if ((yield this.getCommunityById(id)).owner._id.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
+                try {
+                    for (var _b = tslib_1.__asyncValues(community.members), _c; _c = yield _b.next(), !_c.done;) {
+                        const memberId = _c.value;
+                        yield this.usersService.removeJoinedCommunity(new mongoose_1.Types.ObjectId(community._id), new mongoose_1.Types.ObjectId(memberId));
+                    }
+                }
+                catch (e_3_1) { e_3 = { error: e_3_1 }; }
+                finally {
+                    try {
+                        if (_c && !_c.done && (_a = _b.return)) yield _a.call(_b);
+                    }
+                    finally { if (e_3) throw e_3.error; }
+                }
+                ;
+                yield this.usersService.removeCreatedCommunity(new mongoose_1.Types.ObjectId(id), new mongoose_1.Types.ObjectId(creator._id));
                 return yield this.communityModel.findOneAndDelete({ _id: new mongoose_1.Types.ObjectId(id) });
             }
             else {
@@ -2242,6 +2335,20 @@ tslib_1.__decorate([
     }),
     tslib_1.__metadata("design:type", Array)
 ], User.prototype, "followers", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)({
+        ref: 'Community',
+        default: []
+    }),
+    tslib_1.__metadata("design:type", Array)
+], User.prototype, "createdCommunities", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)({
+        ref: 'Community',
+        default: []
+    }),
+    tslib_1.__metadata("design:type", Array)
+], User.prototype, "joinedCommunities", void 0);
 User = tslib_1.__decorate([
     (0, mongoose_1.Schema)()
 ], User);
@@ -2462,6 +2569,49 @@ let UsersService = class UsersService {
                     } },
                 { $unset: ["password", "__v"] }
             ]))[0];
+        });
+    }
+    addJoinedCommunity(communityId, userId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(userId.toString());
+            return yield this.userModel.findOneAndUpdate({ _id: userId }, { $push: { joinedCommunities: communityId } }, { new: true });
+        });
+    }
+    addCreatedCommunity(communityId, userId) {
+        var e_1, _a;
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(userId.toString());
+            const user = yield this.userModel.findOne({ _id: userId });
+            try {
+                for (var _b = tslib_1.__asyncValues(user.createdCommunities), _c; _c = yield _b.next(), !_c.done;) {
+                    const createdCommunityId = _c.value;
+                    yield this.communityModel.updateMany({ _id: new mongoose_1.Types.ObjectId(createdCommunityId), "owner._id": new mongoose_1.Types.ObjectId(userId) }, { $push: { "owner.$[_id]createdCommunities": communityId } });
+                }
+            }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) yield _a.call(_b);
+                }
+                finally { if (e_1) throw e_1.error; }
+            }
+            return yield this.userModel.findOneAndUpdate({ _id: userId }, { $push: { createdCommunities: communityId } }, { new: true });
+        });
+    }
+    removeJoinedCommunity(communityId, userId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(userId.toString());
+            const community = yield this.communityModel.findOne({ _id: communityId });
+            if (community.owner._id.equals(userId)) {
+                yield this.communityModel.updateMany({ _id: communityId, "owner._id": userId }, { $pull: { "owner.$.joinedCommunities": communityId } });
+            }
+            return yield this.userModel.findOneAndUpdate({ _id: userId }, { $pull: { joinedCommunities: communityId } }, { new: true });
+        });
+    }
+    removeCreatedCommunity(communityId, userId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(userId.toString());
+            return yield this.userModel.findOneAndUpdate({ _id: userId }, { $pull: { createdCommunities: communityId } }, { new: true });
         });
     }
     followUser(req, id) {
