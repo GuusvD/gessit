@@ -223,8 +223,14 @@ let AuthService = class AuthService {
     }
     login(user) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const payload = { username: user.username, sub: user.userId };
+            const payload = { id: user._id, username: user.username, roles: user.roles };
+            const loggedInUser = yield this.usersService.getUserByUsername(user.username);
             return {
+                _id: loggedInUser._id,
+                username: loggedInUser.username,
+                emailAddress: loggedInUser.emailAddress,
+                roles: loggedInUser.roles,
+                image: loggedInUser.image,
                 access_token: this.jwtService.sign(payload),
             };
         });
@@ -447,7 +453,7 @@ exports.RolesGuard = RolesGuard;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommunitiesController = void 0;
 const tslib_1 = __webpack_require__("tslib");
@@ -456,9 +462,20 @@ const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/com
 const create_community_dto_1 = __webpack_require__("./apps/gessit-api/src/app/communities/create-community.dto.ts");
 const update_community_dto_1 = __webpack_require__("./apps/gessit-api/src/app/communities/update-community.dto.ts");
 const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
+const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
 let CommunitiesController = class CommunitiesController {
     constructor(communityService) {
         this.communityService = communityService;
+    }
+    getAllJoinedCommunities(req) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.communityService.getJoinedCommunities(req);
+        });
+    }
+    getAllCreatedCommunities(req) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.communityService.getCreatedCommunities(req);
+        });
     }
     getCommunities() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -497,25 +514,41 @@ let CommunitiesController = class CommunitiesController {
     }
 };
 tslib_1.__decorate([
+    (0, common_1.Get)('/joined'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object]),
+    tslib_1.__metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+], CommunitiesController.prototype, "getAllJoinedCommunities", null);
+tslib_1.__decorate([
+    (0, common_1.Get)('/created'),
+    tslib_1.__param(0, (0, common_1.Req)()),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", [Object]),
+    tslib_1.__metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+], CommunitiesController.prototype, "getAllCreatedCommunities", null);
+tslib_1.__decorate([
+    (0, app_module_1.Public)(),
     (0, common_1.Get)(),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", []),
-    tslib_1.__metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
+    tslib_1.__metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
 ], CommunitiesController.prototype, "getCommunities", null);
 tslib_1.__decorate([
+    (0, app_module_1.Public)(),
     (0, common_1.Get)(':id'),
     tslib_1.__param(0, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [String]),
-    tslib_1.__metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+    tslib_1.__metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
 ], CommunitiesController.prototype, "getCommunityById", null);
 tslib_1.__decorate([
     (0, common_1.Post)(),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__param(1, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, typeof (_d = typeof create_community_dto_1.CreateCommunityDto !== "undefined" && create_community_dto_1.CreateCommunityDto) === "function" ? _d : Object]),
-    tslib_1.__metadata("design:returntype", typeof (_e = typeof Promise !== "undefined" && Promise) === "function" ? _e : Object)
+    tslib_1.__metadata("design:paramtypes", [Object, typeof (_f = typeof create_community_dto_1.CreateCommunityDto !== "undefined" && create_community_dto_1.CreateCommunityDto) === "function" ? _f : Object]),
+    tslib_1.__metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
 ], CommunitiesController.prototype, "createCommunity", null);
 tslib_1.__decorate([
     (0, common_1.Post)(':id/join'),
@@ -523,7 +556,7 @@ tslib_1.__decorate([
     tslib_1.__param(1, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [Object, String]),
-    tslib_1.__metadata("design:returntype", typeof (_f = typeof Promise !== "undefined" && Promise) === "function" ? _f : Object)
+    tslib_1.__metadata("design:returntype", typeof (_h = typeof Promise !== "undefined" && Promise) === "function" ? _h : Object)
 ], CommunitiesController.prototype, "joinCommunity", null);
 tslib_1.__decorate([
     (0, common_1.Post)(':id/leave'),
@@ -531,7 +564,7 @@ tslib_1.__decorate([
     tslib_1.__param(1, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [Object, String]),
-    tslib_1.__metadata("design:returntype", typeof (_g = typeof Promise !== "undefined" && Promise) === "function" ? _g : Object)
+    tslib_1.__metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
 ], CommunitiesController.prototype, "leaveCommunity", null);
 tslib_1.__decorate([
     (0, common_1.Patch)(':id'),
@@ -539,8 +572,8 @@ tslib_1.__decorate([
     tslib_1.__param(1, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__param(2, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", [Object, String, typeof (_h = typeof update_community_dto_1.UpdateCommunityDto !== "undefined" && update_community_dto_1.UpdateCommunityDto) === "function" ? _h : Object]),
-    tslib_1.__metadata("design:returntype", typeof (_j = typeof Promise !== "undefined" && Promise) === "function" ? _j : Object)
+    tslib_1.__metadata("design:paramtypes", [Object, String, typeof (_k = typeof update_community_dto_1.UpdateCommunityDto !== "undefined" && update_community_dto_1.UpdateCommunityDto) === "function" ? _k : Object]),
+    tslib_1.__metadata("design:returntype", typeof (_l = typeof Promise !== "undefined" && Promise) === "function" ? _l : Object)
 ], CommunitiesController.prototype, "updateCommunity", null);
 tslib_1.__decorate([
     (0, common_1.Delete)(':id'),
@@ -548,7 +581,7 @@ tslib_1.__decorate([
     tslib_1.__param(1, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [Object, String]),
-    tslib_1.__metadata("design:returntype", typeof (_k = typeof Promise !== "undefined" && Promise) === "function" ? _k : Object)
+    tslib_1.__metadata("design:returntype", typeof (_m = typeof Promise !== "undefined" && Promise) === "function" ? _m : Object)
 ], CommunitiesController.prototype, "deleteCommunity", null);
 CommunitiesController = tslib_1.__decorate([
     (0, common_1.Controller)('community'),
@@ -602,7 +635,6 @@ const mongoose_1 = __webpack_require__("mongoose");
 const themes_service_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.service.ts");
 const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.service.ts");
 const mongoose_2 = __webpack_require__("@nestjs/mongoose");
-const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
 const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
 const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
 let CommunitiesService = class CommunitiesService {
@@ -622,47 +654,98 @@ let CommunitiesService = class CommunitiesService {
             return yield this.communityModel.find({});
         });
     }
+    getJoinedCommunities(req) {
+        var e_1, _a;
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const joinedCommunities = [];
+            const user = yield this.usersService.getUserById(req.user.id);
+            try {
+                for (var _b = tslib_1.__asyncValues(user.joinedCommunities), _c; _c = yield _b.next(), !_c.done;) {
+                    const communityId = _c.value;
+                    joinedCommunities.push(yield this.getCommunityById(communityId.toString()));
+                }
+            }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) yield _a.call(_b);
+                }
+                finally { if (e_1) throw e_1.error; }
+            }
+            return joinedCommunities;
+        });
+    }
+    getCreatedCommunities(req) {
+        var e_2, _a;
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const createdCommunities = [];
+            const user = yield this.usersService.getUserById(req.user.id);
+            try {
+                for (var _b = tslib_1.__asyncValues(user.createdCommunities), _c; _c = yield _b.next(), !_c.done;) {
+                    const communityId = _c.value;
+                    createdCommunities.push(yield this.getCommunityById(communityId.toString()));
+                }
+            }
+            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) yield _a.call(_b);
+                }
+                finally { if (e_2) throw e_2.error; }
+            }
+            return createdCommunities;
+        });
+    }
     createCommunity(req, createCommunityDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             if (createCommunityDto.themes) {
                 if (!(yield this.areValidObjectIds(createCommunityDto.themes))) {
-                    throw new validation_exception_1.ValidationException(['Themes attribute data must be of type ObjectId!']);
+                    throw new common_1.HttpException('Themes attribute data must be of type ObjectId!', common_1.HttpStatus.BAD_REQUEST);
                 }
             }
             const themesArray = (yield this.themesService.getThemes()).filter(p => createCommunityDto.themes.includes(p._id.toString()));
             const mergedCommunity = new this.communityModel(Object.assign(Object.assign({}, createCommunityDto), { _id: new mongoose_1.Types.ObjectId(), creationDate: new Date(), ranking: 0, themes: themesArray, owner: yield this.usersService.getUserById(req.user.id) }));
-            return yield this.communityModel.create(mergedCommunity);
+            yield this.usersService.addCreatedCommunity(mergedCommunity._id, new mongoose_1.Types.ObjectId(req.user.id));
+            const community = yield this.communityModel.create(mergedCommunity);
+            yield this.communityModel.updateMany({ _id: mergedCommunity._id, "owner._id": new mongoose_1.Types.ObjectId(req.user.id) }, { $push: { "owner.$[_id]createdCommunities": mergedCommunity._id } });
+            return community;
         });
     }
     joinCommunity(req, id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(id);
             if ((yield this.getCommunityById(id)).owner._id.equals(req.user.id)) {
-                throw new validation_exception_1.ValidationException(['Can not join your own created community!']);
+                throw new common_1.HttpException('Can not join your own created community!', common_1.HttpStatus.BAD_REQUEST);
             }
             if ((yield this.getCommunityById(id)).members.filter(p => p._id.equals(req.user.id)).length > 0) {
-                throw new validation_exception_1.ValidationException(['Already part of this community!']);
+                throw new common_1.HttpException('Already part of this community!', common_1.HttpStatus.BAD_REQUEST);
             }
-            return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $push: { members: (yield this.usersService.getUserById(req.user.id))._id } });
+            yield this.usersService.addJoinedCommunity(new mongoose_1.Types.ObjectId(id), new mongoose_1.Types.ObjectId(req.user.id));
+            const community = yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $push: { members: (yield this.usersService.getUserById(req.user.id))._id } });
+            yield this.communityModel.updateMany({ _id: new mongoose_1.Types.ObjectId(id), "owner._id": new mongoose_1.Types.ObjectId(req.user.id) }, { $push: { "owner.$[_id]joinedCommunities": new mongoose_1.Types.ObjectId(id) } });
+            return community;
         });
     }
     leaveCommunity(req, id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(id);
             if ((yield this.getCommunityById(id)).owner._id.equals(req.user.id)) {
-                throw new validation_exception_1.ValidationException(['Can not leave your own created community!']);
+                throw new common_1.HttpException('Can not leave your own created community!', common_1.HttpStatus.BAD_REQUEST);
             }
             if ((yield this.getCommunityById(id)).members.filter(p => p._id.equals(req.user.id)).length === 0) {
-                throw new validation_exception_1.ValidationException(['Not part of this community!']);
+                throw new common_1.HttpException('Not part of this community!', common_1.HttpStatus.BAD_REQUEST);
             }
-            return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $pull: { members: (yield this.usersService.getUserById(req.user.id))._id } });
+            yield this.usersService.removeJoinedCommunity(new mongoose_1.Types.ObjectId(id), new mongoose_1.Types.ObjectId(req.user.id));
+            const community = yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, { $pull: { members: (yield this.usersService.getUserById(req.user.id))._id } });
+            yield this.communityModel.updateMany({ _id: new mongoose_1.Types.ObjectId(id), "owner._id": new mongoose_1.Types.ObjectId(req.user.id) }, { $pull: { "owner.$[_id]joinedCommunities": new mongoose_1.Types.ObjectId(id) } });
+            return community;
         });
     }
     updateCommunity(req, id, updateCommunityDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             if (updateCommunityDto.themes) {
                 if (!(yield this.areValidObjectIds(updateCommunityDto.themes))) {
-                    throw new validation_exception_1.ValidationException(['Themes attribute data must be of type ObjectId!']);
+                    throw new common_1.HttpException('Themes attribute data must be of type ObjectId!', common_1.HttpStatus.BAD_REQUEST);
                 }
             }
             yield this.existing(id);
@@ -677,7 +760,7 @@ let CommunitiesService = class CommunitiesService {
                     updatedObject = { themes };
                 }
                 updatedObject = Object.assign(Object.assign({}, updateCommunityDto), updatedObject);
-                return this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, updatedObject);
+                return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(id) }, updatedObject);
             }
             else {
                 throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
@@ -685,10 +768,28 @@ let CommunitiesService = class CommunitiesService {
         });
     }
     deleteCommunity(req, id) {
+        var e_3, _a;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(id);
+            const community = yield this.communityModel.findOne({ _id: new mongoose_1.Types.ObjectId(id) });
+            const creator = yield this.usersService.getUserById(community.owner._id.toString());
             if ((yield this.getCommunityById(id)).owner._id.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
-                return this.communityModel.findOneAndDelete({ _id: new mongoose_1.Types.ObjectId(id) });
+                try {
+                    for (var _b = tslib_1.__asyncValues(community.members), _c; _c = yield _b.next(), !_c.done;) {
+                        const memberId = _c.value;
+                        yield this.usersService.removeJoinedCommunity(new mongoose_1.Types.ObjectId(community._id), new mongoose_1.Types.ObjectId(memberId));
+                    }
+                }
+                catch (e_3_1) { e_3 = { error: e_3_1 }; }
+                finally {
+                    try {
+                        if (_c && !_c.done && (_a = _b.return)) yield _a.call(_b);
+                    }
+                    finally { if (e_3) throw e_3.error; }
+                }
+                ;
+                yield this.usersService.removeCreatedCommunity(new mongoose_1.Types.ObjectId(id), new mongoose_1.Types.ObjectId(creator._id));
+                return yield this.communityModel.findOneAndDelete({ _id: new mongoose_1.Types.ObjectId(id) });
             }
             else {
                 throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
@@ -704,7 +805,7 @@ let CommunitiesService = class CommunitiesService {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const community = yield this.communityModel.findOne({ _id: new mongoose_1.Types.ObjectId(communityId) });
             if (!community) {
-                throw new validation_exception_1.ValidationException([`Community with id ${communityId} does not exist!`]);
+                throw new common_1.HttpException(`Community with id ${communityId} does not exist!`, common_1.HttpStatus.BAD_REQUEST);
             }
         });
     }
@@ -957,6 +1058,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MessagesController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
+const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
 const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
 const create_message_dto_1 = __webpack_require__("./apps/gessit-api/src/app/messages/create-message.dto.ts");
 const messages_service_1 = __webpack_require__("./apps/gessit-api/src/app/messages/messages.service.ts");
@@ -997,6 +1099,7 @@ let MessagesController = class MessagesController {
     }
 };
 tslib_1.__decorate([
+    (0, app_module_1.Public)(),
     (0, common_1.Get)(':communityId/thread/:threadId/message'),
     tslib_1.__param(0, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__param(1, (0, common_1.Param)('threadId', object_id_pipe_1.ObjectIdPipe)),
@@ -1005,6 +1108,7 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
 ], MessagesController.prototype, "getMessages", null);
 tslib_1.__decorate([
+    (0, app_module_1.Public)(),
     (0, common_1.Get)(':communityId/thread/:threadId/message/:messageId'),
     tslib_1.__param(0, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__param(1, (0, common_1.Param)('threadId', object_id_pipe_1.ObjectIdPipe)),
@@ -1102,7 +1206,6 @@ const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("@nestjs/mongoose");
 const mongoose_2 = __webpack_require__("mongoose");
 const community_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/community.schema.ts");
-const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
 const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
 const message_schema_1 = __webpack_require__("./apps/gessit-api/src/app/messages/message.schema.ts");
 let MessagesService = class MessagesService {
@@ -1201,16 +1304,16 @@ let MessagesService = class MessagesService {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const community = yield this.communityModel.findOne({ _id: new mongoose_2.Types.ObjectId(communityId) });
             if (!community) {
-                throw new validation_exception_1.ValidationException([`Community with id ${communityId} does not exist!`]);
+                throw new common_1.HttpException(`Community with id ${communityId} does not exist!`, common_1.HttpStatus.BAD_REQUEST);
             }
             if (threadId) {
                 if (!(community.threads.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(threadId))).length > 0)) {
-                    throw new validation_exception_1.ValidationException([`Thread with id ${threadId} doesn't exist in the community with id ${communityId}!`]);
+                    throw new common_1.HttpException(`Thread with id ${threadId} doesn't exist in the community with id ${communityId}!`, common_1.HttpStatus.BAD_REQUEST);
                 }
             }
             if (messageId) {
                 if (!(community.threads.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(threadId)))[0].messages.filter(p => p._id.equals(new mongoose_2.Types.ObjectId(messageId))).length > 0)) {
-                    throw new validation_exception_1.ValidationException([`Message with id ${messageId} doesn't exist in the thread with id ${threadId} in the community with id ${communityId}!`]);
+                    throw new common_1.HttpException(`Message with id ${messageId} doesn't exist in the thread with id ${threadId} in the community with id ${communityId}!`, common_1.HttpStatus.BAD_REQUEST);
                 }
             }
         });
@@ -1382,6 +1485,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ThemesController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
+const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
 const roles_decorator_1 = __webpack_require__("./apps/gessit-api/src/app/auth/roles.decorator.ts");
 const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
 const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
@@ -1413,12 +1517,14 @@ let ThemesController = class ThemesController {
     }
 };
 tslib_1.__decorate([
+    (0, app_module_1.Public)(),
     (0, common_1.Get)(),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", []),
     tslib_1.__metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
 ], ThemesController.prototype, "getThemes", null);
 tslib_1.__decorate([
+    (0, app_module_1.Public)(),
     (0, common_1.Get)(':id'),
     tslib_1.__param(0, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),
@@ -1488,7 +1594,6 @@ const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("mongoose");
 const theme_schema_1 = __webpack_require__("./apps/gessit-api/src/app/themes/theme.schema.ts");
-const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
 const mongoose_2 = __webpack_require__("@nestjs/mongoose");
 let ThemesService = class ThemesService {
     constructor(themeModel) {
@@ -1508,7 +1613,7 @@ let ThemesService = class ThemesService {
     createTheme(name) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             if ((yield this.getThemes()).filter(p => p.name === name).length > 0) {
-                throw new validation_exception_1.ValidationException(['A Theme with this name already exists!']);
+                throw new common_1.HttpException('A Theme with this name already exists!', common_1.HttpStatus.BAD_REQUEST);
             }
             const newTheme = new this.themeModel({
                 _id: new mongoose_1.Types.ObjectId(),
@@ -1527,7 +1632,7 @@ let ThemesService = class ThemesService {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const theme = yield this.themeModel.findOne({ _id: new mongoose_1.Types.ObjectId(themeId) });
             if (!theme) {
-                throw new validation_exception_1.ValidationException([`Theme with id ${themeId} does not exist!`]);
+                throw new common_1.HttpException(`Theme with id ${themeId} does not exist!`, common_1.HttpStatus.BAD_REQUEST);
             }
         });
     }
@@ -1722,6 +1827,7 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", Promise)
 ], ThreadsController.prototype, "likeThread", null);
 tslib_1.__decorate([
+    (0, app_module_1.Public)(),
     (0, common_1.Post)(':communityId/thread/:threadId/view'),
     tslib_1.__param(0, (0, common_1.Param)('communityId', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__param(1, (0, common_1.Param)('threadId', object_id_pipe_1.ObjectIdPipe)),
@@ -1800,7 +1906,6 @@ const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/use
 const mongoose_2 = __webpack_require__("@nestjs/mongoose");
 const community_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/community.schema.ts");
 const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.service.ts");
-const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
 const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
 let ThreadsService = class ThreadsService {
     constructor(communityModel, threadModel, usersService, communitiesService) {
@@ -2008,11 +2113,11 @@ let ThreadsService = class ThreadsService {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const community = yield this.communityModel.findOne({ _id: new mongoose_1.Types.ObjectId(communityId) });
             if (!community) {
-                throw new validation_exception_1.ValidationException([`Community with id ${communityId} does not exist!`]);
+                throw new common_1.HttpException(`Community with id ${communityId} does not exist!`, common_1.HttpStatus.BAD_REQUEST);
             }
             if (threadId) {
                 if (!(community.threads.filter(thread => thread._id.equals(new mongoose_1.Types.ObjectId(threadId))).length > 0)) {
-                    throw new validation_exception_1.ValidationException([`Thread with id ${threadId} doesn't exist in the community with id ${communityId}!`]);
+                    throw new common_1.HttpException(`Thread with id ${threadId} doesn't exist in the community with id ${communityId}!`, common_1.HttpStatus.BAD_REQUEST);
                 }
             }
         });
@@ -2218,6 +2323,10 @@ tslib_1.__decorate([
 ], User.prototype, "image", void 0);
 tslib_1.__decorate([
     (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", Boolean)
+], User.prototype, "isActive", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
     tslib_1.__metadata("design:type", Array)
 ], User.prototype, "roles", void 0);
 tslib_1.__decorate([
@@ -2232,6 +2341,20 @@ tslib_1.__decorate([
     }),
     tslib_1.__metadata("design:type", Array)
 ], User.prototype, "followers", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)({
+        ref: 'Community',
+        default: []
+    }),
+    tslib_1.__metadata("design:type", Array)
+], User.prototype, "createdCommunities", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)({
+        ref: 'Community',
+        default: []
+    }),
+    tslib_1.__metadata("design:type", Array)
+], User.prototype, "joinedCommunities", void 0);
 User = tslib_1.__decorate([
     (0, mongoose_1.Schema)()
 ], User);
@@ -2398,7 +2521,6 @@ const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("mongoose");
 const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
 const bcrypt = __webpack_require__("bcrypt");
-const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
 const user_schema_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.schema.ts");
 const mongoose_2 = __webpack_require__("@nestjs/mongoose");
 const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.service.ts");
@@ -2454,6 +2576,49 @@ let UsersService = class UsersService {
             ]))[0];
         });
     }
+    addJoinedCommunity(communityId, userId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(userId.toString());
+            return yield this.userModel.findOneAndUpdate({ _id: userId }, { $push: { joinedCommunities: communityId } }, { new: true });
+        });
+    }
+    addCreatedCommunity(communityId, userId) {
+        var e_1, _a;
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(userId.toString());
+            const user = yield this.userModel.findOne({ _id: userId });
+            try {
+                for (var _b = tslib_1.__asyncValues(user.createdCommunities), _c; _c = yield _b.next(), !_c.done;) {
+                    const createdCommunityId = _c.value;
+                    yield this.communityModel.updateMany({ _id: new mongoose_1.Types.ObjectId(createdCommunityId), "owner._id": new mongoose_1.Types.ObjectId(userId) }, { $push: { "owner.$[_id]createdCommunities": communityId } });
+                }
+            }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b.return)) yield _a.call(_b);
+                }
+                finally { if (e_1) throw e_1.error; }
+            }
+            return yield this.userModel.findOneAndUpdate({ _id: userId }, { $push: { createdCommunities: communityId } }, { new: true });
+        });
+    }
+    removeJoinedCommunity(communityId, userId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(userId.toString());
+            const community = yield this.communityModel.findOne({ _id: communityId });
+            if (community.owner._id.equals(userId)) {
+                yield this.communityModel.updateMany({ _id: communityId, "owner._id": userId }, { $pull: { "owner.$.joinedCommunities": communityId } });
+            }
+            return yield this.userModel.findOneAndUpdate({ _id: userId }, { $pull: { joinedCommunities: communityId } }, { new: true });
+        });
+    }
+    removeCreatedCommunity(communityId, userId) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield this.existing(userId.toString());
+            return yield this.userModel.findOneAndUpdate({ _id: userId }, { $pull: { createdCommunities: communityId } }, { new: true });
+        });
+    }
     followUser(req, id) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(id);
@@ -2466,11 +2631,11 @@ let UsersService = class UsersService {
                     return [resultLoggedIn, resultUser];
                 }
                 else {
-                    throw new validation_exception_1.ValidationException(['Already following this user!']);
+                    throw new common_1.HttpException('Already following this user!', common_1.HttpStatus.BAD_REQUEST);
                 }
             }
             else {
-                throw new validation_exception_1.ValidationException(['Can not follow yourself!']);
+                throw new common_1.HttpException('Can not follow yourself!', common_1.HttpStatus.BAD_REQUEST);
             }
         });
     }
@@ -2486,11 +2651,11 @@ let UsersService = class UsersService {
                     return [resultLoggedIn, resultUser];
                 }
                 else {
-                    throw new validation_exception_1.ValidationException(['You do not follow this user!']);
+                    throw new common_1.HttpException('You do not follow this user!', common_1.HttpStatus.BAD_REQUEST);
                 }
             }
             else {
-                throw new validation_exception_1.ValidationException(['Can not unfollow yourself!']);
+                throw new common_1.HttpException('Can not unfollow yourself!', common_1.HttpStatus.BAD_REQUEST);
             }
         });
     }
@@ -2500,10 +2665,10 @@ let UsersService = class UsersService {
             birthDate = new Date(birthDate);
             birthDate.setHours(birthDate.getHours() + 1);
             if (birthDate > new Date()) {
-                throw new validation_exception_1.ValidationException([`Birthdate ${birthDate} lies in the future!`]);
+                throw new common_1.HttpException(`Birthdate ${birthDate} lies in the future!`, common_1.HttpStatus.BAD_REQUEST);
             }
             if ((yield this.getUsers()).filter(p => p.username === username).length > 0) {
-                throw new validation_exception_1.ValidationException([`Username ${username} already in use!`]);
+                throw new common_1.HttpException(`Username ${username} already in use!`, common_1.HttpStatus.BAD_REQUEST);
             }
             const newUser = new this.userModel({
                 _id: new mongoose_1.Types.ObjectId(),
@@ -2514,7 +2679,8 @@ let UsersService = class UsersService {
                 password,
                 registerDate: new Date(),
                 image,
-                roles: [role_enum_1.Role.User]
+                roles: [role_enum_1.Role.User],
+                isActive: true
             });
             return this.userModel.create(newUser);
         });
@@ -2525,14 +2691,14 @@ let UsersService = class UsersService {
             if (req.user.id.equals(new mongoose_1.Types.ObjectId(id)) || req.user.roles.includes(role_enum_1.Role.Admin)) {
                 if (user.username) {
                     if ((yield this.getUsers()).filter(p => p.username === user.username && !(p._id.equals(new mongoose_1.Types.ObjectId(id)))).length > 0) {
-                        throw new validation_exception_1.ValidationException([`Username ${user.username} already in use!`]);
+                        throw new common_1.HttpException(`Username ${user.username} already in use!`, common_1.HttpStatus.BAD_REQUEST);
                     }
                 }
                 if (user.birthDate) {
                     user.birthDate = new Date(user.birthDate);
                     user.birthDate.setHours(user.birthDate.getHours() + 1);
                     if (user.birthDate > new Date()) {
-                        throw new validation_exception_1.ValidationException([`Birthdate ${user.birthDate} lies in the future!`]);
+                        throw new common_1.HttpException(`Birthdate ${user.birthDate} lies in the future!`, common_1.HttpStatus.BAD_REQUEST);
                     }
                 }
                 if (user.password) {
@@ -2554,7 +2720,7 @@ let UsersService = class UsersService {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const user = yield this.userModel.findOne({ _id: new mongoose_1.Types.ObjectId(userId) });
             if (!user) {
-                throw new validation_exception_1.ValidationException([`User with id ${userId} does not exist!`]);
+                throw new common_1.HttpException(`User with id ${userId} does not exist!`, common_1.HttpStatus.BAD_REQUEST);
             }
         });
     }

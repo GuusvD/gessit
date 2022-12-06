@@ -36,7 +36,6 @@
 
 body {
     background-color: #EFEFEF !important;
-    padding-top: 30px;
     padding-bottom: 30px;
 }
 
@@ -54,4 +53,16 @@ nav {
 
 .col-thread {
     padding-top: 15px;
+}
+
+.nav-link:hover {
+    cursor: pointer !important;
+}
+
+.nav-item {
+    color: rgba(0, 0, 0, 0.9) !important;
+}
+
+.gessit-alert {
+    margin-top: 10px;
 }

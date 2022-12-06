@@ -2,7 +2,6 @@ import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nest
 import { Model, Types } from 'mongoose';
 import { Role } from './role.enum';
 import * as bcrypt from 'bcrypt';
-import { ValidationException } from '../shared/filters/validation.exception';
 import { User, UserDocument } from './user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { CommunitiesService } from '../communities/communities.service';
@@ -55,6 +54,41 @@ export class UsersService {
     ]))[0];
   }
 
+  async addJoinedCommunity(communityId: Types.ObjectId, userId: Types.ObjectId): Promise<User> {
+    await this.existing(userId.toString());
+
+    return await this.userModel.findOneAndUpdate({ _id: userId }, { $push: { joinedCommunities: communityId } }, {new: true});
+  }
+
+  async addCreatedCommunity(communityId: Types.ObjectId, userId: Types.ObjectId): Promise<User> {
+    await this.existing(userId.toString());
+    const user = await this.userModel.findOne({ _id: userId });
+
+    for await (const createdCommunityId of user.createdCommunities) {
+      await this.communityModel.updateMany({ _id: new Types.ObjectId(createdCommunityId), "owner._id": new Types.ObjectId(userId) }, { $push:  {"owner.$[_id]createdCommunities": communityId } } );
+    }
+
+    return await this.userModel.findOneAndUpdate({ _id: userId }, { $push: { createdCommunities: communityId } }, {new: true});
+  }
+
+  async removeJoinedCommunity(communityId: Types.ObjectId, userId: Types.ObjectId): Promise<User> {
+    await this.existing(userId.toString());
+
+    const community = await this.communityModel.findOne({ _id: communityId });
+
+    if(community.owner._id.equals(userId)) {
+      await this.communityModel.updateMany({ _id: communityId, "owner._id": userId }, { $pull:  {"owner.$.joinedCommunities": communityId } } );
+    }
+
+    return await this.userModel.findOneAndUpdate({ _id: userId }, { $pull: { joinedCommunities: communityId } }, {new: true});
+  }
+
+  async removeCreatedCommunity(communityId: Types.ObjectId, userId: Types.ObjectId): Promise<User> {
+    await this.existing(userId.toString());
+  
+    return await this.userModel.findOneAndUpdate({ _id: userId }, { $pull: { createdCommunities: communityId } }, {new: true});
+  }
+
   async followUser(req, id: string): Promise<User[]> {
     await this.existing(id);
 
@@ -68,10 +102,10 @@ export class UsersService {
     
         return [resultLoggedIn, resultUser];
       } else {
-        throw new ValidationException(['Already following this user!']);
+        throw new HttpException('Already following this user!', HttpStatus.BAD_REQUEST);
       }
     } else {
-      throw new ValidationException(['Can not follow yourself!']);
+      throw new HttpException('Can not follow yourself!', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -88,10 +122,10 @@ export class UsersService {
 
         return [resultLoggedIn, resultUser];
       } else {
-        throw new ValidationException(['You do not follow this user!']);
+        throw new HttpException('You do not follow this user!', HttpStatus.BAD_REQUEST);
       }
     } else {
-      throw new ValidationException(['Can not unfollow yourself!']);
+      throw new HttpException('Can not unfollow yourself!', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -102,11 +136,11 @@ export class UsersService {
     birthDate.setHours(birthDate.getHours() + 1);
 
     if (birthDate > new Date()) {
-      throw new ValidationException([`Birthdate ${birthDate} lies in the future!`]);
+      throw new HttpException(`Birthdate ${birthDate} lies in the future!`, HttpStatus.BAD_REQUEST);
     }
 
     if ((await this.getUsers()).filter(p => p.username === username).length > 0) {
-      throw new ValidationException([`Username ${username} already in use!`]);
+      throw new HttpException(`Username ${username} already in use!`, HttpStatus.BAD_REQUEST);
     }
 
     const newUser = new this.userModel({
@@ -118,7 +152,8 @@ export class UsersService {
       password,
       registerDate: new Date(),
       image,
-      roles: [Role.User]
+      roles: [Role.User],
+      isActive: true
     });
 
     return this.userModel.create(newUser);
@@ -130,7 +165,7 @@ export class UsersService {
     if (req.user.id.equals(new Types.ObjectId(id)) || req.user.roles.includes(Role.Admin)) {
       if (user.username) {
         if ((await this.getUsers()).filter(p => p.username === user.username && !(p._id.equals(new Types.ObjectId(id)))).length > 0) {
-          throw new ValidationException([`Username ${user.username} already in use!`]);
+          throw new HttpException(`Username ${user.username} already in use!`, HttpStatus.BAD_REQUEST);
         }
       }
 
@@ -139,7 +174,7 @@ export class UsersService {
         user.birthDate.setHours(user.birthDate.getHours() + 1);
 
         if (user.birthDate > new Date()) {
-          throw new ValidationException([`Birthdate ${user.birthDate} lies in the future!`]);
+          throw new HttpException(`Birthdate ${user.birthDate} lies in the future!`, HttpStatus.BAD_REQUEST);
         }
       }
       
@@ -165,7 +200,7 @@ export class UsersService {
     const user = await this.userModel.findOne({ _id: new Types.ObjectId(userId) });
 
     if (!user) {
-      throw new ValidationException([`User with id ${userId} does not exist!`]);
+      throw new HttpException(`User with id ${userId} does not exist!`, HttpStatus.BAD_REQUEST);
     }
   }
 }

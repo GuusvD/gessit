@@ -1,5 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from "@nestjs/common";
-import { Types } from "mongoose";
+import { Body, Controller, Get, Param, Patch, Post, Req } from "@nestjs/common";
 import { Roles } from "../auth/roles.decorator";
 import { ObjectIdPipe } from "../shared/pipes/object.id.pipe";
 import { CreateUserDto } from "./create-user.dto";

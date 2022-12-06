@@ -1,7 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { Model, Types } from "mongoose";
 import { Theme, ThemeDocument } from "./theme.schema";
-import { ValidationException } from "../shared/filters/validation.exception";
 import { InjectModel } from "@nestjs/mongoose";
 
 @Injectable()
@@ -19,7 +18,7 @@ export class ThemesService {
 
     async createTheme(name: string): Promise<Theme> {
         if ((await this.getThemes()).filter(p => p.name === name).length > 0) {
-            throw new ValidationException(['A Theme with this name already exists!'])
+            throw new HttpException('A Theme with this name already exists!', HttpStatus.BAD_REQUEST)
         }
 
         const newTheme = new this.themeModel({
@@ -39,7 +38,7 @@ export class ThemesService {
         const theme = await this.themeModel.findOne({ _id: new Types.ObjectId(themeId) });
 
         if (!theme) {
-            throw new ValidationException([`Theme with id ${themeId} does not exist!`]);
+            throw new HttpException(`Theme with id ${themeId} does not exist!`, HttpStatus.BAD_REQUEST);
         }
     }
 }

@@ -32,6 +32,7 @@ export class ThreadsController {
     return await this.threadService.likeThread(req, communityId, threadId);
   }
 
+  @Public()
   @Post(':communityId/thread/:threadId/view')
   async viewThread(@Param('communityId', ObjectIdPipe) communityId: string, @Param('threadId', ObjectIdPipe) threadId: string) {
     return await this.threadService.viewThread(communityId, threadId);

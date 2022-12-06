@@ -33,6 +33,9 @@ export class User {
     image: string;
 
     @Prop()
+    isActive: boolean;
+
+    @Prop()
     roles: Role[];
 
     @Prop({
@@ -44,6 +47,18 @@ export class User {
         ref: 'User'
     })
     followers: [Types.ObjectId];
+
+    @Prop({
+        ref: 'Community',
+        default: []
+    })
+    createdCommunities: [Types.ObjectId];
+
+    @Prop({
+        ref: 'Community',
+        default: []
+    })
+    joinedCommunities: [Types.ObjectId];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
