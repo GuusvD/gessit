@@ -5,7 +5,7 @@ import { Thread } from "../entities/thread";
 import { environment } from "../environments/environment";
 
 @Injectable({providedIn: 'root',})
-export class ThreadsImService {
+export class ThreadsService {
     private thread?: Thread;
     private threads: Thread[] | undefined;
 

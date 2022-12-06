@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Thread } from 'libs/data/src/entities/thread';
-import { ThreadsImService } from 'libs/data/src/services/threads.service';
+import { ThreadsService } from 'libs/data/src/services/threads.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -18,7 +18,7 @@ export class EditComponent implements OnInit {
   threadId: string | null = null;
   thread: Thread | undefined;
 
-  constructor(private route: ActivatedRoute, private threadsImService: ThreadsImService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private threadsService: ThreadsService, private router: Router) {}
 
   ngOnInit(): void {
     this.pageTitle = this.route.snapshot.data['title'] || undefined;
@@ -30,7 +30,7 @@ export class EditComponent implements OnInit {
       if (!this.createThread) {
         this.threadId = params.get('id');
         if (this.threadId) {
-          this.threadsImService.getById(this.threadId).subscribe((t) => (this.thread = t)).unsubscribe;
+          this.threadsService.getById(this.threadId).subscribe((t) => (this.thread = t)).unsubscribe;
         }
       }
     });
@@ -45,12 +45,12 @@ export class EditComponent implements OnInit {
       this.newThread.communityId = this.communityId;
     }
 
-    this.threadsImService.create(this.newThread);
+    this.threadsService.create(this.newThread);
     this.router.navigate([`/communities/${this.communityId}`]);
   }
 
   update() {
-    this.threadsImService.update(this.thread!);
+    this.threadsService.update(this.thread!);
     this.router.navigate([`/communities/${this.communityId}/threads/${this.threadId}`]);
   }
 }
