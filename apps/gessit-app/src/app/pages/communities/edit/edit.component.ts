@@ -47,7 +47,7 @@ export class EditComponent implements OnInit, OnDestroy {
       });
 
       this.subs = this.communitiesService.getById(this.communityId as string).subscribe((community) => {
-        this.communityForm.patchValue({name: community.name, description: community.description, imageUrl: community.image, isPublic: community.isOpen});
+        this.communityForm.patchValue({name: community.name, description: community.description, image: community.image, isOpen: community.isOpen});
       });
     }
     else {
