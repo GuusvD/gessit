@@ -115,15 +115,43 @@
 
                     <div class="col-12">
                         <label for="inputTheme" class="form-label">Choose theme(s)</label>
-                        <div *ngFor="let theme of themes" class="form-check">
-                            <input
-                            id="inputTheme"
-                            class="form-check-input"
-                            (change)="onChange(theme._id.toString())"
-                            type="checkbox"
-                            >
-                            {{ theme.name }}
+
+                        <!-- CREATE -->
+                        <div *ngIf="!community">
+                            <div *ngFor="let theme of themes" class="form-check">
+                                <input
+                                id="inputTheme"
+                                class="form-check-input"
+                                (change)="onChange(theme._id.toString())"
+                                type="checkbox"
+                                >
+                                {{ theme.name }}
+                            </div>
                         </div>
+                        
+                        <!-- EDIT -->
+                        <div *ngIf="community">
+                            <div *ngFor="let theme of themesChosen" class="form-check">
+                                <input
+                                id="inputTheme"
+                                class="form-check-input"
+                                (change)="onChange(theme._id.toString())"
+                                type="checkbox"
+                                checked="true"
+                                >
+                                {{ theme.name }}
+                            </div>
+                            <div *ngFor="let theme of themes" class="form-check">
+                                <input
+                                id="inputTheme"
+                                class="form-check-input"
+                                (change)="onChange(theme._id.toString())"
+                                type="checkbox"
+                                >
+                                {{ theme.name }}
+                            </div>
+                        </div>
+
                     </div>
         
                     <div class="text-center">

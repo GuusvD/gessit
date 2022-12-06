@@ -10,12 +10,6 @@ import { Public } from '../app.module';
 export class CommunitiesController {
   constructor(private readonly communityService: CommunitiesService) {}
 
-  @Public()
-  @Get()
-  async getCommunities(): Promise<Community[]> {
-    return await this.communityService.getCommunities();
-  }
-
   @Get('/joined')
   async getAllJoinedCommunities(@Req() req): Promise<Community[]> {
     return await this.communityService.getJoinedCommunities(req);
@@ -24,6 +18,12 @@ export class CommunitiesController {
   @Get('/created')
   async getAllCreatedCommunities(@Req() req): Promise<Community[]> {
     return await this.communityService.getCreatedCommunities(req);
+  }
+
+  @Public()
+  @Get()
+  async getCommunities(): Promise<Community[]> {
+    return await this.communityService.getCommunities();
   }
 
   @Public()

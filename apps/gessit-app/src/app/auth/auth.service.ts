@@ -7,6 +7,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { User } from 'libs/data/src/entities/user';
 import { AlertService } from '../shared/alert/alert.service';
 import { Types } from 'mongoose';
+import { Role } from 'libs/data/src/entities/role.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -174,10 +175,23 @@ export class AuthService {
     localStorage.setItem(this.CURRENT_USER, JSON.stringify(user));
   }
 
-  userMayEdit(itemUserId: string): Observable<boolean> {
+  userMayEdit(itemUserId: string): boolean {
+    let isAdmin;
+    let isOwnerOfData;
+    
+    this.getUserFromLocalStorage().subscribe((user) => {
+      console.log(user)
+      isAdmin = user.roles.includes(Role.Admin);
+      isOwnerOfData = new Types.ObjectId(user._id).equals(new Types.ObjectId(itemUserId));
+    }).unsubscribe();
+
+    return (isAdmin || isOwnerOfData) ? true : false;
+  }
+
+  partOfCommunity(communityId: string): Observable<boolean> {
     return this.currentUser$.pipe(
-      map((user: User | undefined) => (user ? user._id.equals(new Types.ObjectId(itemUserId)) : false))
-    );
+      map((user: User | undefined) => (user ? user.joinedCommunities.includes(new Types.ObjectId(communityId)) : false))
+    ); 
   }
 
   formHeaders(): object {

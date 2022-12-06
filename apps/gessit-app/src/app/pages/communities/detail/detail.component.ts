@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Community } from 'libs/data/src/entities/community';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { CommunitiesService } from '../../../../../../../libs/data/src/services/communities.service';
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
   selector: 'gessit-detail',
@@ -12,18 +13,17 @@ import { CommunitiesService } from '../../../../../../../libs/data/src/services/
 export class DetailComponent implements OnInit {
   communityId: string | null = null;
   subscription: Subscription | undefined;
-  community: Community | undefined;
+  community: Community = new Community();
+  themesString: string | undefined;
 
-  constructor(private route: ActivatedRoute, private communitiesService: CommunitiesService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private communitiesService: CommunitiesService, private router: Router, public authService: AuthService) {}
 
   ngOnInit(): void {
     this.subscription = this.route.paramMap.subscribe(params => {
       this.communityId = params.get('id');
       if (this.communityId) {
-        this.communitiesService.getById(this.communityId).subscribe((c) => (this.community = c)).unsubscribe;
+        this.communitiesService.getById(this.communityId).subscribe((c) => (this.community = c, this.themesString = c.themes.map((theme) => theme.name).join(', '))).unsubscribe;
       }
-
-      
     });
   }
 
@@ -31,11 +31,14 @@ export class DetailComponent implements OnInit {
     this.subscription?.unsubscribe;
   }
 
-  delete(id: string | undefined): void {
-    if (id) {
-      this.communitiesService.delete(id);
-      this.router.navigate(['/communities']);
-    } 
+  delete() : void {
+    if(this.communityId) {
+      this.communitiesService.delete(this.communityId).subscribe((community) => {
+        if (community) {
+          this.router.navigate(['/communities']);
+        }
+      });
+    }
   }
 
   join() {

@@ -71,7 +71,24 @@ export class CommunitiesService {
         );
     }
 
-    delete(communityId: string) {
-        this.httpClient.delete<Community>(environment.BASE_API_URL + `community/${communityId}`).subscribe();
+    delete(communityId : string): Observable<Community | undefined> {
+        console.log(`deleting community at ${environment.BASE_API_URL}community/${communityId}`);
+      
+        return this.httpClient
+          .delete<Community>(`${environment.BASE_API_URL}community/${communityId}`, this.authService.formHeaders())
+          .pipe(
+            map((community) => {
+              console.dir(community);
+              this.alertService.error('Community has been deleted');
+              return community;
+            }),
+            catchError((error: any) => {
+              console.log('error:', error);
+              console.log('error.message:', error.message);
+              console.log('error.error.message:', error.error.message);
+              this.alertService.error(error.error.message || error.message);
+              return of(undefined); 
+            })
+        );
     }
 }

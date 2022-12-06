@@ -224,7 +224,13 @@ let AuthService = class AuthService {
     login(user) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const payload = { id: user._id, username: user.username, roles: user.roles };
+            const loggedInUser = yield this.usersService.getUserByUsername(user.username);
             return {
+                _id: loggedInUser._id,
+                username: loggedInUser.username,
+                emailAddress: loggedInUser.emailAddress,
+                roles: loggedInUser.roles,
+                image: loggedInUser.image,
                 access_token: this.jwtService.sign(payload),
             };
         });
@@ -461,11 +467,6 @@ let CommunitiesController = class CommunitiesController {
     constructor(communityService) {
         this.communityService = communityService;
     }
-    getCommunities() {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.communityService.getCommunities();
-        });
-    }
     getAllJoinedCommunities(req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return yield this.communityService.getJoinedCommunities(req);
@@ -474,6 +475,11 @@ let CommunitiesController = class CommunitiesController {
     getAllCreatedCommunities(req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             return yield this.communityService.getCreatedCommunities(req);
+        });
+    }
+    getCommunities() {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            return yield this.communityService.getCommunities();
         });
     }
     getCommunityById(id) {
@@ -508,26 +514,26 @@ let CommunitiesController = class CommunitiesController {
     }
 };
 tslib_1.__decorate([
-    (0, app_module_1.Public)(),
-    (0, common_1.Get)(),
-    tslib_1.__metadata("design:type", Function),
-    tslib_1.__metadata("design:paramtypes", []),
-    tslib_1.__metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
-], CommunitiesController.prototype, "getCommunities", null);
-tslib_1.__decorate([
     (0, common_1.Get)('/joined'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [Object]),
-    tslib_1.__metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
+    tslib_1.__metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
 ], CommunitiesController.prototype, "getAllJoinedCommunities", null);
 tslib_1.__decorate([
     (0, common_1.Get)('/created'),
     tslib_1.__param(0, (0, common_1.Req)()),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", [Object]),
-    tslib_1.__metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+    tslib_1.__metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
 ], CommunitiesController.prototype, "getAllCreatedCommunities", null);
+tslib_1.__decorate([
+    (0, app_module_1.Public)(),
+    (0, common_1.Get)(),
+    tslib_1.__metadata("design:type", Function),
+    tslib_1.__metadata("design:paramtypes", []),
+    tslib_1.__metadata("design:returntype", typeof (_d = typeof Promise !== "undefined" && Promise) === "function" ? _d : Object)
+], CommunitiesController.prototype, "getCommunities", null);
 tslib_1.__decorate([
     (0, app_module_1.Public)(),
     (0, common_1.Get)(':id'),

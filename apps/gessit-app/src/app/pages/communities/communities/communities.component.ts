@@ -35,15 +35,6 @@ export class CommunitiesComponent implements OnInit, OnDestroy {
     }
   }
 
-  delete(id: string | undefined): void {
-    if (id) {
-      this.communitiesService.delete(id);
-      this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-      this.router.onSameUrlNavigation = 'reload';
-      this.router.navigate(['/communities']);
-    }
-  }
-
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
   }

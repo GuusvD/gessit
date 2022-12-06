@@ -19,8 +19,10 @@ export class EditComponent implements OnInit, OnDestroy {
   subs?: Subscription;
   communityForm: FormGroup = new FormGroup({});
   communityId : string | undefined;
-  themes: Theme[] | undefined;
+  themes: Theme[] = [];
+  themesChosen: Theme[] = [];
   selectedThemes: string[] = [];
+  community?: Community;
 
   constructor(
     private route: ActivatedRoute,
@@ -33,6 +35,8 @@ export class EditComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.title = this.route.snapshot.data['title'] || undefined;
     this.createCommunity = this.route.snapshot.data['createCommunity'] || false;
+
+    this.themesService.getThemes().subscribe((p) => (this.themes = p));
 
     if(!this.createCommunity) {
       this.subs = this.route.paramMap.subscribe((params) => {
@@ -47,6 +51,17 @@ export class EditComponent implements OnInit, OnDestroy {
       });
 
       this.subs = this.communitiesService.getById(this.communityId as string).subscribe((community) => {
+        this.community = community;
+
+        this.community.themes.forEach(selectedTheme => {
+          this.themesChosen.push(selectedTheme);
+          this.selectedThemes.push(selectedTheme._id.toString());
+        });
+
+        this.themesChosen.forEach(chosen => {
+          this.themes = this.themes.filter(p => p._id.toString() !== chosen._id.toString());
+        });
+
         this.communityForm.patchValue({name: community.name, description: community.description, image: community.image, isOpen: community.isOpen});
       });
     }
@@ -58,8 +73,6 @@ export class EditComponent implements OnInit, OnDestroy {
         isOpen: new FormControl(false),
       });
     }
-
-    this.themesService.getThemes().subscribe((p) => (this.themes = p));
   }
 
   ngOnDestroy(): void {
