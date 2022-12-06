@@ -9,62 +9,6 @@
           (ngSubmit)="onSubmit()"
         >
           <!--
-          firstName
-         -->
-          <div class="form-row">
-            <div class="col-5">
-              <label for="inputFirstName">Firstname</label>
-              <input
-                type="text"
-                class="form-control"
-                formControlName="firstname"
-                placeholder="Firstname"
-                id="inputFirstName"
-                [ngClass]="{
-                  'is-invalid':
-                    registerForm.get('firstname')?.invalid &&
-                    registerForm.get('firstname')?.touched
-                }"
-              />
-              <span
-                *ngIf="
-                  !registerForm.get('firstname')?.valid &&
-                  registerForm.get('firstname')?.touched
-                "
-                class="invalid-feedback"
-              >
-                <p id="firstName-invalid">Name is invalid.</p>
-              </span>
-            </div>
-            <!--
-          lastName
-         -->
-            <div class="col">
-              <label for="inputLastName">Lastname</label>
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Lastname"
-                formControlName="lastname"
-                id="inputLastName"
-                [ngClass]="{
-                  'is-invalid':
-                    registerForm.get('lastname')?.invalid &&
-                    registerForm.get('lastname')?.touched
-                }"
-              />
-              <span
-                *ngIf="
-                  !registerForm.get('lastname')?.valid &&
-                  registerForm.get('lastname')?.touched
-                "
-                class="invalid-feedback"
-              >
-                <p id="lastName-invalid">Lastname is invalid.</p>
-              </span>
-            </div>
-          </div>
-          <!--
           username
          -->
           <div class="form-group">
@@ -82,9 +26,7 @@
                   registerForm.get('username')?.touched
               }"
             />
-            <small id="usernameHelp" class="form-text text-muted"
-              >We'll never share your username with anyone else.</small
-            >
+
             <span
               *ngIf="
                 !registerForm.get('username')?.valid &&
@@ -95,6 +37,130 @@
               <p id="username-invalid">Username is invalid.</p>
             </span>
           </div>
+          <!--
+          emailAddress
+         -->
+         <div class="form-group">
+            <label for="inputEmailAddress">Email address</label>
+            <input
+              type="email"
+              class="form-control"
+              placeholder="Email address"
+              formControlName="emailAddress"
+              id="inputEmailAddress"
+              aria-describedby="emailAddressHelp"
+              [ngClass]="{
+                'is-invalid':
+                  registerForm.get('emailAddress')?.invalid &&
+                  registerForm.get('emailAddress')?.touched
+              }"
+            />
+            <small id="emailAddressHelp" class="form-text text-muted"
+              >We'll never share your email with anyone else.</small
+            >
+            <span
+              *ngIf="
+                !registerForm.get('emailAddress')?.valid &&
+                registerForm.get('emailAddress')?.touched
+              "
+              class="invalid-feedback"
+            >
+              <p id="emailAddress-invalid">Email address is invalid.</p>
+            </span>
+          </div>
+          <!--
+          phonenumber
+         -->
+         <div class="form-group">
+          <label for="inputPhoneNumber">Phone number</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="PhoneNumber"
+            formControlName="phoneNumber"
+            id="inputPhoneNumber"
+            aria-describedby="phoneNumberHelp"
+            [ngClass]="{
+              'is-invalid':
+                registerForm.get('phoneNumber')?.invalid &&
+                registerForm.get('phoneNumber')?.touched
+            }"
+          />
+
+          <span
+            *ngIf="
+              !registerForm.get('phoneNumber')?.valid &&
+              registerForm.get('phoneNumber')?.touched
+            "
+            class="invalid-feedback"
+          >
+            <p id="phoneNumber-invalid">Phone number is invalid.</p>
+          </span>
+        </div>
+        <!--
+          image
+         -->
+         <div class="form-group">
+          <label for="inputImage">Image</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Image"
+            formControlName="image"
+            id="inputImage"
+            aria-describedby="imageHelp"
+            [ngClass]="{
+              'is-invalid':
+                registerForm.get('image')?.invalid &&
+                registerForm.get('image')?.touched
+            }"
+          />
+
+          <span
+            *ngIf="
+              !registerForm.get('image')?.valid &&
+              registerForm.get('image')?.touched
+            "
+            class="invalid-feedback"
+          >
+            <p id="image-invalid">Image is invalid.</p>
+          </span>
+        </div>
+        <!--
+          birthDate
+         -->
+         <div class="form-group">
+          <label for="inputBirthDate">Birth date</label>
+          <div class="input-group">
+            <input
+              class="form-control"
+              formControlName="birthDate"
+              id="inputBirthDate"
+              name="birthDate"
+              ngbDatepicker
+              #d="ngbDatepicker"
+              [ngClass]="{
+                'is-invalid':
+                  registerForm.get('birthDate')?.invalid &&
+                  registerForm.get('birthDate')?.touched
+              }"
+            />
+            <button
+              class="btn btn-outline-secondary bi bi-calendar3"
+              (click)="d.toggle()"
+              type="button"
+            ></button>
+            <span
+              *ngIf="
+                !registerForm.get('birthDate')?.valid &&
+                registerForm.get('birthDate')?.touched
+              "
+              class="invalid-feedback"
+            >
+              <p id="birthDate-invalid">Enter a valid birthdate</p>
+            </span>
+          </div>
+        </div>
           <!--
           password
          -->
@@ -129,7 +195,7 @@
               type="submit"
               [disabled]="!registerForm.valid"
             >
-              Sign in
+              Register
             </button>
           </div>
 

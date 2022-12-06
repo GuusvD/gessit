@@ -17,8 +17,22 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.registerForm = new FormGroup({
-      firstname: new FormControl(null, [Validators.required]),
-      lastname: new FormControl(null, [Validators.required]),
+      emailAddress: new FormControl(null, [
+        Validators.required,
+        this.validEmail.bind(this),
+      ]),
+      phoneNumber: new FormControl(null, [
+        Validators.required,
+        this.validPhoneNumber.bind(this),
+      ]),
+      image: new FormControl(null, [
+        Validators.required,
+        this.validImageUrl.bind(this),
+      ]),
+      birthDate: new FormControl(null, [
+        Validators.required,
+        this.validBirthDate.bind(this),
+      ]),
       username: new FormControl(null, [
         Validators.required,
         this.validUsername.bind(this),
@@ -52,7 +66,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   validUsername(control: FormControl): { [s: string]: boolean } {
     const username = control.value;
     const regexp = new RegExp(
-      '.{4,}'
+      '.{5,}'
     );
 
     if (regexp.test(username) !== true) {
@@ -65,11 +79,57 @@ export class RegisterComponent implements OnInit, OnDestroy {
   validPassword(control: FormControl): { [s: string]: boolean } {
     const password = control.value;
     const regexp = new RegExp(
-      '.{4,}'
+      '.{5,}'
     );
 
     if (regexp.test(password) !== true) {
       return { password: false };
+    } else {
+      return null!;
+    }
+  }
+
+  validEmail(control: FormControl): { [s: string]: boolean } {
+    const email = control.value;
+    const regexp = new RegExp('^[^@]+@[^@]+\.[^@]+$');
+    if (regexp.test(email) !== true) {
+      return { email: false };
+    } else {
+      return null!;
+    }
+  }
+
+  validImageUrl(control: FormControl): { [s: string]: boolean } {
+    const imageUrl = control.value;
+    const regexp = new RegExp('^(https?:\\/\\/)?'+
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ 
+    '(\\#[-a-z\\d_]*)?$','i');
+    if (regexp.test(imageUrl) !== true) {
+      return { imageUrl: false };
+    } else {
+      return null!
+    }
+  }
+
+  validBirthDate(control: FormControl): { [s: string]: boolean } {
+    const birthDate = control.value;
+    const dateString = birthDate?.year + '-' + birthDate?.month + '-' + birthDate?.day;
+
+    if (new Date(dateString) > new Date()) {
+      return { birthDate: false };
+    } else {
+      return null!;
+    }
+  }
+
+  validPhoneNumber(control: FormControl): { [s: string]: boolean } {
+    const phoneNumber = control.value;
+    const regexp = new RegExp('.{10,}');
+    if (regexp.test(phoneNumber) !== true) {
+      return { phoneNumber: false };
     } else {
       return null!;
     }

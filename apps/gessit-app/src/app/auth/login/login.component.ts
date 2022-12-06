@@ -71,7 +71,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   validUsername(control: FormControl): { [s: string]: boolean } {
     const username = control.value;
     const regexp = new RegExp(
-      '.{4,}'
+      '.{5,}'
     );
 
     if (regexp.test(username) !== true) {
@@ -84,7 +84,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   validPassword(control: FormControl): { [s: string]: boolean } {
     const password = control.value;
     const regexp = new RegExp(
-      '.{4,}'
+      '.{5,}'
     );
 
     if (regexp.test(password) !== true) {

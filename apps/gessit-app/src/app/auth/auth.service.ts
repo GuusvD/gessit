@@ -72,10 +72,32 @@ export class AuthService {
   }
 
   register(userData: User): Observable<User | undefined> {
-    console.log(`register at ${environment.SERVER_API_URL}users`);
+    console.log(`register at ${environment.SERVER_API_URL}auth/register`);
     console.log(userData);
+
+    const anyDate = userData.birthDate as any;
+
+    if(anyDate.month.toString().length === 1) {
+      anyDate.month = '0' + anyDate.month;
+    }
+
+    if(anyDate.day.toString().length === 1) {
+      anyDate.day = '0' + anyDate.day;
+    }
+
+    const user = {
+      username: userData.username,
+      birthDate: anyDate?.year + '-' + anyDate?.month + '-' + anyDate?.day,
+      emailAddress: userData.emailAddress,
+      phoneNumber: userData.phoneNumber,
+      password: userData.password,
+      image: userData.image
+    }
+
+    console.log(user);
+
     return this.http
-      .post<User>(`${environment.SERVER_API_URL}users`, userData, {
+      .post<User>(`${environment.SERVER_API_URL}auth/register`, user, {
         headers: this.headers,
       })
       .pipe(
