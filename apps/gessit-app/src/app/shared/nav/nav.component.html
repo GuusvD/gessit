@@ -29,10 +29,10 @@
                 <a class="nav-link dropdown-toggle" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   Communities
                 </a>
-                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-                  <li><a class="dropdown-item" routerLink="communities">All communities</a></li>
-                  <li><a class="dropdown-item" routerLink="communities/joined">Joined communities</a></li>
-                  <li><a class="dropdown-item" routerLink="communities/created">Created communities</a></li>
+                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink" style="background-color: #dddddd;">
+                  <li><a class="dropdown-item nav-item" routerLink="communities">All communities</a></li>
+                  <li *ngIf="loggedInUser$ | async as user"><a class="dropdown-item nav-item" routerLink="communities/joined">Joined communities</a></li>
+                  <li *ngIf="loggedInUser$ | async as user"><a class="dropdown-item nav-item" routerLink="communities/created">Created communities</a></li>
                 </ul>
               </li>
             </ul>

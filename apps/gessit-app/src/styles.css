@@ -58,3 +58,7 @@ nav {
 .nav-link:hover {
     cursor: pointer !important;
 }
+
+.nav-item {
+    color: rgba(0, 0, 0, 0.9) !important;
+}
