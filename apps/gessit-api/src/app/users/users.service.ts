@@ -2,7 +2,6 @@ import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nest
 import { Model, Types } from 'mongoose';
 import { Role } from './role.enum';
 import * as bcrypt from 'bcrypt';
-import { ValidationException } from '../shared/filters/validation.exception';
 import { User, UserDocument } from './user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { CommunitiesService } from '../communities/communities.service';
@@ -103,10 +102,10 @@ export class UsersService {
     
         return [resultLoggedIn, resultUser];
       } else {
-        throw new ValidationException(['Already following this user!']);
+        throw new HttpException('Already following this user!', HttpStatus.BAD_REQUEST);
       }
     } else {
-      throw new ValidationException(['Can not follow yourself!']);
+      throw new HttpException('Can not follow yourself!', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -123,10 +122,10 @@ export class UsersService {
 
         return [resultLoggedIn, resultUser];
       } else {
-        throw new ValidationException(['You do not follow this user!']);
+        throw new HttpException('You do not follow this user!', HttpStatus.BAD_REQUEST);
       }
     } else {
-      throw new ValidationException(['Can not unfollow yourself!']);
+      throw new HttpException('Can not unfollow yourself!', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -137,11 +136,11 @@ export class UsersService {
     birthDate.setHours(birthDate.getHours() + 1);
 
     if (birthDate > new Date()) {
-      throw new ValidationException([`Birthdate ${birthDate} lies in the future!`]);
+      throw new HttpException(`Birthdate ${birthDate} lies in the future!`, HttpStatus.BAD_REQUEST);
     }
 
     if ((await this.getUsers()).filter(p => p.username === username).length > 0) {
-      throw new ValidationException([`Username ${username} already in use!`]);
+      throw new HttpException(`Username ${username} already in use!`, HttpStatus.BAD_REQUEST);
     }
 
     const newUser = new this.userModel({
@@ -165,7 +164,7 @@ export class UsersService {
     if (req.user.id.equals(new Types.ObjectId(id)) || req.user.roles.includes(Role.Admin)) {
       if (user.username) {
         if ((await this.getUsers()).filter(p => p.username === user.username && !(p._id.equals(new Types.ObjectId(id)))).length > 0) {
-          throw new ValidationException([`Username ${user.username} already in use!`]);
+          throw new HttpException(`Username ${user.username} already in use!`, HttpStatus.BAD_REQUEST);
         }
       }
 
@@ -174,7 +173,7 @@ export class UsersService {
         user.birthDate.setHours(user.birthDate.getHours() + 1);
 
         if (user.birthDate > new Date()) {
-          throw new ValidationException([`Birthdate ${user.birthDate} lies in the future!`]);
+          throw new HttpException(`Birthdate ${user.birthDate} lies in the future!`, HttpStatus.BAD_REQUEST);
         }
       }
       
@@ -200,7 +199,7 @@ export class UsersService {
     const user = await this.userModel.findOne({ _id: new Types.ObjectId(userId) });
 
     if (!user) {
-      throw new ValidationException([`User with id ${userId} does not exist!`]);
+      throw new HttpException(`User with id ${userId} does not exist!`, HttpStatus.BAD_REQUEST);
     }
   }
 }

@@ -7,7 +7,6 @@ import { UpdateCommunityDto } from "./update-community.dto";
 import { Theme } from "../themes/theme.schema";
 import { CreateCommunityDto } from "./create-community.dto";
 import { InjectModel } from "@nestjs/mongoose";
-import { ValidationException } from "../shared/filters/validation.exception";
 import { ObjectIdPipe } from "../shared/pipes/object.id.pipe";
 import { Role } from "../users/role.enum";
 
@@ -51,7 +50,7 @@ export class CommunitiesService {
     async createCommunity(req, createCommunityDto: CreateCommunityDto): Promise<Community> {
         if (createCommunityDto.themes) {
             if (!(await this.areValidObjectIds(createCommunityDto.themes as string[]))) {
-                throw new ValidationException(['Themes attribute data must be of type ObjectId!'])
+                throw new HttpException('Themes attribute data must be of type ObjectId!', HttpStatus.BAD_REQUEST)
             }
         }
 
@@ -78,11 +77,11 @@ export class CommunitiesService {
         await this.existing(id);
 
         if ((await this.getCommunityById(id)).owner._id.equals(req.user.id)) {
-            throw new ValidationException(['Can not join your own created community!']);
+            throw new HttpException('Can not join your own created community!', HttpStatus.BAD_REQUEST);
         }
 
         if ((await this.getCommunityById(id)).members.filter(p => p._id.equals(req.user.id)).length > 0) {
-            throw new ValidationException(['Already part of this community!']);
+            throw new HttpException('Already part of this community!', HttpStatus.BAD_REQUEST);
         }
 
         await this.usersService.addJoinedCommunity(new Types.ObjectId(id), new Types.ObjectId(req.user.id));
@@ -97,11 +96,11 @@ export class CommunitiesService {
         await this.existing(id);
 
         if ((await this.getCommunityById(id)).owner._id.equals(req.user.id)) {
-            throw new ValidationException(['Can not leave your own created community!']);
+            throw new HttpException('Can not leave your own created community!', HttpStatus.BAD_REQUEST);
         }
 
         if ((await this.getCommunityById(id)).members.filter(p => p._id.equals(req.user.id)).length === 0) {
-            throw new ValidationException(['Not part of this community!']);
+            throw new HttpException('Not part of this community!', HttpStatus.BAD_REQUEST);
         }
 
         await this.usersService.removeJoinedCommunity(new Types.ObjectId(id), new Types.ObjectId(req.user.id));
@@ -114,7 +113,7 @@ export class CommunitiesService {
     async updateCommunity(req, id: string, updateCommunityDto: UpdateCommunityDto): Promise<Community> {
         if (updateCommunityDto.themes) {
             if (!(await this.areValidObjectIds(updateCommunityDto.themes as string[]))) {
-                throw new ValidationException(['Themes attribute data must be of type ObjectId!'])
+                throw new HttpException('Themes attribute data must be of type ObjectId!', HttpStatus.BAD_REQUEST)
             }
         }
 
@@ -169,7 +168,7 @@ export class CommunitiesService {
         const community = await this.communityModel.findOne({ _id: new Types.ObjectId(communityId) });
 
         if (!community) {
-            throw new ValidationException([`Community with id ${communityId} does not exist!`])
+            throw new HttpException(`Community with id ${communityId} does not exist!`, HttpStatus.BAD_REQUEST)
         }
     }
 }
