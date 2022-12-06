@@ -62,3 +62,7 @@ nav {
 .nav-item {
     color: rgba(0, 0, 0, 0.9) !important;
 }
+
+.gessit-alert {
+    margin-top: 10px;
+}

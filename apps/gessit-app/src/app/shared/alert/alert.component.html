@@ -1,5 +1,6 @@
 <ngb-alert
   *ngIf="!staticAlertClosed && alert"
+  class="gessit-alert"
   [dismissible]="true"
   [type]="alert.type"
   (close)="staticAlertClosed = true"
