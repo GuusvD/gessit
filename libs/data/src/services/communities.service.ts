@@ -49,10 +49,10 @@ export class CommunitiesService {
     }
     
     update(communityData: Community, communityId : string): Observable<Community | undefined> {
-        console.log(`updating community at ${environment.BASE_API_URL}communities`);
+        console.log(`updating community at ${environment.BASE_API_URL}community/${communityId}`);
       
         return this.httpClient
-          .patch<Community>(`${environment.BASE_API_URL}communities/${communityId}`, communityData,
+          .patch<Community>(`${environment.BASE_API_URL}community/${communityId}`, communityData,
             this.authService.formHeaders()
           )
           .pipe(

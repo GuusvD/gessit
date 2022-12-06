@@ -127,35 +127,47 @@
                     </div>
         
                     <div class="text-center">
-                    <button
+                        <button
+                          *ngIf="createCommunity"
+                          style="margin-right: 5px"
+                          type="submit"
+                          class="btn btn-primary"
+                          [disabled]="!communityForm.valid"
+                        >
+                          Create
+                        </button>
+          
+                        <button
+                        *ngIf="!createCommunity"
                         style="margin-right: 5px"
                         type="submit"
                         class="btn btn-primary"
                         [disabled]="!communityForm.valid"
-                    >
-                        Create
-                    </button>
-                    <button 
-                        *ngIf="!createCommunity"
+                      >
+                        Edit
+                      </button>
+          
+                        <button 
+                          *ngIf="!createCommunity"
+                          style="margin-left: 5px"
+                          type="reset"
+                          class="btn btn-danger"
+                          [routerLink]="['/communities', communityId]"
+                        >
+                          Cancel
+                        </button>
+          
+                        <button 
+                        *ngIf="createCommunity"
                         style="margin-left: 5px"
                         type="reset"
                         class="btn btn-danger"
-                        [routerLink]="['/communities', communityId]"
-                    >
+                        [routerLink]="['/communities']"
+                      >
                         Cancel
-                    </button>
-        
-                    <button 
-                    *ngIf="createCommunity"
-                    style="margin-left: 5px"
-                    type="reset"
-                    class="btn btn-danger"
-                    [routerLink]="['/communities']"
-                    >
-                    Cancel
-                    </button>
-        
-                    </div>
+                      </button>
+          
+                      </div>
                 </form>
                 </div>
             </div>

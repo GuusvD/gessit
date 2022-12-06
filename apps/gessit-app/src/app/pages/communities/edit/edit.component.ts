@@ -6,6 +6,7 @@ import { Theme } from 'libs/data/src/entities/theme';
 import { Subscription } from 'rxjs';
 import { CommunitiesService } from '../../../../../../../libs/data/src/services/communities.service';
 import { ThemesService } from '../../../../../../../libs/data/src/services/themes.service';
+import { AlertService } from '../../../shared/alert/alert.service';
 
 @Component({
   selector: 'gessit-edit',
@@ -25,7 +26,8 @@ export class EditComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private communitiesService: CommunitiesService,
-    private themesService: ThemesService
+    private themesService: ThemesService,
+    private alertService: AlertService
   ) {}
 
   ngOnInit(): void {
@@ -76,12 +78,11 @@ export class EditComponent implements OnInit, OnDestroy {
       }
 
       if(!this.createCommunity) {
-        // this.authService.register(this.registerForm.value).subscribe((user) => {
-        //   if (user) {
-        //     console.log('user = ', user);
-        //     this.router.navigate(['/communities']);
-        //   }
-        // });
+        this.communitiesService.update(this.communityForm.value, this.communityId as string).subscribe((community) => {
+          if (community) {
+            this.router.navigate(['/communities']);
+          }
+        });
       } else {
         this.communitiesService.create(this.communityForm.value).subscribe((community) => {
           if (community) {
