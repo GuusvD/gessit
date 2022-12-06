@@ -1,11 +1,11 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { Injectable, NgModule } from '@angular/core';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from './app.component';
 import { NxWelcomeComponent } from './nx-welcome.component';
-import { RouterModule } from '@angular/router';
+import { RouterModule, RouterStateSnapshot, TitleStrategy } from '@angular/router';
 import { appRoutes } from './app.routes';
 import { NavComponent } from './shared/nav/nav.component';
 import { HomepageComponent } from './pages/homepage/homepage.component';
@@ -22,6 +22,21 @@ import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { AlertModule } from './shared/alert/alert.module';
 import { AuthModule } from './auth/auth.module';
+import { CommunitiesListComponent } from './pages/communities/communities-list/communities-list.component';
+
+@Injectable({providedIn: 'root'})
+export class TemplatePageTitleStrategy extends TitleStrategy {
+  constructor(private readonly title: Title) {
+    super();
+  }
+
+  override updateTitle(routerState: RouterStateSnapshot) {
+    const title = this.buildTitle(routerState);
+    if (title !== undefined) {
+      this.title.setTitle(`Gessit | ${title}`);
+    }
+  }
+}
 
 @NgModule({
   declarations: [
@@ -38,7 +53,8 @@ import { AuthModule } from './auth/auth.module';
     CommunitiesDetailComponent.DetailComponent,
     ThreadsDetailComponent.DetailComponent,
     CommunitiesEditComponent.EditComponent,
-    ThreadsEditComponent.EditComponent
+    ThreadsEditComponent.EditComponent,
+    CommunitiesListComponent,
   ],
   imports: [
     BrowserModule,
@@ -48,10 +64,13 @@ import { AuthModule } from './auth/auth.module';
     FormsModule,
     ReactiveFormsModule,
     AlertModule,
-    AuthModule
+    AuthModule,
   ],
-  providers: [],
+  providers: [{
+    provide: TitleStrategy, 
+    useClass: TemplatePageTitleStrategy
+  }],
   bootstrap: [AppComponent],
-  exports: []
+  exports: [],
 })
 export class AppModule {}

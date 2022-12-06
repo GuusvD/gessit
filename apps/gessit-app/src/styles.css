@@ -54,3 +54,7 @@ nav {
 .col-thread {
     padding-top: 15px;
 }
+
+.nav-link:hover {
+    cursor: pointer !important;
+}

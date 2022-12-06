@@ -27,7 +27,7 @@ export class LoggedInAuthGuard implements CanActivate, CanActivateChild {
     console.log('canActivate LoggedIn');
     return this.authService.currentUser$.pipe(
       map((user: User | undefined) => {
-        if (user && user.token) {
+        if (user) {
           return true;
         } else {
           console.log('not logged in, reroute to /');
