@@ -1,15 +1,16 @@
 import { Injectable } from "@angular/core";
 import { Community } from "libs/data/src/entities/community";
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { environment } from "../environments/environment";
-import { Observable } from "rxjs";
+import { catchError, map, Observable, of } from "rxjs";
 import { AuthService } from '../../../../apps/gessit-app/src/app/auth/auth.service'
+import { AlertService } from "apps/gessit-app/src/app/shared/alert/alert.service";
 
 @Injectable({providedIn: 'root',})
 export class CommunitiesService {
     private community? : Community;
 
-    constructor(private httpClient: HttpClient, private authService: AuthService) {}
+    constructor(private httpClient: HttpClient, private authService: AuthService, private alertService: AlertService) {}
 
     getCommunities(endpoint: string): Observable<Community[]> {
         const httpOptions = this.authService.formHeaders();
@@ -17,35 +18,57 @@ export class CommunitiesService {
     }
 
     getById(communityId: string): Observable<Community> {
-        return this.httpClient.get<Community>(environment.BASE_API_URL + `community/${communityId}`) as Observable<Community>;
+        const httpOptions = this.authService.formHeaders();
+        return this.httpClient.get<Community>(environment.BASE_API_URL + `community/${communityId}`, httpOptions) as Observable<Community>;
     }
 
-    create(community: Community) {
-        this.community = new Community();
-
-        this.community.name = community.name;
-        this.community.description = community.description;
-        this.community.image = community.image;
-
-        if (community.isOpen == undefined) {
-            this.community.isOpen = false;
-        } else {
-            this.community.isOpen = community.isOpen;
-        }
-
-        this.httpClient.post<Community>(environment.BASE_API_URL + 'community', this.community).subscribe();
+    create(communityData: Community): Observable<Community | undefined> {
+        console.log('creating community at' + environment.BASE_API_URL + 'community');
+        console.log(communityData);
+  
+        return this.httpClient
+            .post<Community>(
+                environment.BASE_API_URL + 'community', 
+                communityData,
+                this.authService.formHeaders()
+            )
+            .pipe(
+                map((community) => {
+                    console.dir(community);
+                    this.alertService.success('Community has been created');
+                    return community;
+                }),
+                catchError((error: any) => {
+                    console.log('error:', error);
+                    console.log('error.message:', error.message);
+                    console.log('error.error.message:', error.error.message);
+                    this.alertService.error(error.error.message || error.message);
+                    return of(undefined); 
+                })
+            );
     }
     
-    update(community: Community) {
-        this.community = new Community();
-
-        this.community._id = community._id;
-        this.community.name = community.name;
-        this.community.description = community.description;
-        this.community.image = community.image;
-        this.community.isOpen = community.isOpen;
-
-        this.httpClient.patch<Community>(environment.BASE_API_URL + `community/${community._id}`, this.community).subscribe();
+    update(communityData: Community, communityId : string): Observable<Community | undefined> {
+        console.log(`updating community at ${environment.BASE_API_URL}communities`);
+      
+        return this.httpClient
+          .patch<Community>(`${environment.BASE_API_URL}communities/${communityId}`, communityData,
+            this.authService.formHeaders()
+          )
+          .pipe(
+            map((community) => {
+              console.dir(community);
+              this.alertService.success('Community has been updated');
+              return community;
+            }),
+            catchError((error: any) => {
+              console.log('error:', error);
+              console.log('error.message:', error.message);
+              console.log('error.error.message:', error.error.message);
+              this.alertService.error(error.error.message || error.message);
+              return of(undefined); 
+            })
+        );
     }
 
     delete(communityId: string) {
