@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Community } from 'libs/data/src/entities/community';
 import { Subscription } from 'rxjs';
-import { CommunitiesImService } from '../../../../../../../libs/data/src/services/communities.service';
+import { CommunitiesService } from '../../../../../../../libs/data/src/services/communities.service';
 
 @Component({
   selector: 'gessit-edit',
@@ -17,7 +17,7 @@ export class EditComponent implements OnInit {
   communityId: string | null = null;
   community: Community | undefined;
 
-  constructor(private route: ActivatedRoute, private communitiesImService: CommunitiesImService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private communitiesService: CommunitiesService, private router: Router) {}
 
   ngOnInit(): void {
     this.title = this.route.snapshot.data['title'] || undefined;
@@ -27,19 +27,19 @@ export class EditComponent implements OnInit {
       this.subscription = this.route.paramMap.subscribe(params => {
         this.communityId = params.get('id');
         if (this.communityId) {
-          this.communitiesImService.getById(this.communityId).subscribe((c) => (this.community = c)).unsubscribe;
+          this.communitiesService.getById(this.communityId).subscribe((c) => (this.community = c)).unsubscribe;
         }
       });
     }
   }
 
   create() {
-    this.communitiesImService.create(this.newCommunity);
+    this.communitiesService.create(this.newCommunity);
     this.router.navigate(['/communities']);
   }
 
   update() {
-    this.communitiesImService.update(this.community!);
+    this.communitiesService.update(this.community!);
     this.router.navigate([`/communities/${this.communityId}`]);
   }
 }

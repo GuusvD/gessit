@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Community } from 'libs/data/src/entities/community';
 import { Subscription } from 'rxjs';
-import { CommunitiesImService } from '../../../../../../../libs/data/src/services/communities.service';
+import { CommunitiesService } from '../../../../../../../libs/data/src/services/communities.service';
 
 @Component({
   selector: 'gessit-detail',
@@ -14,13 +14,13 @@ export class DetailComponent implements OnInit {
   subscription: Subscription | undefined;
   community: Community | undefined;
 
-  constructor(private route: ActivatedRoute, private communitiesImService: CommunitiesImService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private communitiesService: CommunitiesService, private router: Router) {}
 
   ngOnInit(): void {
     this.subscription = this.route.paramMap.subscribe(params => {
       this.communityId = params.get('id');
       if (this.communityId) {
-        this.communitiesImService.getById(this.communityId).subscribe((c) => (this.community = c)).unsubscribe;
+        this.communitiesService.getById(this.communityId).subscribe((c) => (this.community = c)).unsubscribe;
       }
     });
   }
@@ -31,7 +31,7 @@ export class DetailComponent implements OnInit {
 
   delete(id: string | undefined): void {
     if (id) {
-      this.communitiesImService.delete(id);
+      this.communitiesService.delete(id);
       this.router.navigate(['/communities']);
     } 
   }

@@ -11,7 +11,7 @@ export interface IUser {
     password: string;
     registerDate: Date;
     image: string;
-    token: string;
+    access_token: string;
 }
 
 export class User implements IUser {
@@ -23,5 +23,5 @@ export class User implements IUser {
     password: string = '';
     registerDate: Date = new Date();
     image: string = '';
-    token: string = '';
+    access_token: string = '';
 }

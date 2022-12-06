@@ -129,7 +129,7 @@ export class AuthService {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + userData.token,
+        Authorization: 'Bearer ' + userData.access_token,
       }),
     };
 
@@ -178,5 +178,17 @@ export class AuthService {
     return this.currentUser$.pipe(
       map((user: User | undefined) => (user ? user._id.equals(new Types.ObjectId(itemUserId)) : false))
     );
+  }
+
+  formHeaders(): object {
+    let token;
+    this.getUserFromLocalStorage().subscribe((p) => {
+      token = p.access_token;
+    }).unsubscribe();
+
+    return { headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + token})
+    }
   }
 }

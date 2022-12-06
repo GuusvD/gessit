@@ -1,17 +1,19 @@
 import { Injectable } from "@angular/core";
 import { Community } from "libs/data/src/entities/community";
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from "../environments/environment";
 import { Observable } from "rxjs";
+import { AuthService } from '../../../../apps/gessit-app/src/app/auth/auth.service'
 
 @Injectable({providedIn: 'root',})
-export class CommunitiesImService {
+export class CommunitiesService {
     private community? : Community;
 
-    constructor(private httpClient: HttpClient) {}
+    constructor(private httpClient: HttpClient, private authService: AuthService) {}
 
-    getAll(): Observable<Community[]> {
-        return this.httpClient.get<Community[]>(environment.BASE_API_URL + 'community') as Observable<Community[]>;
+    getCommunities(endpoint: string): Observable<Community[]> {
+        const httpOptions = this.authService.formHeaders();
+        return this.httpClient.get<Community[]>(environment.BASE_API_URL + endpoint, httpOptions) as Observable<Community[]>;
     }
 
     getById(communityId: string): Observable<Community> {
