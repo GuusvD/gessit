@@ -17,7 +17,8 @@ export class ThreadsService {
 
     getAllByCommunity(communityId: string): Thread[] {
         this.getAll().subscribe((t) => (this.threads = t)).unsubscribe;
-        return this.threads!.filter(thread => thread.communityId === communityId);
+        //return this.threads!.filter(thread => thread.communityId === communityId);
+        return null!;
     }
 
     getById(threadId: string): Observable<Thread> {

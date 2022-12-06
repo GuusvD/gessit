@@ -22,6 +22,8 @@ export class DetailComponent implements OnInit {
       if (this.communityId) {
         this.communitiesService.getById(this.communityId).subscribe((c) => (this.community = c)).unsubscribe;
       }
+
+      
     });
   }
 
@@ -34,5 +36,9 @@ export class DetailComponent implements OnInit {
       this.communitiesService.delete(id);
       this.router.navigate(['/communities']);
     } 
+  }
+
+  join() {
+
   }
 }

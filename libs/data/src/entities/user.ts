@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import { Role } from './role.enum';
 
 export * from '../lib/data.module';
 
@@ -11,6 +12,11 @@ export interface IUser {
     password: string;
     registerDate: Date;
     image: string;
+    roles: Role[];
+    following: Types.ObjectId[];
+    followers: Types.ObjectId[];
+    createdCommunities: Types.ObjectId[];
+    joinedCommunities: Types.ObjectId[];
     access_token: string;
 }
 
@@ -23,5 +29,10 @@ export class User implements IUser {
     password: string = '';
     registerDate: Date = new Date();
     image: string = '';
+    roles: Role[] = [];
+    following: Types.ObjectId[] = [];
+    followers: Types.ObjectId[] = [];
+    createdCommunities: Types.ObjectId[] = [];
+    joinedCommunities: Types.ObjectId[] = [];
     access_token: string = '';
 }

@@ -42,7 +42,7 @@ export class EditComponent implements OnInit {
 
   create() {
     if (this.communityId) {
-      this.newThread.communityId = this.communityId;
+      //this.newThread = this.communityId;
     }
 
     this.threadsService.create(this.newThread);
