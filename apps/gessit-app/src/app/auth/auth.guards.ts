@@ -10,8 +10,6 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { User } from 'libs/data/src/entities/user';
-import { ModalConfirmYesNoComponent } from '../shared/alert/modal.confirm-yes-no.component';
-import { ModalLeaveYesNoComponent } from '../shared/alert/modal.leave-yes-no.component';
 import { AuthService } from './auth.service';
 
 /**
@@ -51,10 +49,4 @@ export class LoggedInAuthGuard implements CanActivate, CanActivateChild {
 export class SaveEditedWorkGuard {
   constructor(private modalService: NgbModal) {}
 
-  canDeactivate(): Promise<boolean> {
-    return this.modalService
-      .open(ModalLeaveYesNoComponent)
-      .result.then((result) => true)
-      .catch(() => false);
-  }
 }
