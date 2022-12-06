@@ -33,6 +33,9 @@ export class User {
     image: string;
 
     @Prop()
+    isActive: boolean;
+
+    @Prop()
     roles: Role[];
 
     @Prop({

@@ -2317,6 +2317,10 @@ tslib_1.__decorate([
 ], User.prototype, "image", void 0);
 tslib_1.__decorate([
     (0, mongoose_1.Prop)(),
+    tslib_1.__metadata("design:type", Boolean)
+], User.prototype, "isActive", void 0);
+tslib_1.__decorate([
+    (0, mongoose_1.Prop)(),
     tslib_1.__metadata("design:type", Array)
 ], User.prototype, "roles", void 0);
 tslib_1.__decorate([
@@ -2669,7 +2673,8 @@ let UsersService = class UsersService {
                 password,
                 registerDate: new Date(),
                 image,
-                roles: [role_enum_1.Role.User]
+                roles: [role_enum_1.Role.User],
+                isActive: true
             });
             return this.userModel.create(newUser);
         });

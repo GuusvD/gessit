@@ -152,7 +152,8 @@ export class UsersService {
       password,
       registerDate: new Date(),
       image,
-      roles: [Role.User]
+      roles: [Role.User],
+      isActive: true
     });
 
     return this.userModel.create(newUser);
