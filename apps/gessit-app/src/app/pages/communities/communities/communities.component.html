@@ -1,9 +1,14 @@
 <div class="component">
     <div class="row">
-        <div class="col-6">
-            <h1>Communities</h1>
+        <div class="col-6" *ngIf="loggedInUser$ | async">
+            <h1>{{ title }}</h1>
         </div>
-        <div class="col-6 ">
+
+        <div class="col-12" *ngIf="!(loggedInUser$ | async)">
+            <h1>{{ title }}</h1>
+        </div>
+
+        <div class="col-6" *ngIf="loggedInUser$ | async">
             <button routerLink="/communities/create" class="btn btn-primary float-end"><i class="bi bi-plus"></i>Create</button>
         </div>
 

@@ -20,9 +20,9 @@ export const appRoutes: Route[] = [
     { path: 'about', pathMatch: 'full', component: AboutComponent, title: 'About' },
     //Communities
     { path: 'communities', component: CommunitiesListComponent, children: [
-        { path: '', component: CommunitiesComponent, data: { type: 'all' }, title: 'Communities' },
-        { path: 'created', component: CommunitiesComponent, data: { type: 'created' }, title: 'Created Communities' },
-        { path: 'joined', component: CommunitiesComponent, data: { type: 'joined' }, title: 'Joined Communities' },
+        { path: '', component: CommunitiesComponent, data: { type: 'all', title: 'All communities' }, title: 'All communities' },
+        { path: 'created', component: CommunitiesComponent, data: { type: 'created', title: 'Created communities' }, title: 'Created Communities' },
+        { path: 'joined', component: CommunitiesComponent, data: { type: 'joined', title: 'Joined communities' }, title: 'Joined Communities' },
         { path: 'create', canActivate: [LoggedInAuthGuard], component: CommunitiesEditComponent.EditComponent, data: { createCommunity: true, title: 'Create community' }, title: 'Create Community'},  
         { path: ':id', component: CommunitiesDetailComponent.DetailComponent, title: 'Community Detail' },
         { path: ':id/edit', canActivate: [LoggedInAuthGuard], component: CommunitiesEditComponent.EditComponent , data: { createCommunity: false, title: 'Edit community' }, title: 'Edit Community'},
