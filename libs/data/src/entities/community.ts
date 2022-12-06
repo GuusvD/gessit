@@ -12,7 +12,7 @@ export interface ICommunity {
     creationDate: Date;
     image: string;
     isOpen: boolean;
-    themes: string[];
+    themes: Theme[];
     threads: Thread[];
     members: Types.ObjectId[];
     owner: User;
@@ -26,7 +26,7 @@ export class Community implements ICommunity {
     creationDate: Date = new Date();
     image: string = '';
     isOpen: boolean = true;
-    themes: string[] = [];
+    themes: Theme[] = [];
     threads: Thread[] = [];
     members: Types.ObjectId[] = [];
     owner: User = new User();

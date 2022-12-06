@@ -20,7 +20,7 @@ export class EditComponent implements OnInit, OnDestroy {
   communityForm: FormGroup = new FormGroup({});
   communityId : string | undefined;
   themes: Theme[] | undefined;
-  selectedThemes: string[] | undefined;
+  selectedThemes: string[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -60,7 +60,6 @@ export class EditComponent implements OnInit, OnDestroy {
     }
 
     this.themesService.getThemes().subscribe((p) => (this.themes = p));
-    this.selectedThemes = [];
   }
 
   ngOnDestroy(): void {
@@ -71,24 +70,24 @@ export class EditComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     if (this.communityForm.valid) {
-      const community = this.communityForm.value as Community;
-
-      if (this.selectedThemes) {
-        community.themes = this.selectedThemes;
-      }
-
-      if(!this.createCommunity) {
-        this.communitiesService.update(this.communityForm.value, this.communityId as string).subscribe((community) => {
-          if (community) {
-            this.router.navigate(['/communities']);
-          }
-        });
+      if (this.selectedThemes.length == 0) {
+        this.alertService.error('Select at least one theme');
       } else {
-        this.communitiesService.create(this.communityForm.value).subscribe((community) => {
-          if (community) {
-            this.router.navigate(['/communities']);
-          }
-        });
+        const community = {...(this.communityForm.value as Community), themes: this.selectedThemes};
+
+        if(!this.createCommunity) {
+          this.communitiesService.update(community, this.communityId as string).subscribe((community) => {
+            if (community) {
+              this.router.navigate(['/communities']);
+            }
+          });
+        } else {
+          this.communitiesService.create(community).subscribe((community) => {
+            if (community) {
+              this.router.navigate(['/communities']);
+            }
+          });
+        }
       }
     }
   }

@@ -22,7 +22,7 @@ export class CommunitiesService {
         return this.httpClient.get<Community>(environment.BASE_API_URL + `community/${communityId}`, httpOptions) as Observable<Community>;
     }
 
-    create(communityData: Community): Observable<Community | undefined> {
+    create(communityData: object): Observable<Community | undefined> {
         console.log('creating community at' + environment.BASE_API_URL + 'community');
         console.log(communityData);
   
@@ -48,7 +48,7 @@ export class CommunitiesService {
             );
     }
     
-    update(communityData: Community, communityId : string): Observable<Community | undefined> {
+    update(communityData: object, communityId : string): Observable<Community | undefined> {
         console.log(`updating community at ${environment.BASE_API_URL}community/${communityId}`);
       
         return this.httpClient
