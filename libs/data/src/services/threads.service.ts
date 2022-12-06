@@ -5,7 +5,7 @@ import { Thread } from "../entities/thread";
 import { environment } from "../environments/environment";
 
 @Injectable({providedIn: 'root',})
-export class ThreadsImService {
+export class ThreadsService {
     private thread?: Thread;
     private threads: Thread[] | undefined;
 
@@ -17,7 +17,8 @@ export class ThreadsImService {
 
     getAllByCommunity(communityId: string): Thread[] {
         this.getAll().subscribe((t) => (this.threads = t)).unsubscribe;
-        return this.threads!.filter(thread => thread.communityId === communityId);
+        //return this.threads!.filter(thread => thread.communityId === communityId);
+        return null!;
     }
 
     getById(threadId: string): Observable<Thread> {

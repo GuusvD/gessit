@@ -1,0 +1,210 @@
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-sm-10 col-md-8 col-lg-6 my-5">
+      <div class="card card-auth shadow-lg p-3 px-md-5 py-md-4">
+        <h2>Register</h2>
+        <form
+          class="form-signin"
+          [formGroup]="registerForm"
+          (ngSubmit)="onSubmit()"
+        >
+          <!--
+          username
+         -->
+          <div class="form-group">
+            <label for="inputUsername">Username</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Username"
+              formControlName="username"
+              id="inputUsername"
+              aria-describedby="usernameHelp"
+              [ngClass]="{
+                'is-invalid':
+                  registerForm.get('username')?.invalid &&
+                  registerForm.get('username')?.touched
+              }"
+            />
+
+            <span
+              *ngIf="
+                !registerForm.get('username')?.valid &&
+                registerForm.get('username')?.touched
+              "
+              class="invalid-feedback"
+            >
+              <p id="username-invalid">Username is invalid.</p>
+            </span>
+          </div>
+          <!--
+          emailAddress
+         -->
+         <div class="form-group">
+            <label for="inputEmailAddress">Email address</label>
+            <input
+              type="email"
+              class="form-control"
+              placeholder="Email address"
+              formControlName="emailAddress"
+              id="inputEmailAddress"
+              aria-describedby="emailAddressHelp"
+              [ngClass]="{
+                'is-invalid':
+                  registerForm.get('emailAddress')?.invalid &&
+                  registerForm.get('emailAddress')?.touched
+              }"
+            />
+            <small id="emailAddressHelp" class="form-text text-muted"
+              >We'll never share your email with anyone else.</small
+            >
+            <span
+              *ngIf="
+                !registerForm.get('emailAddress')?.valid &&
+                registerForm.get('emailAddress')?.touched
+              "
+              class="invalid-feedback"
+            >
+              <p id="emailAddress-invalid">Email address is invalid.</p>
+            </span>
+          </div>
+          <!--
+          phonenumber
+         -->
+         <div class="form-group">
+          <label for="inputPhoneNumber">Phone number</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Phone number"
+            formControlName="phoneNumber"
+            id="inputPhoneNumber"
+            aria-describedby="phoneNumberHelp"
+            [ngClass]="{
+              'is-invalid':
+                registerForm.get('phoneNumber')?.invalid &&
+                registerForm.get('phoneNumber')?.touched
+            }"
+          />
+
+          <span
+            *ngIf="
+              !registerForm.get('phoneNumber')?.valid &&
+              registerForm.get('phoneNumber')?.touched
+            "
+            class="invalid-feedback"
+          >
+            <p id="phoneNumber-invalid">Phone number is invalid.</p>
+          </span>
+        </div>
+        <!--
+          image
+         -->
+         <div class="form-group">
+          <label for="inputImage">Image URL</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Image URL"
+            formControlName="image"
+            id="inputImage"
+            aria-describedby="imageHelp"
+            [ngClass]="{
+              'is-invalid':
+                registerForm.get('image')?.invalid &&
+                registerForm.get('image')?.touched
+            }"
+          />
+
+          <span
+            *ngIf="
+              !registerForm.get('image')?.valid &&
+              registerForm.get('image')?.touched
+            "
+            class="invalid-feedback"
+          >
+            <p id="image-invalid">Image is invalid.</p>
+          </span>
+        </div>
+        <!--
+          birthDate
+         -->
+         <div class="form-group">
+          <label for="inputBirthDate">Birth date</label>
+          <div class="input-group">
+            <input
+              class="form-control"
+              formControlName="birthDate"
+              id="inputBirthDate"
+              name="birthDate"
+              ngbDatepicker
+              #d="ngbDatepicker"
+              [ngClass]="{
+                'is-invalid':
+                  registerForm.get('birthDate')?.invalid &&
+                  registerForm.get('birthDate')?.touched
+              }"
+            />
+            <button
+              class="btn btn-outline-secondary bi bi-calendar3"
+              (click)="d.toggle()"
+              type="button"
+            ></button>
+            <span
+              *ngIf="
+                !registerForm.get('birthDate')?.valid &&
+                registerForm.get('birthDate')?.touched
+              "
+              class="invalid-feedback"
+            >
+              <p id="birthDate-invalid">Enter a valid birthdate</p>
+            </span>
+          </div>
+        </div>
+          <!--
+          password
+         -->
+          <div class="form-group">
+            <label for="inputPassword">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              formControlName="password"
+              id="inputPassword"
+              [ngClass]="{
+                'is-invalid':
+                  registerForm.get('password')?.invalid &&
+                  registerForm.get('password')?.touched
+              }"
+            />
+            <span
+              *ngIf="
+                !registerForm.get('password')?.valid &&
+                registerForm.get('password')?.touched
+              "
+              class="invalid-feedback"
+            >
+              <p id="password-invalid">Enter a valid password</p>
+            </span>
+          </div>
+
+          <div class="form-group">
+            <button
+              id="submitbutton"
+              class="btn btn-lg btn-primary btn-block"
+              type="submit"
+              [disabled]="!registerForm.valid"
+            >
+              Register
+            </button>
+          </div>
+
+          <p>
+            <a routerLink="/">Homepage</a> |
+            <a routerLink="/login">Login</a>
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

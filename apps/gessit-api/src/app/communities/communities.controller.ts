@@ -4,16 +4,29 @@ import { CreateCommunityDto } from './create-community.dto';
 import { Community } from './community.schema';
 import { UpdateCommunityDto } from './update-community.dto';
 import { ObjectIdPipe } from '../shared/pipes/object.id.pipe';
+import { Public } from '../app.module';
 
 @Controller('community')
 export class CommunitiesController {
   constructor(private readonly communityService: CommunitiesService) {}
 
+  @Get('/joined')
+  async getAllJoinedCommunities(@Req() req): Promise<Community[]> {
+    return await this.communityService.getJoinedCommunities(req);
+  }
+
+  @Get('/created')
+  async getAllCreatedCommunities(@Req() req): Promise<Community[]> {
+    return await this.communityService.getCreatedCommunities(req);
+  }
+
+  @Public()
   @Get()
   async getCommunities(): Promise<Community[]> {
     return await this.communityService.getCommunities();
   }
 
+  @Public()
   @Get(':id')
   async getCommunityById(@Param('id', ObjectIdPipe) id: string): Promise<Community> {
     return await this.communityService.getCommunityById(id);

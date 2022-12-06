@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from "@nestjs/common";
+import { Public } from "../app.module";
 import { ObjectIdPipe } from "../shared/pipes/object.id.pipe";
 import { CreateMessageDto } from "./create-message.dto";
 import { Message } from "./message.schema";
@@ -9,6 +10,7 @@ import { UpdateMessageDto } from "./update-message.dto";
 export class MessagesController {
     constructor(private readonly messagesService: MessagesService) {}
 
+    @Public()
     @Get(':communityId/thread/:threadId/message')
     async getMessages(
         @Param('communityId', ObjectIdPipe) communityId: string,
@@ -16,6 +18,7 @@ export class MessagesController {
         return await this.messagesService.getMessages(communityId, threadId);
     }
 
+    @Public()
     @Get(':communityId/thread/:threadId/message/:messageId')
     async getMessageById(
         @Param('communityId', ObjectIdPipe) communityId: string, 

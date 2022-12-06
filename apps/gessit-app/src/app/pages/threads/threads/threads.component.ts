@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Thread } from 'libs/data/src/entities/thread';
 import { Subscription } from 'rxjs';
-import { ThreadsImService } from '../../../../../../../libs/data/src/services/threads.service';
+import { ThreadsService } from '../../../../../../../libs/data/src/services/threads.service';
 
 @Component({
   selector: 'gessit-threads',
@@ -14,11 +14,11 @@ export class ThreadsComponent implements OnInit {
   communityId: string | null = null;
   subscription: Subscription | undefined;
 
-  constructor(private threadsImService: ThreadsImService, private route: ActivatedRoute, private router: Router) {}
+  constructor(private threadsService: ThreadsService, private route: ActivatedRoute, private router: Router) {}
 
   fetch() {
     if (this.communityId) {
-      this.threads = this.threadsImService.getAllByCommunity(this.communityId);
+      this.threads = this.threadsService.getAllByCommunity(this.communityId);
     }
   }
 
@@ -36,7 +36,7 @@ export class ThreadsComponent implements OnInit {
 
   delete(id: string): void {
     if (id) {
-      this.threadsImService.delete(id);
+      this.threadsService.delete(id);
       this.router.routeReuseStrategy.shouldReuseRoute = () => false;
       this.router.onSameUrlNavigation = 'reload';
       this.router.navigate([`/communities/${this.communityId}`]);
@@ -44,6 +44,6 @@ export class ThreadsComponent implements OnInit {
   }
 
   increaseViews(id: string): void {
-    this.threadsImService.increaseViews(id);
+    this.threadsService.increaseViews(id);
   }
 }

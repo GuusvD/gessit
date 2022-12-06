@@ -6,7 +6,6 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Community, CommunityDocument } from "../communities/community.schema";
 import { CommunitiesService } from "../communities/communities.service";
 import { CreateThreadDto } from "./create-thread.dto";
-import { ValidationException } from "../shared/filters/validation.exception";
 import { Role } from "../users/role.enum";
 
 @Injectable()
@@ -222,12 +221,12 @@ export class ThreadsService {
         const community = await this.communityModel.findOne({ _id : new Types.ObjectId(communityId) });
 
         if(!community) {
-            throw new ValidationException([`Community with id ${communityId} does not exist!`]);
+            throw new HttpException(`Community with id ${communityId} does not exist!`, HttpStatus.BAD_REQUEST);
         }
 
         if(threadId) {
             if(!(community.threads.filter(thread => thread._id.equals(new Types.ObjectId(threadId))).length > 0)) {
-                throw new ValidationException([`Thread with id ${threadId} doesn't exist in the community with id ${communityId}!`]);
+                throw new HttpException(`Thread with id ${threadId} doesn't exist in the community with id ${communityId}!`, HttpStatus.BAD_REQUEST);
             }
         }
     }
