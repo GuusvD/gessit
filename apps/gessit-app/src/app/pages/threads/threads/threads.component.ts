@@ -41,7 +41,7 @@ export class ThreadsComponent implements OnInit {
     }
   }
 
-  // increaseViews(id: string): void {
-  //   this.threadsService.increaseViews(id);
-  // }
+  view(id: string): void {
+    this.threadsService.view(this.communityId!, id.toString()).subscribe();
+  }
 }

@@ -5,7 +5,7 @@
             <div class="card" style="margin-bottom: 15px">
               <div class="card-body">
                 <h5 class="card-title">{{ title }}</h5>
-                <!-- FORM -->
+
                 <form
                   [formGroup]="threadForm"
                   (ngSubmit)="onSubmit()"
@@ -86,7 +86,6 @@
                         Create
                       </button>
       
-                      <!--EDIT BUTTON-->
                       <button
                       *ngIf="!createThread"
                       style="margin-right: 5px"
@@ -97,7 +96,6 @@
                       Edit
                     </button>
       
-                      <!--EDIT CANCEL BUTTON-->
                       <button 
                         *ngIf="!createThread"
                         style="margin-left: 5px"
@@ -108,7 +106,6 @@
                         Cancel
                       </button>
       
-                      <!--EDIT CANCEL BUTTON-->
                       <button 
                       *ngIf="createThread"
                       style="margin-left: 5px"
@@ -120,7 +117,6 @@
                     </button>
                   </div>
                 </form>
-                <!-- END FORM -->
               </div>
             </div>
           </div>
