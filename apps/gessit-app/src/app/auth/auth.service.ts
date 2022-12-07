@@ -179,7 +179,7 @@ export class AuthService {
 
     this.getUserFromLocalStorage().subscribe((user) => {
       isAdmin = user.roles.includes(Role.Admin);
-      isOwnerOfData = new Types.ObjectId(user._id).equals(new Types.ObjectId(itemUserId));
+      isOwnerOfData = user._id.toString() === itemUserId;
     }).unsubscribe();
 
     return (isAdmin || isOwnerOfData) ? true : false;

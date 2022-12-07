@@ -33,8 +33,8 @@ export class EditComponent implements OnInit, OnDestroy {
 
       this.threadForm = new FormGroup({
         title: new FormControl(null, [Validators.required, this.validTitle.bind(this)]),
-        content: new FormControl({content : true}),
-        image: new FormControl({image : true}, [Validators.required, this.validUrl.bind(this)]),
+        content: new FormControl(null),
+        image: new FormControl(null, [Validators.required, this.validUrl.bind(this)]),
       });
 
       if(!this.createThread) {

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Thread } from 'libs/data/src/entities/thread';
 import { ThreadsService } from 'libs/data/src/services/threads.service';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
   selector: 'gessit-detail',
@@ -13,18 +13,17 @@ export class DetailComponent implements OnInit {
   threadId: string | null = null;
   communityId: string | null = null;
   subscription: Subscription | undefined;
-  thread: Thread | undefined;
+  thread: any;
+  creatorId: string = '';
 
-  constructor(private route: ActivatedRoute, private threadsService: ThreadsService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private threadsService: ThreadsService, private router: Router, public authService: AuthService) {}
 
   ngOnInit(): void {
-    this.subscription = this.route.paramMap.subscribe(params => {
+    this.subscription = this.route.paramMap.subscribe(async params => {
       this.threadId = params.get('id');
       this.communityId = params.get('c-id');
 
-      if (this.threadId) {
-        this.threadsService.getById(this.communityId!.toString(), this.threadId.toString()!).subscribe((t) => (this.thread = t)).unsubscribe;
-      }
+      await this.init();
     });
   }
 
@@ -39,6 +38,13 @@ export class DetailComponent implements OnInit {
           this.router.navigate([`/communities/${this.communityId}`]);
         }
       });
+    }
+  }
+
+  async init() {
+    if (this.threadId) {
+      this.thread = await this.threadsService.getById(this.communityId!.toString(), this.threadId?.toString()!).toPromise();
+      this.creatorId = this.thread.creator[0]._id;
     }
   }
 }
