@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Community } from "libs/data/src/entities/community";
 import { HttpClient } from '@angular/common/http';
-import { environment } from "../../../../apps/gessit-app/src/environments/environment.prod";
+import { environment } from "../../../../apps/gessit-app/src/environments/environment";
 
 import { catchError, map, Observable, of } from "rxjs";
 import { AuthService } from '../../../../apps/gessit-app/src/app/auth/auth.service'

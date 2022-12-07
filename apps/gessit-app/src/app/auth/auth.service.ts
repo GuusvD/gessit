@@ -6,7 +6,6 @@ import { map, catchError, switchMap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { User } from 'libs/data/src/entities/user';
 import { AlertService } from '../shared/alert/alert.service';
-import { Types } from 'mongoose';
 import { Role } from 'libs/data/src/entities/role.enum';
 
 @Injectable({
