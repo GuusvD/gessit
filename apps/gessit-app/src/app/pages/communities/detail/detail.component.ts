@@ -62,4 +62,8 @@ export class DetailComponent implements OnInit {
   async isPartOfCommunity() {
     this.partOfCommunity = await this.authService.partOfCommunity(this.communityId!);
   }
+
+  updateImgUrl() {
+    this.community!.image = 'https://cdn-icons-png.flaticon.com/512/33/33308.png';
+  }
 }

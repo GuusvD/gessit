@@ -24,6 +24,6 @@ export class ProfileComponent implements OnInit {
   }
 
   updateImgUrl() {
-    this.user!.image = 'https://t4.ftcdn.net/jpg/02/29/75/83/360_F_229758328_7x8jwCwjtBMmC6rgFzLFhZoEpLobB6L8.jpg';
+    this.user!.image = 'https://cdn-icons-png.flaticon.com/512/33/33308.png';
   }
 }

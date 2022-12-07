@@ -38,7 +38,7 @@
         <div class="col-6">
             <div class="card h-100">
                 <div class="card-body card-detail-img">
-                    <img class="detail-img" src="{{ community.image }}">
+                    <img (error)="updateImgUrl()" class="detail-img" src="{{ community.image }}">
                 </div>
             </div>
         </div>
