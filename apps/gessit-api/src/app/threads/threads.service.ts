@@ -7,6 +7,7 @@ import { Community, CommunityDocument } from "../communities/community.schema";
 import { CommunitiesService } from "../communities/communities.service";
 import { CreateThreadDto } from "./create-thread.dto";
 import { Role } from "../users/role.enum";
+import { UpdateThreadDto } from "./update-thread.dto";
 
 @Injectable()
 export class ThreadsService {
@@ -192,29 +193,40 @@ export class ThreadsService {
         return community.threads.filter(p => p._id.equals(new Types.ObjectId(threadId)))[0];
     }
 
-    async updateThread(req, communityId: string, threadId: string, thread: Partial<Thread>): Promise<Thread> {
+    async updateThread(communityId: string, threadId : string, req, updateThreadDto: UpdateThreadDto): Promise<Thread> {
         await this.existing(communityId, threadId);
 
-        if ((await this.getThreadById(communityId, threadId)).creator.equals(req.user.id) || req.user.roles.includes(Role.Admin)) {
-            const oldThread = await this.getThreadById(communityId, threadId);
-            const newThread = { ...oldThread, ...thread };
-    
-            await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$pull: {threads: oldThread}});
-            return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$push: {threads: newThread}});
-        } else {
-            throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+        const thread = (await this.communityModel.findOne(
+            {_id: new Types.ObjectId(communityId)}, 
+            {threads:{$elemMatch:{_id: new Types.ObjectId(threadId)}}}))
+            .threads.filter(async thread => thread._id.equals(new Types.ObjectId(threadId)))[0];
+
+        if(!(await req.user.id.equals(thread.creator)) && !(req.user.roles.includes(Role.Admin))) {
+            throw new HttpException(`Unauthorized`, HttpStatus.UNAUTHORIZED);
         }
+
+        return await this.communityModel.findOneAndUpdate(
+            {_id : new Types.ObjectId(communityId), "threads._id" : new Types.ObjectId(threadId)}, 
+            {$set: {"threads.$" : {...thread, ...updateThreadDto}}}, 
+            {new: true});
     }
 
-    async deleteThread(req, communityId: string, threadId: string): Promise<Thread> {
+    async deleteThread(communityId : string, threadId : string, req): Promise<Thread> {
         await this.existing(communityId, threadId);
 
-        if ((await this.getThreadById(communityId, threadId)).creator.equals(req.user.id) || req.user.roles.includes(Role.Admin)) {
-            const thread = await this.getThreadById(communityId, threadId);
-            return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$pull: {threads: thread}});
-        } else {
-            throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+        const thread = (await this.communityModel.findOne(
+            {_id: new Types.ObjectId(communityId)}, 
+            {threads:{$elemMatch:{_id: new Types.ObjectId(threadId)}}}))
+            .threads.filter(async thread => thread._id.equals(new Types.ObjectId(threadId)))[0];
+
+        if(!(await req.user.id.equals(thread.creator)) && !(req.user.roles.includes(Role.Admin))) {
+            throw new HttpException(`Unauthorized`, HttpStatus.UNAUTHORIZED);
         }
+
+        return (await this.communityModel.findOneAndUpdate(
+            { _id: new Types.ObjectId(communityId) }, 
+            {$pull: { threads : {_id: new Types.ObjectId(threadId)}}}, 
+            { new: true }))
     }
 
     async existing(communityId : string, threadId? : string) : Promise<void> {

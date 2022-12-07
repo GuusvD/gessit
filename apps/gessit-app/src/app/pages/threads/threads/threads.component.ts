@@ -16,18 +16,16 @@ export class ThreadsComponent implements OnInit {
 
   constructor(private threadsService: ThreadsService, private route: ActivatedRoute, private router: Router) {}
 
-  fetch() {
-    if (this.communityId) {
-      this.threads = this.threadsService.getAllByCommunity(this.communityId);
-    }
-  }
-
   ngOnInit(): void {
     this.subscription = this.route.paramMap.subscribe(params => {
       this.communityId = params.get('id');
     });
 
-    this.fetch();
+    if (this.communityId) {
+      this.threadsService.getList(this.communityId).subscribe((p) => {
+        this.threads = p;
+      });
+    }
   }
 
   ngOnDestroy(): void {
@@ -36,14 +34,14 @@ export class ThreadsComponent implements OnInit {
 
   delete(id: string): void {
     if (id) {
-      this.threadsService.delete(id);
+      this.threadsService.delete(this.communityId?.toString()!, id.toString()!);
       this.router.routeReuseStrategy.shouldReuseRoute = () => false;
       this.router.onSameUrlNavigation = 'reload';
       this.router.navigate([`/communities/${this.communityId}`]);
     }
   }
 
-  increaseViews(id: string): void {
-    this.threadsService.increaseViews(id);
-  }
+  // increaseViews(id: string): void {
+  //   this.threadsService.increaseViews(id);
+  // }
 }

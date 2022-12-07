@@ -1782,12 +1782,12 @@ let ThreadsController = class ThreadsController {
     }
     updateThread(req, communityId, threadId, updateThreadDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.threadService.updateThread(req, communityId, threadId, updateThreadDto);
+            return yield this.threadService.updateThread(communityId, threadId, req, updateThreadDto);
         });
     }
     deleteThread(req, communityId, threadId) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            return yield this.threadService.deleteThread(req, communityId, threadId);
+            return yield this.threadService.deleteThread(communityId, threadId, req);
         });
     }
 };
@@ -2083,30 +2083,26 @@ let ThreadsService = class ThreadsService {
             return community.threads.filter(p => p._id.equals(new mongoose_1.Types.ObjectId(threadId)))[0];
         });
     }
-    updateThread(req, communityId, threadId, thread) {
+    updateThread(communityId, threadId, req, updateThreadDto) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(communityId, threadId);
-            if ((yield this.getThreadById(communityId, threadId)).creator.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
-                const oldThread = yield this.getThreadById(communityId, threadId);
-                const newThread = Object.assign(Object.assign({}, oldThread), thread);
-                yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $pull: { threads: oldThread } });
-                return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $push: { threads: newThread } });
+            const thread = (yield this.communityModel.findOne({ _id: new mongoose_1.Types.ObjectId(communityId) }, { threads: { $elemMatch: { _id: new mongoose_1.Types.ObjectId(threadId) } } }))
+                .threads.filter((thread) => tslib_1.__awaiter(this, void 0, void 0, function* () { return thread._id.equals(new mongoose_1.Types.ObjectId(threadId)); }))[0];
+            if (!(yield req.user.id.equals(thread.creator)) && !(req.user.roles.includes(role_enum_1.Role.Admin))) {
+                throw new common_1.HttpException(`Unauthorized`, common_1.HttpStatus.UNAUTHORIZED);
             }
-            else {
-                throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
-            }
+            return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId), "threads._id": new mongoose_1.Types.ObjectId(threadId) }, { $set: { "threads.$": Object.assign(Object.assign({}, thread), updateThreadDto) } }, { new: true });
         });
     }
-    deleteThread(req, communityId, threadId) {
+    deleteThread(communityId, threadId, req) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield this.existing(communityId, threadId);
-            if ((yield this.getThreadById(communityId, threadId)).creator.equals(req.user.id) || req.user.roles.includes(role_enum_1.Role.Admin)) {
-                const thread = yield this.getThreadById(communityId, threadId);
-                return yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $pull: { threads: thread } });
+            const thread = (yield this.communityModel.findOne({ _id: new mongoose_1.Types.ObjectId(communityId) }, { threads: { $elemMatch: { _id: new mongoose_1.Types.ObjectId(threadId) } } }))
+                .threads.filter((thread) => tslib_1.__awaiter(this, void 0, void 0, function* () { return thread._id.equals(new mongoose_1.Types.ObjectId(threadId)); }))[0];
+            if (!(yield req.user.id.equals(thread.creator)) && !(req.user.roles.includes(role_enum_1.Role.Admin))) {
+                throw new common_1.HttpException(`Unauthorized`, common_1.HttpStatus.UNAUTHORIZED);
             }
-            else {
-                throw new common_1.HttpException('Unauthorized', common_1.HttpStatus.UNAUTHORIZED);
-            }
+            return (yield this.communityModel.findOneAndUpdate({ _id: new mongoose_1.Types.ObjectId(communityId) }, { $pull: { threads: { _id: new mongoose_1.Types.ObjectId(threadId) } } }, { new: true }));
         });
     }
     existing(communityId, threadId) {

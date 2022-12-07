@@ -21,8 +21,9 @@ export class DetailComponent implements OnInit {
     this.subscription = this.route.paramMap.subscribe(params => {
       this.threadId = params.get('id');
       this.communityId = params.get('c-id');
+
       if (this.threadId) {
-        this.threadsService.getById(this.threadId).subscribe((t) => (this.thread = t)).unsubscribe;
+        this.threadsService.getById(this.communityId!.toString(), this.threadId.toString()!).subscribe((t) => (this.thread = t)).unsubscribe;
       }
     });
   }
@@ -33,8 +34,11 @@ export class DetailComponent implements OnInit {
 
   delete(id: string | undefined): void {
     if (id) {
-      this.threadsService.delete(id);
-      this.router.navigate([`/communities/${this.communityId}`]);
+      this.threadsService.delete(this.communityId?.toString()!, this.thread?._id.toString()!).subscribe((p) => {
+        if (p) {
+          this.router.navigate([`/communities/${this.communityId}`]);
+        }
+      });
     }
   }
 }

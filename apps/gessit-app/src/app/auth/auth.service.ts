@@ -75,7 +75,6 @@ export class AuthService {
 
   register(userData: User): Observable<User | undefined> {
     console.log(`register at ${environment.BASE_API_URL}auth/register`);
-    console.log(userData);
 
     const anyDate = userData.birthDate as any;
 
@@ -95,8 +94,6 @@ export class AuthService {
       password: userData.password,
       image: userData.image
     }
-
-    console.log(user);
 
     return this.http
       .post<User>(`${environment.BASE_API_URL}auth/register`, user, {
