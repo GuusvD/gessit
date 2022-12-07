@@ -47,7 +47,7 @@
             <div class="card card-threads-title">
                 <div class="card-body">
                     <h2 class="float-start">Threads</h2>
-                    <button *ngIf="partOfCommunity" class="btn btn-primary float-end" routerLink="/communities/{{ communityId }}/threads/create"><i class="bi bi-plus"></i>Create</button>
+                    <button *ngIf="partOfCommunity || authService.userMayEdit(community.owner._id.toString())" class="btn btn-primary float-end" routerLink="/communities/{{ communityId }}/threads/create"><i class="bi bi-plus"></i>Create</button>
                 </div>
             </div>
         </div>
