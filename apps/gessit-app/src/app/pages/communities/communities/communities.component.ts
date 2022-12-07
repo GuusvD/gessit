@@ -38,4 +38,8 @@ export class CommunitiesComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
   }
+
+  updateImgUrl(id: string) {
+    this.communities!.filter(p => p._id.toString() === id)[0].image = 'https://cdn-icons-png.flaticon.com/512/33/33308.png';
+  }
 }

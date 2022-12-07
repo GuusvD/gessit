@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Community } from 'libs/data/src/entities/community';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { CommunitiesService } from '../../../../../../../libs/data/src/services/communities.service';
 import { AuthService } from '../../../auth/auth.service';
 
@@ -15,6 +15,7 @@ export class DetailComponent implements OnInit {
   subscription: Subscription | undefined;
   community: Community = new Community();
   themesString: string | undefined;
+  partOfCommunity: boolean = false;
 
   constructor(private route: ActivatedRoute, private communitiesService: CommunitiesService, private router: Router, public authService: AuthService) {}
 
@@ -23,6 +24,7 @@ export class DetailComponent implements OnInit {
       this.communityId = params.get('id');
       if (this.communityId) {
         this.communitiesService.getById(this.communityId).subscribe((c) => (this.community = c, this.themesString = c.themes.map((theme) => theme.name).join(', '))).unsubscribe;
+        this.isPartOfCommunity();
       }
     });
   }
@@ -41,7 +43,27 @@ export class DetailComponent implements OnInit {
     }
   }
 
-  join() {
+  join(): void {
+    this.communitiesService.join(this.communityId!).subscribe((community) => {
+      if (community) {
+        this.router.navigate(['/communities/joined']);
+      }
+    });
+  }
 
+  leave(): void {
+    this.communitiesService.leave(this.communityId!).subscribe((community) => {
+      if (community) {
+        this.router.navigate(['/communities/joined']);
+      }
+    });
+  }
+
+  async isPartOfCommunity() {
+    this.partOfCommunity = await this.authService.partOfCommunity(this.communityId!);
+  }
+
+  updateImgUrl() {
+    this.community!.image = 'https://cdn-icons-png.flaticon.com/512/33/33308.png';
   }
 }

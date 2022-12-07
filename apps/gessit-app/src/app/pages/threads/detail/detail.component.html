@@ -18,7 +18,7 @@
                     </div>
                 </div>
 
-                <div class="card">
+                <div class="card" *ngIf="authService.userMayEdit(creatorId)">
                     <div class="card-body">
                         <button class="btn btn-primary" routerLink="/communities/{{ communityId }}/threads/{{ threadId }}/edit"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-danger" (click)="delete(thread?._id?.toString())"><i class="bi bi-trash3"></i></button>

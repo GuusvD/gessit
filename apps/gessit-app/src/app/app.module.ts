@@ -5,7 +5,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from './app.component';
 import { NxWelcomeComponent } from './nx-welcome.component';
-import { RouterModule, RouterStateSnapshot, TitleStrategy } from '@angular/router';
+import {
+  RouterModule,
+  RouterStateSnapshot,
+  TitleStrategy,
+} from '@angular/router';
 import { appRoutes } from './app.routes';
 import { NavComponent } from './shared/nav/nav.component';
 import { HomepageComponent } from './pages/homepage/homepage.component';
@@ -23,8 +27,9 @@ import { RegisterComponent } from './auth/register/register.component';
 import { AlertModule } from './shared/alert/alert.module';
 import { AuthModule } from './auth/auth.module';
 import { CommunitiesListComponent } from './pages/communities/communities-list/communities-list.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class TemplatePageTitleStrategy extends TitleStrategy {
   constructor(private readonly title: Title) {
     super();
@@ -55,6 +60,7 @@ export class TemplatePageTitleStrategy extends TitleStrategy {
     CommunitiesEditComponent.EditComponent,
     ThreadsEditComponent.EditComponent,
     CommunitiesListComponent,
+    ProfileComponent,
   ],
   imports: [
     BrowserModule,
@@ -66,10 +72,12 @@ export class TemplatePageTitleStrategy extends TitleStrategy {
     AlertModule,
     AuthModule,
   ],
-  providers: [{
-    provide: TitleStrategy, 
-    useClass: TemplatePageTitleStrategy
-  }],
+  providers: [
+    {
+      provide: TitleStrategy,
+      useClass: TemplatePageTitleStrategy,
+    },
+  ],
   bootstrap: [AppComponent],
   exports: [],
 })

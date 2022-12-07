@@ -29,7 +29,7 @@
 
         <div *ngFor="let community of communities" class="col-3">
             <div class="card">
-                <img class="card-img-top" src="{{ community.image }}">
+                <img (error)="updateImgUrl(community._id.toString())" class="card-img-top" src="{{ community.image }}">
                 <div class="card-body">
                     <p class="card-text">
                         {{ community.name }}
