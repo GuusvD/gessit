@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { AuthService } from "apps/gessit-app/src/app/auth/auth.service";
 import { Observable } from "rxjs";
 import { Theme } from "../entities/theme";
-import { environment } from "../../../../apps/gessit-app/src/environments/environment.prod";
+import { environment } from "../../../../apps/gessit-app/src/environments/environment";
 
 @Injectable({providedIn: 'root',})
 export class ThemesService {

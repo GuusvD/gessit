@@ -1,6 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { environment } from '../../environments/environment.prod';
+import { environment } from '../../environments/environment';
 import { CommunitiesModule } from '../communities/communities.module';
 import { Neo4jModule } from '../neo4j/neo4j.module';
 import { User, UserSchema } from './user.schema';

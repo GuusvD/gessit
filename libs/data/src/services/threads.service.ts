@@ -4,7 +4,7 @@ import { AlertService } from '../../../../apps/gessit-app/src/app/shared/alert/a
 import { catchError, map, Observable, of } from "rxjs";
 import { AuthService } from "../../../../apps/gessit-app/src/app/auth/auth.service";
 import { Thread } from "../entities/thread";
-import { environment } from "../../../../apps/gessit-app/src/environments/environment.prod";
+import { environment } from "../../../../apps/gessit-app/src/environments/environment";
 
 @Injectable({providedIn: 'root',})
 export class ThreadsService {

@@ -45,14 +45,14 @@ const roles_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/roles.
 const themes_module_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.module.ts");
 const messages_module_1 = __webpack_require__("./apps/gessit-api/src/app/messages/messages.module.ts");
 const neo4j_module_1 = __webpack_require__("./apps/gessit-api/src/app/neo4j/neo4j.module.ts");
-const environment_prod_1 = __webpack_require__("./apps/gessit-api/src/environments/environment.prod.ts");
+const environment_1 = __webpack_require__("./apps/gessit-api/src/environments/environment.ts");
 let AppModule = class AppModule {
 };
 AppModule = tslib_1.__decorate([
     (0, common_2.Module)({
-        imports: [mongoose_1.MongooseModule.forRoot(environment_prod_1.environment.BASE_MONGO_URL), communities_module_1.CommunitiesModule, threads_module_1.ThreadsModule, auth_module_1.AuthModule, users_module_1.UsersModule, themes_module_1.ThemesModule, messages_module_1.MessagesModule, neo4j_module_1.Neo4jModule.forRoot({
+        imports: [mongoose_1.MongooseModule.forRoot(environment_1.environment.BASE_MONGO_URL), communities_module_1.CommunitiesModule, threads_module_1.ThreadsModule, auth_module_1.AuthModule, users_module_1.UsersModule, themes_module_1.ThemesModule, messages_module_1.MessagesModule, neo4j_module_1.Neo4jModule.forRoot({
                 scheme: 'bolt',
-                host: environment_prod_1.environment.BASE_NEO_HOST,
+                host: environment_1.environment.BASE_NEO_HOST,
                 port: 7687,
                 username: 'neo4j',
                 password: 'neo',
@@ -2631,7 +2631,7 @@ exports.UsersModule = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("@nestjs/mongoose");
-const environment_prod_1 = __webpack_require__("./apps/gessit-api/src/environments/environment.prod.ts");
+const environment_1 = __webpack_require__("./apps/gessit-api/src/environments/environment.ts");
 const communities_module_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.module.ts");
 const neo4j_module_1 = __webpack_require__("./apps/gessit-api/src/app/neo4j/neo4j.module.ts");
 const user_schema_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.schema.ts");
@@ -2643,7 +2643,7 @@ UsersModule = tslib_1.__decorate([
     (0, common_1.Module)({
         imports: [mongoose_1.MongooseModule.forFeature([{ name: user_schema_1.User.name, schema: user_schema_1.UserSchema }]), (0, common_1.forwardRef)(() => communities_module_1.CommunitiesModule), neo4j_module_1.Neo4jModule.forRoot({
                 scheme: 'bolt',
-                host: environment_prod_1.environment.BASE_NEO_HOST,
+                host: environment_1.environment.BASE_NEO_HOST,
                 port: 7687,
                 username: 'neo4j',
                 password: 'neo',
@@ -2896,14 +2896,14 @@ exports.UsersService = UsersService;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/environments/environment.prod.ts":
+/***/ "./apps/gessit-api/src/environments/environment.ts":
 /***/ ((__unused_webpack_module, exports) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.environment = void 0;
 exports.environment = {
-    production: true,
+    production: false,
     BASE_MONGO_URL: 'mongodb://127.0.0.1:27017/gessit',
     BASE_NEO_HOST: '127.0.0.1'
 };
