@@ -10,6 +10,7 @@ import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { LoggedInAuthGuard } from './auth/auth.guards';
 import { CommunitiesListComponent } from './pages/communities/communities-list/communities-list.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 
 export const appRoutes: Route[] = [
     //Auth
@@ -18,6 +19,7 @@ export const appRoutes: Route[] = [
     //Other
     { path: 'homepage', pathMatch: 'full', component: HomepageComponent, title: 'Homepage' },
     { path: 'about', pathMatch: 'full', component: AboutComponent, title: 'About' },
+    { path: 'profile', pathMatch: 'full', component: ProfileComponent, title: 'Profile' },
     //Communities
     { path: 'communities', component: CommunitiesListComponent, children: [
         { path: '', component: CommunitiesComponent, data: { type: 'all', title: 'All communities' }, title: 'All communities' },

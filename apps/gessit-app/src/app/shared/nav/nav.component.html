@@ -47,6 +47,9 @@
 
       <ul class="navbar-nav ms-auto" *ngIf="loggedInUser$ | async as user">
         <li>
+          <a class="nav-link" routerLink="profile">Profile</a>
+        </li>
+        <li>
           <a class="nav-link" (click)="logout()">Logout</a>
         </li>
       </ul>

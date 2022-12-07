@@ -1,0 +1,21 @@
+<div class="component">
+    <div class="row">
+        <div class="col-6">
+            <div class="card">
+                <img (error)="updateImgUrl()" src="{{ user?.image }}">
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <h1>{{ user?.username }}</h1>
+                    <hr>
+                    <p>Birth date: {{ user?.birthDate | date: 'dd-MM-yyyy on HH:mm' }}</p>
+                    <p>Email address: {{ user?.emailAddress }}</p>
+                    <p>Phone number: {{ user?.phoneNumber }}</p>
+                    <p>Register date: {{ user?.registerDate | date: 'dd-MM-yyyy on HH:mm' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
