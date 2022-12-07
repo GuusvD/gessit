@@ -16,11 +16,12 @@ import { RolesGuard } from './auth/roles.guard';
 import { ThemesModule } from './themes/themes.module';
 import { MessagesModule } from './messages/messages.module';
 import { Neo4jModule } from './neo4j/neo4j.module';
+import { environment } from '../environments/environment.prod';
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://127.0.0.1:27017/gessit'), CommunitiesModule, ThreadsModule, AuthModule, UsersModule, ThemesModule, MessagesModule, Neo4jModule.forRoot({
+  imports: [MongooseModule.forRoot(environment.BASE_MONGO_URL), CommunitiesModule, ThreadsModule, AuthModule, UsersModule, ThemesModule, MessagesModule, Neo4jModule.forRoot({
     scheme: 'bolt',
-    host: '127.0.0.1',
+    host: environment.BASE_NEO_HOST,
     port: 7687,
     username: 'neo4j',
     password: 'neo',
