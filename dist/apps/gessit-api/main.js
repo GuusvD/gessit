@@ -2,7 +2,7 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./apps/gessit-api/src/app/app.controller.ts":
+/***/ "../app.controller.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -20,7 +20,7 @@ exports.AppController = AppController;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/app.module.ts":
+/***/ "../app.module.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -33,22 +33,29 @@ const Public = () => (0, common_1.SetMetadata)(exports.IS_PUBLIC_KEY, true);
 exports.Public = Public;
 const common_2 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("@nestjs/mongoose");
-const auth_module_1 = __webpack_require__("./apps/gessit-api/src/app/auth/auth.module.ts");
-const app_controller_1 = __webpack_require__("./apps/gessit-api/src/app/app.controller.ts");
-const app_service_1 = __webpack_require__("./apps/gessit-api/src/app/app.service.ts");
-const communities_module_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.module.ts");
-const threads_module_1 = __webpack_require__("./apps/gessit-api/src/app/threads/threads.module.ts");
-const users_module_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.module.ts");
+const auth_module_1 = __webpack_require__("../auth/auth.module.ts");
+const app_controller_1 = __webpack_require__("../app.controller.ts");
+const app_service_1 = __webpack_require__("../app.service.ts");
+const communities_module_1 = __webpack_require__("../communities/communities.module.ts");
+const threads_module_1 = __webpack_require__("../threads/threads.module.ts");
+const users_module_1 = __webpack_require__("../users/users.module.ts");
 const core_1 = __webpack_require__("@nestjs/core");
-const jwt_auth_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/jwt-auth.guard.ts");
-const roles_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/roles.guard.ts");
-const themes_module_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.module.ts");
-const messages_module_1 = __webpack_require__("./apps/gessit-api/src/app/messages/messages.module.ts");
+const jwt_auth_guard_1 = __webpack_require__("../auth/jwt-auth.guard.ts");
+const roles_guard_1 = __webpack_require__("../auth/roles.guard.ts");
+const themes_module_1 = __webpack_require__("../themes/themes.module.ts");
+const messages_module_1 = __webpack_require__("../messages/messages.module.ts");
+const neo4j_module_1 = __webpack_require__("./neo4j.module.ts");
 let AppModule = class AppModule {
 };
 AppModule = tslib_1.__decorate([
     (0, common_2.Module)({
-        imports: [mongoose_1.MongooseModule.forRoot('mongodb://127.0.0.1:27017/gessit'), communities_module_1.CommunitiesModule, threads_module_1.ThreadsModule, auth_module_1.AuthModule, users_module_1.UsersModule, themes_module_1.ThemesModule, messages_module_1.MessagesModule],
+        imports: [mongoose_1.MongooseModule.forRoot('mongodb://127.0.0.1:27017/gessit'), communities_module_1.CommunitiesModule, threads_module_1.ThreadsModule, auth_module_1.AuthModule, users_module_1.UsersModule, themes_module_1.ThemesModule, messages_module_1.MessagesModule, neo4j_module_1.Neo4jModule.forRoot({
+                scheme: 'bolt',
+                host: '127.0.0.1',
+                port: 7687,
+                username: 'neo4j',
+                password: 'neo',
+            })],
         controllers: [app_controller_1.AppController],
         providers: [
             {
@@ -68,7 +75,7 @@ exports.AppModule = AppModule;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/app.service.ts":
+/***/ "../app.service.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -89,7 +96,7 @@ exports.AppService = AppService;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/auth/auth.controller.ts":
+/***/ "../auth/auth.controller.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -98,10 +105,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
-const auth_service_1 = __webpack_require__("./apps/gessit-api/src/app/auth/auth.service.ts");
-const local_auth_guard_1 = __webpack_require__("./apps/gessit-api/src/app/auth/local-auth.guard.ts");
-const create_user_dto_1 = __webpack_require__("./apps/gessit-api/src/app/users/create-user.dto.ts");
+const app_module_1 = __webpack_require__("../app.module.ts");
+const auth_service_1 = __webpack_require__("../auth/auth.service.ts");
+const local_auth_guard_1 = __webpack_require__("../auth/local-auth.guard.ts");
+const create_user_dto_1 = __webpack_require__("../users/create-user.dto.ts");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -153,7 +160,7 @@ exports.AuthController = AuthController;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/auth/auth.module.ts":
+/***/ "../auth/auth.module.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -161,14 +168,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthModule = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const auth_service_1 = __webpack_require__("./apps/gessit-api/src/app/auth/auth.service.ts");
-const local_strategy_1 = __webpack_require__("./apps/gessit-api/src/app/auth/local.strategy.ts");
-const jwt_strategy_1 = __webpack_require__("./apps/gessit-api/src/app/auth/jwt.strategy.ts");
-const users_module_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.module.ts");
+const auth_service_1 = __webpack_require__("../auth/auth.service.ts");
+const local_strategy_1 = __webpack_require__("../auth/local.strategy.ts");
+const jwt_strategy_1 = __webpack_require__("../auth/jwt.strategy.ts");
+const users_module_1 = __webpack_require__("../users/users.module.ts");
 const passport_1 = __webpack_require__("@nestjs/passport");
 const jwt_1 = __webpack_require__("@nestjs/jwt");
-const constant_1 = __webpack_require__("./apps/gessit-api/src/app/auth/constant.ts");
-const auth_controller_1 = __webpack_require__("./apps/gessit-api/src/app/auth/auth.controller.ts");
+const constant_1 = __webpack_require__("../auth/constant.ts");
+const auth_controller_1 = __webpack_require__("../auth/auth.controller.ts");
 let AuthModule = class AuthModule {
 };
 AuthModule = tslib_1.__decorate([
@@ -191,7 +198,7 @@ exports.AuthModule = AuthModule;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/auth/auth.service.ts":
+/***/ "../auth/auth.service.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -200,7 +207,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.service.ts");
+const users_service_1 = __webpack_require__("../users/users.service.ts");
 const jwt_1 = __webpack_require__("@nestjs/jwt");
 const bcrypt = __webpack_require__("bcrypt");
 let AuthService = class AuthService {
@@ -251,7 +258,7 @@ exports.AuthService = AuthService;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/auth/constant.ts":
+/***/ "../auth/constant.ts":
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -264,7 +271,7 @@ exports.jwtConstants = {
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/auth/jwt-auth.guard.ts":
+/***/ "../auth/jwt-auth.guard.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -275,7 +282,7 @@ const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const core_1 = __webpack_require__("@nestjs/core");
 const passport_1 = __webpack_require__("@nestjs/passport");
-const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
+const app_module_1 = __webpack_require__("../app.module.ts");
 let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
     constructor(reflector) {
         super();
@@ -301,7 +308,7 @@ exports.JwtAuthGuard = JwtAuthGuard;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/auth/jwt.strategy.ts":
+/***/ "../auth/jwt.strategy.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -312,8 +319,8 @@ const tslib_1 = __webpack_require__("tslib");
 const passport_jwt_1 = __webpack_require__("passport-jwt");
 const passport_1 = __webpack_require__("@nestjs/passport");
 const common_1 = __webpack_require__("@nestjs/common");
-const constant_1 = __webpack_require__("./apps/gessit-api/src/app/auth/constant.ts");
-const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.service.ts");
+const constant_1 = __webpack_require__("../auth/constant.ts");
+const users_service_1 = __webpack_require__("../users/users.service.ts");
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
     constructor(usersService) {
         super({
@@ -344,7 +351,7 @@ exports.JwtStrategy = JwtStrategy;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/auth/local-auth.guard.ts":
+/***/ "../auth/local-auth.guard.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -363,7 +370,7 @@ exports.LocalAuthGuard = LocalAuthGuard;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/auth/local.strategy.ts":
+/***/ "../auth/local.strategy.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -374,7 +381,7 @@ const tslib_1 = __webpack_require__("tslib");
 const passport_local_1 = __webpack_require__("passport-local");
 const passport_1 = __webpack_require__("@nestjs/passport");
 const common_1 = __webpack_require__("@nestjs/common");
-const auth_service_1 = __webpack_require__("./apps/gessit-api/src/app/auth/auth.service.ts");
+const auth_service_1 = __webpack_require__("../auth/auth.service.ts");
 let LocalStrategy = class LocalStrategy extends (0, passport_1.PassportStrategy)(passport_local_1.Strategy) {
     constructor(authService) {
         super();
@@ -399,7 +406,7 @@ exports.LocalStrategy = LocalStrategy;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/auth/roles.decorator.ts":
+/***/ "../auth/roles.decorator.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -413,7 +420,7 @@ exports.Roles = Roles;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/auth/roles.guard.ts":
+/***/ "../auth/roles.guard.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -423,7 +430,7 @@ exports.RolesGuard = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const core_1 = __webpack_require__("@nestjs/core");
-const roles_decorator_1 = __webpack_require__("./apps/gessit-api/src/app/auth/roles.decorator.ts");
+const roles_decorator_1 = __webpack_require__("../auth/roles.decorator.ts");
 let RolesGuard = class RolesGuard {
     constructor(reflector) {
         this.reflector = reflector;
@@ -449,7 +456,7 @@ exports.RolesGuard = RolesGuard;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/communities/communities.controller.ts":
+/***/ "../communities/communities.controller.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -458,11 +465,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommunitiesController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.service.ts");
-const create_community_dto_1 = __webpack_require__("./apps/gessit-api/src/app/communities/create-community.dto.ts");
-const update_community_dto_1 = __webpack_require__("./apps/gessit-api/src/app/communities/update-community.dto.ts");
-const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
-const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
+const communities_service_1 = __webpack_require__("../communities/communities.service.ts");
+const create_community_dto_1 = __webpack_require__("../communities/create-community.dto.ts");
+const update_community_dto_1 = __webpack_require__("../communities/update-community.dto.ts");
+const object_id_pipe_1 = __webpack_require__("../shared/pipes/object.id.pipe.ts");
+const app_module_1 = __webpack_require__("../app.module.ts");
 let CommunitiesController = class CommunitiesController {
     constructor(communityService) {
         this.communityService = communityService;
@@ -592,7 +599,7 @@ exports.CommunitiesController = CommunitiesController;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/communities/communities.module.ts":
+/***/ "../communities/communities.module.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -601,11 +608,11 @@ exports.CommunitiesModule = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const mongoose_1 = __webpack_require__("@nestjs/mongoose");
 const common_1 = __webpack_require__("@nestjs/common");
-const community_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/community.schema.ts");
-const communities_controller_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.controller.ts");
-const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.service.ts");
-const themes_module_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.module.ts");
-const users_module_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.module.ts");
+const community_schema_1 = __webpack_require__("../communities/community.schema.ts");
+const communities_controller_1 = __webpack_require__("../communities/communities.controller.ts");
+const communities_service_1 = __webpack_require__("../communities/communities.service.ts");
+const themes_module_1 = __webpack_require__("../themes/themes.module.ts");
+const users_module_1 = __webpack_require__("../users/users.module.ts");
 let CommunitiesModule = class CommunitiesModule {
 };
 CommunitiesModule = tslib_1.__decorate([
@@ -621,7 +628,7 @@ exports.CommunitiesModule = CommunitiesModule;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/communities/communities.service.ts":
+/***/ "../communities/communities.service.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -630,13 +637,13 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CommunitiesService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const community_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/community.schema.ts");
+const community_schema_1 = __webpack_require__("../communities/community.schema.ts");
 const mongoose_1 = __webpack_require__("mongoose");
-const themes_service_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.service.ts");
-const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.service.ts");
+const themes_service_1 = __webpack_require__("../themes/themes.service.ts");
+const users_service_1 = __webpack_require__("../users/users.service.ts");
 const mongoose_2 = __webpack_require__("@nestjs/mongoose");
-const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
-const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
+const object_id_pipe_1 = __webpack_require__("../shared/pipes/object.id.pipe.ts");
+const role_enum_1 = __webpack_require__("../users/role.enum.ts");
 let CommunitiesService = class CommunitiesService {
     constructor(communityModel, themesService, usersService) {
         this.communityModel = communityModel;
@@ -821,7 +828,7 @@ exports.CommunitiesService = CommunitiesService;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/communities/community.schema.ts":
+/***/ "../communities/community.schema.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -831,7 +838,7 @@ exports.CommunitySchema = exports.Community = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const mongoose_1 = __webpack_require__("@nestjs/mongoose");
 const mongoose_2 = __webpack_require__("mongoose");
-const user_schema_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.schema.ts");
+const user_schema_1 = __webpack_require__("../users/user.schema.ts");
 let Community = class Community {
 };
 tslib_1.__decorate([
@@ -894,7 +901,7 @@ exports.CommunitySchema = mongoose_1.SchemaFactory.createForClass(Community);
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/communities/create-community.dto.ts":
+/***/ "../communities/create-community.dto.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -938,7 +945,7 @@ exports.CreateCommunityDto = CreateCommunityDto;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/communities/update-community.dto.ts":
+/***/ "../communities/update-community.dto.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -981,7 +988,7 @@ exports.UpdateCommunityDto = UpdateCommunityDto;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/messages/create-message.dto.ts":
+/***/ "../messages/create-message.dto.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1000,7 +1007,7 @@ exports.CreateMessageDto = CreateMessageDto;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/messages/message.schema.ts":
+/***/ "../messages/message.schema.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1049,7 +1056,7 @@ exports.MessageSchema = mongoose_1.SchemaFactory.createForClass(Message);
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/messages/messages.controller.ts":
+/***/ "../messages/messages.controller.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1058,11 +1065,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MessagesController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
-const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
-const create_message_dto_1 = __webpack_require__("./apps/gessit-api/src/app/messages/create-message.dto.ts");
-const messages_service_1 = __webpack_require__("./apps/gessit-api/src/app/messages/messages.service.ts");
-const update_message_dto_1 = __webpack_require__("./apps/gessit-api/src/app/messages/update-message.dto.ts");
+const app_module_1 = __webpack_require__("../app.module.ts");
+const object_id_pipe_1 = __webpack_require__("../shared/pipes/object.id.pipe.ts");
+const create_message_dto_1 = __webpack_require__("../messages/create-message.dto.ts");
+const messages_service_1 = __webpack_require__("../messages/messages.service.ts");
+const update_message_dto_1 = __webpack_require__("../messages/update-message.dto.ts");
 let MessagesController = class MessagesController {
     constructor(messagesService) {
         this.messagesService = messagesService;
@@ -1167,7 +1174,7 @@ exports.MessagesController = MessagesController;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/messages/messages.module.ts":
+/***/ "../messages/messages.module.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1176,10 +1183,10 @@ exports.MessagesModule = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("@nestjs/mongoose");
-const communities_module_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.module.ts");
-const message_schema_1 = __webpack_require__("./apps/gessit-api/src/app/messages/message.schema.ts");
-const messages_controller_1 = __webpack_require__("./apps/gessit-api/src/app/messages/messages.controller.ts");
-const messages_service_1 = __webpack_require__("./apps/gessit-api/src/app/messages/messages.service.ts");
+const communities_module_1 = __webpack_require__("../communities/communities.module.ts");
+const message_schema_1 = __webpack_require__("../messages/message.schema.ts");
+const messages_controller_1 = __webpack_require__("../messages/messages.controller.ts");
+const messages_service_1 = __webpack_require__("../messages/messages.service.ts");
 let MessagesModule = class MessagesModule {
 };
 MessagesModule = tslib_1.__decorate([
@@ -1194,7 +1201,7 @@ exports.MessagesModule = MessagesModule;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/messages/messages.service.ts":
+/***/ "../messages/messages.service.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1205,9 +1212,9 @@ const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("@nestjs/mongoose");
 const mongoose_2 = __webpack_require__("mongoose");
-const community_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/community.schema.ts");
-const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
-const message_schema_1 = __webpack_require__("./apps/gessit-api/src/app/messages/message.schema.ts");
+const community_schema_1 = __webpack_require__("../communities/community.schema.ts");
+const role_enum_1 = __webpack_require__("../users/role.enum.ts");
+const message_schema_1 = __webpack_require__("../messages/message.schema.ts");
 let MessagesService = class MessagesService {
     constructor(communityModel, messageModel) {
         this.communityModel = communityModel;
@@ -1330,7 +1337,7 @@ exports.MessagesService = MessagesService;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/messages/update-message.dto.ts":
+/***/ "../messages/update-message.dto.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1350,7 +1357,143 @@ exports.UpdateMessageDto = UpdateMessageDto;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/shared/filters/validation.exception.ts":
+/***/ "./neo4j-config.interface.ts":
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+
+/***/ "./neo4j.constants.ts":
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NEO4J_DRIVER = exports.NEO4J_CONFIG = void 0;
+exports.NEO4J_CONFIG = 'NEO4J_CONFIG';
+exports.NEO4J_DRIVER = 'NEO4J_DRIVER';
+
+
+/***/ }),
+
+/***/ "./neo4j.module.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var Neo4jModule_1;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Neo4jModule = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const neo4j_service_1 = __webpack_require__("./neo4j.service.ts");
+const neo4j_constants_1 = __webpack_require__("./neo4j.constants.ts");
+const neo4j_util_1 = __webpack_require__("./neo4j.util.ts");
+let Neo4jModule = Neo4jModule_1 = class Neo4jModule {
+    static forRoot(config) {
+        return {
+            module: Neo4jModule_1,
+            providers: [
+                {
+                    provide: neo4j_constants_1.NEO4J_CONFIG,
+                    useValue: config
+                },
+                {
+                    provide: neo4j_constants_1.NEO4J_DRIVER,
+                    inject: [neo4j_constants_1.NEO4J_CONFIG],
+                    useFactory: (config) => tslib_1.__awaiter(this, void 0, void 0, function* () { return (0, neo4j_util_1.createDriver)(config); })
+                },
+                neo4j_service_1.Neo4jService
+            ],
+            exports: [
+                neo4j_service_1.Neo4jService
+            ]
+        };
+    }
+};
+Neo4jModule = Neo4jModule_1 = tslib_1.__decorate([
+    (0, common_1.Module)({})
+], Neo4jModule);
+exports.Neo4jModule = Neo4jModule;
+
+
+/***/ }),
+
+/***/ "./neo4j.service.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Neo4jService = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const common_1 = __webpack_require__("@nestjs/common");
+const neo4j_config_interface_1 = __webpack_require__("./neo4j-config.interface.ts");
+const neo4j_constants_1 = __webpack_require__("./neo4j.constants.ts");
+const neo4j_driver_1 = __webpack_require__("neo4j-driver");
+let Neo4jService = class Neo4jService {
+    constructor(config, driver) {
+        this.config = config;
+        this.driver = driver;
+    }
+    getDriver() {
+        return this.driver;
+    }
+    getConfig() {
+        return this.config;
+    }
+    getReadSession(database) {
+        return this.driver.session({
+            database: database || this.config.database,
+            defaultAccessMode: neo4j_driver_1.default.session.READ
+        });
+    }
+    getWriteSession(database) {
+        return this.driver.session({
+            database: database || this.config.database,
+            defaultAccessMode: neo4j_driver_1.default.session.WRITE
+        });
+    }
+    read(cypher, params, database) {
+        const session = this.getReadSession(database);
+        return session.run(cypher, params);
+    }
+    write(cypher, params, database) {
+        const session = this.getWriteSession(database);
+        return session.run(cypher, params);
+    }
+};
+Neo4jService = tslib_1.__decorate([
+    (0, common_1.Injectable)(),
+    tslib_1.__param(0, (0, common_1.Inject)(neo4j_constants_1.NEO4J_CONFIG)),
+    tslib_1.__param(1, (0, common_1.Inject)(neo4j_constants_1.NEO4J_DRIVER)),
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof neo4j_config_interface_1.Neo4jConfig !== "undefined" && neo4j_config_interface_1.Neo4jConfig) === "function" ? _a : Object, typeof (_b = typeof neo4j_driver_1.Driver !== "undefined" && neo4j_driver_1.Driver) === "function" ? _b : Object])
+], Neo4jService);
+exports.Neo4jService = Neo4jService;
+
+
+/***/ }),
+
+/***/ "./neo4j.util.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.createDriver = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const neo4j_driver_1 = __webpack_require__("neo4j-driver");
+const createDriver = (config) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
+    const driver = neo4j_driver_1.default.driver(`${config.scheme}://${config.host}:${config.port}`, neo4j_driver_1.default.auth.basic(config.username, config.password));
+    yield driver.verifyConnectivity();
+    return driver;
+});
+exports.createDriver = createDriver;
+
+
+/***/ }),
+
+/***/ "../shared/filters/validation.exception.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1368,7 +1511,7 @@ exports.ValidationException = ValidationException;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/shared/filters/validation.filter.ts":
+/***/ "../shared/filters/validation.filter.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1376,7 +1519,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ValidationFilter = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
+const validation_exception_1 = __webpack_require__("../shared/filters/validation.exception.ts");
 let ValidationFilter = class ValidationFilter {
     catch(exception, host) {
         const ctx = host.switchToHttp(), response = ctx.getResponse();
@@ -1396,13 +1539,13 @@ exports.ValidationFilter = ValidationFilter;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts":
+/***/ "../shared/pipes/object.id.pipe.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ObjectIdPipe = void 0;
-const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
+const validation_exception_1 = __webpack_require__("../shared/filters/validation.exception.ts");
 var ObjectId = (__webpack_require__("mongoose").Types.ObjectId);
 class ObjectIdPipe {
     transform(value) {
@@ -1426,7 +1569,7 @@ exports.ObjectIdPipe = ObjectIdPipe;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/themes/create-theme.dto.ts":
+/***/ "../themes/create-theme.dto.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1447,7 +1590,7 @@ exports.CreateThemeDto = CreateThemeDto;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/themes/theme.schema.ts":
+/***/ "../themes/theme.schema.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1476,7 +1619,7 @@ exports.ThemeSchema = mongoose_1.SchemaFactory.createForClass(Theme);
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/themes/themes.controller.ts":
+/***/ "../themes/themes.controller.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1485,12 +1628,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ThemesController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
-const roles_decorator_1 = __webpack_require__("./apps/gessit-api/src/app/auth/roles.decorator.ts");
-const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
-const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
-const create_theme_dto_1 = __webpack_require__("./apps/gessit-api/src/app/themes/create-theme.dto.ts");
-const themes_service_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.service.ts");
+const app_module_1 = __webpack_require__("../app.module.ts");
+const roles_decorator_1 = __webpack_require__("../auth/roles.decorator.ts");
+const object_id_pipe_1 = __webpack_require__("../shared/pipes/object.id.pipe.ts");
+const role_enum_1 = __webpack_require__("../users/role.enum.ts");
+const create_theme_dto_1 = __webpack_require__("../themes/create-theme.dto.ts");
+const themes_service_1 = __webpack_require__("../themes/themes.service.ts");
 let ThemesController = class ThemesController {
     constructor(themeService) {
         this.themeService = themeService;
@@ -1556,7 +1699,7 @@ exports.ThemesController = ThemesController;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/themes/themes.module.ts":
+/***/ "../themes/themes.module.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1565,9 +1708,9 @@ exports.ThemesModule = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("@nestjs/mongoose");
-const theme_schema_1 = __webpack_require__("./apps/gessit-api/src/app/themes/theme.schema.ts");
-const themes_controller_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.controller.ts");
-const themes_service_1 = __webpack_require__("./apps/gessit-api/src/app/themes/themes.service.ts");
+const theme_schema_1 = __webpack_require__("../themes/theme.schema.ts");
+const themes_controller_1 = __webpack_require__("../themes/themes.controller.ts");
+const themes_service_1 = __webpack_require__("../themes/themes.service.ts");
 let ThemesModule = class ThemesModule {
 };
 ThemesModule = tslib_1.__decorate([
@@ -1583,7 +1726,7 @@ exports.ThemesModule = ThemesModule;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/themes/themes.service.ts":
+/***/ "../themes/themes.service.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1593,7 +1736,7 @@ exports.ThemesService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("mongoose");
-const theme_schema_1 = __webpack_require__("./apps/gessit-api/src/app/themes/theme.schema.ts");
+const theme_schema_1 = __webpack_require__("../themes/theme.schema.ts");
 const mongoose_2 = __webpack_require__("@nestjs/mongoose");
 let ThemesService = class ThemesService {
     constructor(themeModel) {
@@ -1647,7 +1790,7 @@ exports.ThemesService = ThemesService;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/threads/create-thread.dto.ts":
+/***/ "../threads/create-thread.dto.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1674,7 +1817,7 @@ exports.CreateThreadDto = CreateThreadDto;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/threads/thread.schema.ts":
+/***/ "../threads/thread.schema.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1737,7 +1880,7 @@ exports.ThreadSchema = mongoose_1.SchemaFactory.createForClass(Thread);
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/threads/threads.controller.ts":
+/***/ "../threads/threads.controller.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1746,11 +1889,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ThreadsController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const threads_service_1 = __webpack_require__("./apps/gessit-api/src/app/threads/threads.service.ts");
-const update_thread_dto_1 = __webpack_require__("./apps/gessit-api/src/app/threads/update-thread.dto.ts");
-const create_thread_dto_1 = __webpack_require__("./apps/gessit-api/src/app/threads/create-thread.dto.ts");
-const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
-const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
+const threads_service_1 = __webpack_require__("../threads/threads.service.ts");
+const update_thread_dto_1 = __webpack_require__("../threads/update-thread.dto.ts");
+const create_thread_dto_1 = __webpack_require__("../threads/create-thread.dto.ts");
+const app_module_1 = __webpack_require__("../app.module.ts");
+const object_id_pipe_1 = __webpack_require__("../shared/pipes/object.id.pipe.ts");
 let ThreadsController = class ThreadsController {
     constructor(threadService) {
         this.threadService = threadService;
@@ -1863,7 +2006,7 @@ exports.ThreadsController = ThreadsController;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/threads/threads.module.ts":
+/***/ "../threads/threads.module.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1872,11 +2015,11 @@ exports.ThreadsModule = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const mongoose_1 = __webpack_require__("@nestjs/mongoose");
 const common_1 = __webpack_require__("@nestjs/common");
-const thread_schema_1 = __webpack_require__("./apps/gessit-api/src/app/threads/thread.schema.ts");
-const threads_controller_1 = __webpack_require__("./apps/gessit-api/src/app/threads/threads.controller.ts");
-const threads_service_1 = __webpack_require__("./apps/gessit-api/src/app/threads/threads.service.ts");
-const users_module_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.module.ts");
-const communities_module_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.module.ts");
+const thread_schema_1 = __webpack_require__("../threads/thread.schema.ts");
+const threads_controller_1 = __webpack_require__("../threads/threads.controller.ts");
+const threads_service_1 = __webpack_require__("../threads/threads.service.ts");
+const users_module_1 = __webpack_require__("../users/users.module.ts");
+const communities_module_1 = __webpack_require__("../communities/communities.module.ts");
 let ThreadsModule = class ThreadsModule {
 };
 ThreadsModule = tslib_1.__decorate([
@@ -1891,7 +2034,7 @@ exports.ThreadsModule = ThreadsModule;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/threads/threads.service.ts":
+/***/ "../threads/threads.service.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1901,12 +2044,12 @@ exports.ThreadsService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("mongoose");
-const thread_schema_1 = __webpack_require__("./apps/gessit-api/src/app/threads/thread.schema.ts");
-const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.service.ts");
+const thread_schema_1 = __webpack_require__("../threads/thread.schema.ts");
+const users_service_1 = __webpack_require__("../users/users.service.ts");
 const mongoose_2 = __webpack_require__("@nestjs/mongoose");
-const community_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/community.schema.ts");
-const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.service.ts");
-const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
+const community_schema_1 = __webpack_require__("../communities/community.schema.ts");
+const communities_service_1 = __webpack_require__("../communities/communities.service.ts");
+const role_enum_1 = __webpack_require__("../users/role.enum.ts");
 let ThreadsService = class ThreadsService {
     constructor(communityModel, threadModel, usersService, communitiesService) {
         this.communityModel = communityModel;
@@ -2130,7 +2273,7 @@ exports.ThreadsService = ThreadsService;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/threads/update-thread.dto.ts":
+/***/ "../threads/update-thread.dto.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -2160,7 +2303,7 @@ exports.UpdateThreadDto = UpdateThreadDto;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/users/create-user.dto.ts":
+/***/ "../users/create-user.dto.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -2210,7 +2353,7 @@ exports.CreateUserDto = CreateUserDto;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/users/role.enum.ts":
+/***/ "../users/role.enum.ts":
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2225,7 +2368,7 @@ var Role;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/users/update-user.dto.ts":
+/***/ "../users/update-user.dto.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -2271,7 +2414,7 @@ exports.UpdateUserDto = UpdateUserDto;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/users/user.schema.ts":
+/***/ "../users/user.schema.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -2360,7 +2503,7 @@ exports.UserSchema = mongoose_1.SchemaFactory.createForClass(User);
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/users/users.controller.ts":
+/***/ "../users/users.controller.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -2369,12 +2512,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const roles_decorator_1 = __webpack_require__("./apps/gessit-api/src/app/auth/roles.decorator.ts");
-const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
-const create_user_dto_1 = __webpack_require__("./apps/gessit-api/src/app/users/create-user.dto.ts");
-const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
-const update_user_dto_1 = __webpack_require__("./apps/gessit-api/src/app/users/update-user.dto.ts");
-const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.service.ts");
+const roles_decorator_1 = __webpack_require__("../auth/roles.decorator.ts");
+const object_id_pipe_1 = __webpack_require__("../shared/pipes/object.id.pipe.ts");
+const create_user_dto_1 = __webpack_require__("../users/create-user.dto.ts");
+const role_enum_1 = __webpack_require__("../users/role.enum.ts");
+const update_user_dto_1 = __webpack_require__("../users/update-user.dto.ts");
+const users_service_1 = __webpack_require__("../users/users.service.ts");
 let UsersController = class UsersController {
     constructor(userService) {
         this.userService = userService;
@@ -2477,7 +2620,7 @@ exports.UsersController = UsersController;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/users/users.module.ts":
+/***/ "../users/users.module.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -2486,15 +2629,22 @@ exports.UsersModule = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("@nestjs/mongoose");
-const communities_module_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.module.ts");
-const user_schema_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.schema.ts");
-const users_controller_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.controller.ts");
-const users_service_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.service.ts");
+const communities_module_1 = __webpack_require__("../communities/communities.module.ts");
+const neo4j_module_1 = __webpack_require__("./neo4j.module.ts");
+const user_schema_1 = __webpack_require__("../users/user.schema.ts");
+const users_controller_1 = __webpack_require__("../users/users.controller.ts");
+const users_service_1 = __webpack_require__("../users/users.service.ts");
 let UsersModule = class UsersModule {
 };
 UsersModule = tslib_1.__decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: user_schema_1.User.name, schema: user_schema_1.UserSchema }]), (0, common_1.forwardRef)(() => communities_module_1.CommunitiesModule)],
+        imports: [mongoose_1.MongooseModule.forFeature([{ name: user_schema_1.User.name, schema: user_schema_1.UserSchema }]), (0, common_1.forwardRef)(() => communities_module_1.CommunitiesModule), neo4j_module_1.Neo4jModule.forRoot({
+                scheme: 'bolt',
+                host: '127.0.0.1',
+                port: 7687,
+                username: 'neo4j',
+                password: 'neo',
+            })],
         controllers: [users_controller_1.UsersController],
         providers: [users_service_1.UsersService],
         exports: [users_service_1.UsersService]
@@ -2505,27 +2655,29 @@ exports.UsersModule = UsersModule;
 
 /***/ }),
 
-/***/ "./apps/gessit-api/src/app/users/users.service.ts":
+/***/ "../users/users.service.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
-var _a, _b, _c;
+var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersService = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const mongoose_1 = __webpack_require__("mongoose");
-const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
+const role_enum_1 = __webpack_require__("../users/role.enum.ts");
 const bcrypt = __webpack_require__("bcrypt");
-const user_schema_1 = __webpack_require__("./apps/gessit-api/src/app/users/user.schema.ts");
+const user_schema_1 = __webpack_require__("../users/user.schema.ts");
 const mongoose_2 = __webpack_require__("@nestjs/mongoose");
-const communities_service_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.service.ts");
-const community_schema_1 = __webpack_require__("./apps/gessit-api/src/app/communities/community.schema.ts");
+const communities_service_1 = __webpack_require__("../communities/communities.service.ts");
+const community_schema_1 = __webpack_require__("../communities/community.schema.ts");
+const neo4j_service_1 = __webpack_require__("./neo4j.service.ts");
 let UsersService = class UsersService {
-    constructor(userModel, communityModel, communitiesService) {
+    constructor(userModel, communityModel, communitiesService, neo4jService) {
         this.userModel = userModel;
         this.communityModel = communityModel;
         this.communitiesService = communitiesService;
+        this.neo4jService = neo4jService;
     }
     getUserByUsername(username) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -2678,7 +2830,15 @@ let UsersService = class UsersService {
                 roles: [role_enum_1.Role.User],
                 isActive: true
             });
-            return this.userModel.create(newUser);
+            const result = yield this.userModel.create(newUser);
+            yield this.neo4jService.write(`
+      CREATE
+      (n:User {
+      id: '${result._id.toString()}',
+      username: '${newUser.username}', 
+      birthDate: '${newUser.birthDate.toISOString()}'
+     })`, {});
+            return result;
         });
     }
     updateUser(req, id, user) {
@@ -2726,7 +2886,7 @@ UsersService = tslib_1.__decorate([
     tslib_1.__param(0, (0, mongoose_2.InjectModel)(user_schema_1.User.name)),
     tslib_1.__param(1, (0, mongoose_2.InjectModel)(community_schema_1.Community.name)),
     tslib_1.__param(2, (0, common_1.Inject)((0, common_1.forwardRef)(() => communities_service_1.CommunitiesService))),
-    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof mongoose_1.Model !== "undefined" && mongoose_1.Model) === "function" ? _a : Object, typeof (_b = typeof mongoose_1.Model !== "undefined" && mongoose_1.Model) === "function" ? _b : Object, typeof (_c = typeof communities_service_1.CommunitiesService !== "undefined" && communities_service_1.CommunitiesService) === "function" ? _c : Object])
+    tslib_1.__metadata("design:paramtypes", [typeof (_a = typeof mongoose_1.Model !== "undefined" && mongoose_1.Model) === "function" ? _a : Object, typeof (_b = typeof mongoose_1.Model !== "undefined" && mongoose_1.Model) === "function" ? _b : Object, typeof (_c = typeof communities_service_1.CommunitiesService !== "undefined" && communities_service_1.CommunitiesService) === "function" ? _c : Object, typeof (_d = typeof neo4j_service_1.Neo4jService !== "undefined" && neo4j_service_1.Neo4jService) === "function" ? _d : Object])
 ], UsersService);
 exports.UsersService = UsersService;
 
@@ -2786,6 +2946,13 @@ module.exports = require("class-validator");
 /***/ ((module) => {
 
 module.exports = require("mongoose");
+
+/***/ }),
+
+/***/ "neo4j-driver":
+/***/ ((module) => {
+
+module.exports = require("neo4j-driver");
 
 /***/ }),
 
@@ -2850,9 +3017,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
 const core_1 = __webpack_require__("@nestjs/core");
-const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
-const validation_filter_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.filter.ts");
-const validation_exception_1 = __webpack_require__("./apps/gessit-api/src/app/shared/filters/validation.exception.ts");
+const app_module_1 = __webpack_require__("../app.module.ts");
+const validation_filter_1 = __webpack_require__("../shared/filters/validation.filter.ts");
+const validation_exception_1 = __webpack_require__("../shared/filters/validation.exception.ts");
 function bootstrap() {
     return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const app = yield core_1.NestFactory.create(app_module_1.AppModule);
