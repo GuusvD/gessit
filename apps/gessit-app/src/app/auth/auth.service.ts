@@ -20,7 +20,6 @@ export class AuthService {
 
   constructor(
     private alertService: AlertService,
-    private http: HttpClient,
     private router: Router,
     private httpClient: HttpClient
   ) {
@@ -49,7 +48,10 @@ export class AuthService {
   login(username: string, password: string): Observable<User | undefined> {
     console.log(`login at ${environment.BASE_API_URL}auth/login`);
 
-    return this.http
+    console.log(this.httpClient)
+    console.log(`${environment.BASE_API_URL}auth/login`)
+
+    return this.httpClient
       .post<User>(
         `${environment.BASE_API_URL}auth/login`,
         { username: username, password: password },
@@ -94,7 +96,7 @@ export class AuthService {
       image: userData.image
     }
 
-    return this.http
+    return this.httpClient
       .post<User>(`${environment.BASE_API_URL}auth/register`, user, {
         headers: this.headers,
       })
@@ -132,7 +134,7 @@ export class AuthService {
     };
 
     console.log(`validateToken at ${url}`);
-    return this.http.get<any>(url, httpOptions).pipe(
+    return this.httpClient.get<any>(url, httpOptions).pipe(
       map((response) => {
         console.log('token is valid');
         return response;
