@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  BASE_API_URL: 'http://localhost:3333/api/'
+  BASE_API_URL: 'gessit.up.railway.app/api/'
 };

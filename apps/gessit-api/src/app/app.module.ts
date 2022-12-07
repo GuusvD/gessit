@@ -16,7 +16,7 @@ import { RolesGuard } from './auth/roles.guard';
 import { ThemesModule } from './themes/themes.module';
 import { MessagesModule } from './messages/messages.module';
 import { Neo4jModule } from './neo4j/neo4j.module';
-import { environment } from '../environments/environment.prod';
+import { environment } from '../environments/environment';
 
 @Module({
   imports: [MongooseModule.forRoot(environment.BASE_MONGO_URL), CommunitiesModule, ThreadsModule, AuthModule, UsersModule, ThemesModule, MessagesModule, Neo4jModule.forRoot({
