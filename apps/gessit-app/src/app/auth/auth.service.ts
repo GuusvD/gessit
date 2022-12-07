@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
-import { map, tap, catchError, switchMap } from 'rxjs/operators';
+import { map, catchError, switchMap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { User } from 'libs/data/src/entities/user';
 import { AlertService } from '../shared/alert/alert.service';
@@ -22,7 +22,8 @@ export class AuthService {
   constructor(
     private alertService: AlertService,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private httpClient: HttpClient
   ) {
     // Check of we al een ingelogde user hebben
     // Zo ja, check dan op de backend of het token nog valid is.
@@ -47,11 +48,11 @@ export class AuthService {
   }
 
   login(username: string, password: string): Observable<User | undefined> {
-    console.log(`login at ${environment.SERVER_API_URL}auth/login`);
+    console.log(`login at ${environment.BASE_API_URL}auth/login`);
 
     return this.http
       .post<User>(
-        `${environment.SERVER_API_URL}auth/login`,
+        `${environment.BASE_API_URL}auth/login`,
         { username: username, password: password },
         { headers: this.headers }
       )
@@ -73,7 +74,7 @@ export class AuthService {
   }
 
   register(userData: User): Observable<User | undefined> {
-    console.log(`register at ${environment.SERVER_API_URL}auth/register`);
+    console.log(`register at ${environment.BASE_API_URL}auth/register`);
     console.log(userData);
 
     const anyDate = userData.birthDate as any;
@@ -98,7 +99,7 @@ export class AuthService {
     console.log(user);
 
     return this.http
-      .post<User>(`${environment.SERVER_API_URL}auth/register`, user, {
+      .post<User>(`${environment.BASE_API_URL}auth/register`, user, {
         headers: this.headers,
       })
       .pipe(
@@ -126,7 +127,7 @@ export class AuthService {
    * Als het token niet valid is loggen we de user uit.
    */
   validateToken(userData: User): Observable<User | undefined> {
-    const url = `${environment.SERVER_API_URL}auth/profile`;
+    const url = `${environment.BASE_API_URL}auth/profile`;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -178,9 +179,8 @@ export class AuthService {
   userMayEdit(itemUserId: string): boolean {
     let isAdmin;
     let isOwnerOfData;
-    
+
     this.getUserFromLocalStorage().subscribe((user) => {
-      console.log(user)
       isAdmin = user.roles.includes(Role.Admin);
       isOwnerOfData = new Types.ObjectId(user._id).equals(new Types.ObjectId(itemUserId));
     }).unsubscribe();
@@ -188,10 +188,20 @@ export class AuthService {
     return (isAdmin || isOwnerOfData) ? true : false;
   }
 
-  partOfCommunity(communityId: string): Observable<boolean> {
-    return this.currentUser$.pipe(
-      map((user: User | undefined) => (user ? user.joinedCommunities.includes(new Types.ObjectId(communityId)) : false))
-    ); 
+  async partOfCommunity(communityId: string): Promise<boolean> {
+    let userId = '' as string | undefined;
+
+    this.currentUser$.subscribe((p) => {
+      userId = p?._id.toString();
+    });
+
+    const user = await this.getById(userId!).toPromise();
+
+    if (user!.joinedCommunities.filter(p => p.toString() === communityId.toString()).length > 0) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   formHeaders(): object {
@@ -205,4 +215,12 @@ export class AuthService {
       Authorization: 'Bearer ' + token})
     }
   }
+
+  getUsers(): Observable<User[]> {
+    return this.httpClient.get<User[]>(environment.BASE_API_URL + 'user', this.formHeaders()) as Observable<User[]>;
+  }
+
+  getById(userId: string): Observable<User> {
+    return this.httpClient.get<User>(environment.BASE_API_URL + `user/${userId}`, this.formHeaders()) as Observable<User>;
+  } 
 }

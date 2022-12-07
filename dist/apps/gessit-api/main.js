@@ -1997,7 +1997,7 @@ let ThreadsService = class ThreadsService {
                         }
                     }
                 },
-                { $unwind: { path: "$threads", preserveNullAndEmptyArrays: true } },
+                { $unwind: { path: "$threads", preserveNullAndEmptyArrays: false } },
                 { $lookup: {
                         from: "users",
                         localField: "threads.creator",

@@ -4,7 +4,8 @@
         <div class="col-12 card-threads-title">
             <div class="card card-threads-title">
                 <div class="card-body">
-                    <button class="btn btn-primary float-start" (click)="join()"><i class="bi bi-plus"></i>Join</button>
+                    <button *ngIf="partOfCommunity" class="btn btn-primary float-start" (click)="leave()"><i class="bi bi-dash"></i>Leave</button>
+                    <button *ngIf="!partOfCommunity" class="btn btn-primary float-start" (click)="join()"><i class="bi bi-plus"></i>Join</button>
                 </div>
             </div>
         </div>

@@ -8,8 +8,6 @@ import { AlertService } from "apps/gessit-app/src/app/shared/alert/alert.service
 
 @Injectable({providedIn: 'root',})
 export class CommunitiesService {
-    private community? : Community;
-
     constructor(private httpClient: HttpClient, private authService: AuthService, private alertService: AlertService) {}
 
     getCommunities(endpoint: string): Observable<Community[]> {
@@ -90,5 +88,55 @@ export class CommunitiesService {
               return of(undefined); 
             })
         );
+    }
+
+    join(communityId: string): Observable<Community | undefined> {
+        console.log(`Join request to: ${environment.BASE_API_URL}community/${communityId}/join`);
+
+        return this.httpClient
+            .post<Community>(
+                environment.BASE_API_URL + 'community/' + communityId + '/join', 
+                { null: null },
+                this.authService.formHeaders()
+            )
+            .pipe(
+                map((community) => {
+                    console.dir(community);
+                    this.alertService.success('Community has been joined');
+                    return community;
+                }),
+                catchError((error: any) => {
+                    console.log('error:', error);
+                    console.log('error.message:', error.message);
+                    console.log('error.error.message:', error.error.message);
+                    this.alertService.error(error.error.message || error.message);
+                    return of(undefined); 
+                })
+            );
+    }
+
+    leave(communityId: string): Observable<Community | undefined> {
+        console.log(`Leave request to: ${environment.BASE_API_URL}community/${communityId}/leave`);
+
+        return this.httpClient
+            .post<Community>(
+                `${environment.BASE_API_URL}community/${communityId}/leave`,
+                { null: null },
+                this.authService.formHeaders()
+            )
+            .pipe(
+                map((community) => {
+                    console.dir(community);
+                    this.alertService.success('Community has been leaved');
+                    return community;
+                }),
+                catchError((error: any) => {
+                    console.log('error:', error);
+                    console.log('error.message:', error.message);
+                    console.log('error.error.message:', error.error.message);
+                    this.alertService.error(error.error.message || error.message);
+                    return of(undefined); 
+                })
+            );
     }
 }
