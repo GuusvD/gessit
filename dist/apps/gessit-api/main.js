@@ -2901,10 +2901,11 @@ exports.UsersService = UsersService;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.environment = void 0;
+const password = process.env.PASSWORD_MONGO_URL;
 exports.environment = {
     production: true,
-    BASE_MONGO_URL: 'mongodb://127.0.0.1:27017/gessit',
-    BASE_NEO_HOST: '127.0.0.1'
+    BASE_MONGO_URL: `mongodb+srv://Gustave:${{ password }}@gessit-cluster.m6gvewv.mongodb.net/?retryWrites=true&w=majority`,
+    BASE_NEO_HOST: '44.199.235.138'
 };
 
 
