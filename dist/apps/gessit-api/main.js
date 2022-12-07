@@ -1485,6 +1485,7 @@ exports.createDriver = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const neo4j_driver_1 = __webpack_require__("neo4j-driver");
 const createDriver = (config) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
+    console.log(`${config.scheme}://${config.host}:${config.port}`);
     const driver = neo4j_driver_1.default.driver(`${config.scheme}://${config.host}:${config.port}`, neo4j_driver_1.default.auth.basic(config.username, config.password));
     yield driver.verifyConnectivity();
     return driver;
@@ -2904,7 +2905,8 @@ exports.environment = void 0;
 exports.environment = {
     production: true,
     BASE_MONGO_URL: 'mongodb://127.0.0.1:27017/gessit',
-    BASE_NEO_HOST: '127.0.0.1'
+    BASE_NEO_HOST: '127.0.0.1',
+    BASE_API_URL: 'http://localhost:3333/api/'
 };
 
 
