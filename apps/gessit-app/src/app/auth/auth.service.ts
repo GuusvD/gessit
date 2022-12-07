@@ -48,9 +48,6 @@ export class AuthService {
   login(username: string, password: string): Observable<User | undefined> {
     console.log(`login at ${environment.BASE_API_URL}auth/login`);
 
-    console.log(this.httpClient)
-    console.log(`${environment.BASE_API_URL}auth/login`)
-
     return this.httpClient
       .post<User>(
         `${environment.BASE_API_URL}auth/login`,
