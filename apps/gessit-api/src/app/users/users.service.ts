@@ -6,10 +6,11 @@ import { User, UserDocument } from './user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { CommunitiesService } from '../communities/communities.service';
 import { Community, CommunityDocument } from '../communities/community.schema';
+import { Neo4jService } from '../neo4j/neo4j.service';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>, @InjectModel(Community.name) private communityModel: Model<CommunityDocument>, @Inject(forwardRef(() => CommunitiesService)) private readonly communitiesService: CommunitiesService) {}
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>, @InjectModel(Community.name) private communityModel: Model<CommunityDocument>, @Inject(forwardRef(() => CommunitiesService)) private readonly communitiesService: CommunitiesService, private readonly neo4jService: Neo4jService) {}
 
   async getUserByUsername(username: string): Promise<User | undefined> {
     return this.userModel.findOne({ username: username });
@@ -156,7 +157,18 @@ export class UsersService {
       isActive: true
     });
 
-    return this.userModel.create(newUser);
+    const result = await this.userModel.create(newUser);
+
+    await this.neo4jService.write(`
+      CREATE
+      (n:User {
+      id: '${result._id.toString()}',
+      username: '${newUser.username}', 
+      birthDate: '${newUser.birthDate.toISOString()}'
+     })`,
+    {});
+
+    return result;
   }
 
   async updateUser(req, id: string, user: Partial<User>): Promise<User> {
