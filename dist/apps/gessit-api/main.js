@@ -54,8 +54,8 @@ AppModule = tslib_1.__decorate([
                 scheme: 'bolt',
                 host: environment_1.environment.BASE_NEO_HOST,
                 port: 7687,
-                username: 'neo4j',
-                password: 'neo',
+                username: environment_1.environment.USERNAME_NEO,
+                password: environment_1.environment.PASSWORD_NEO,
             })],
         controllers: [app_controller_1.AppController],
         providers: [
@@ -2905,7 +2905,9 @@ exports.environment = void 0;
 exports.environment = {
     production: false,
     BASE_MONGO_URL: 'mongodb://127.0.0.1:27017/gessit',
-    BASE_NEO_HOST: '127.0.0.1'
+    BASE_NEO_HOST: '127.0.0.1',
+    USERNAME_NEO: 'neo4j',
+    PASSWORD_NEO: 'neo'
 };
 
 
