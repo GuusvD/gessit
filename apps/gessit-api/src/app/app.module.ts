@@ -23,8 +23,8 @@ import { environment } from '../environments/environment';
     scheme: 'bolt',
     host: environment.BASE_NEO_HOST,
     port: 7687,
-    username: 'neo4j',
-    password: 'neo',
+    username: environment.USERNAME_NEO,
+    password: environment.PASSWORD_NEO,
   })],
   controllers: [AppController],
   providers: [
