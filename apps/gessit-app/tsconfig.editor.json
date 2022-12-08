@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "src/app/communities.service.spec.ts"],
   "compilerOptions": {
     "types": ["jest", "node"]
   }
