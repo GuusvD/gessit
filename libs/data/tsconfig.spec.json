@@ -6,5 +6,5 @@
     "types": ["jest", "node"]
   },
   "files": ["src/test-setup.ts"],
-  "include": ["jest.config.ts", "**/*.test.ts", "**/*.spec.ts", "**/*.d.ts", "../../apps/gessit-app/src/app/communities.service.spec.ts"]
+  "include": ["jest.config.ts", "**/*.test.ts", "**/*.spec.ts", "**/*.d.ts", "../../apps/gessit-app/src/app/pages/communities/communities/communities.service.spec.ts"]
 }

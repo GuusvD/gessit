@@ -2,15 +2,15 @@ global.TextEncoder = require("util").TextEncoder;
 global.TextDecoder = require("util").TextDecoder;
 
 import { TestBed } from '@angular/core/testing';
-import { Community } from '../../../../libs/data/src/entities/community';
+import { Community } from '../../../../../../../libs/data/src/entities/community';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
-import { CommunitiesService } from '../../../../libs/data/src/services/communities.service';
+import { CommunitiesService } from '../../../../../../../libs/data/src/services/communities.service';
 import { Types } from 'mongoose';
-import { Theme } from '../../../../libs/data/src/entities/theme';
-import { Thread } from '../../../../libs/data/src/entities/thread';
-import { User } from '../../../../libs/data/src/entities/user';
-import { environment } from "../environments/environment";
+import { Theme } from '../../../../../../../libs/data/src/entities/theme';
+import { Thread } from '../../../../../../../libs/data/src/entities/thread';
+import { User } from '../../../../../../../libs/data/src/entities/user';
+import { environment } from "../../../../environments/environment";
 
 fdescribe('CommunitiesService', () => {
     let service: CommunitiesService;

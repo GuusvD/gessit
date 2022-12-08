@@ -26,12 +26,12 @@ export class CommunitiesComponent implements OnInit, OnDestroy {
     this.type = this.route.snapshot.data['type'] || undefined;
     this.title = this.route.snapshot.data['title'] || undefined;
 
-    if (this.type === 'all') {
-      this.sub = this.communitiesService.getCommunities("community").subscribe((c) => (this.communities = c));
-    } else if (this.type === 'created') {
-      this.sub = this.communitiesService.getCommunities("community/created").subscribe((c) => (this.communities = c));
+    if (this.type === 'created') {
+      this.sub = this.communitiesService.getCommunities('community/created').subscribe((c) => (this.communities = c));
     } else if (this.type === 'joined') {
-      this.sub = this.communitiesService.getCommunities("community/joined").subscribe((c) => (this.communities = c));
+      this.sub = this.communitiesService.getCommunities('community/joined').subscribe((c) => (this.communities = c));
+    } else {
+      this.sub = this.communitiesService.getCommunities('community').subscribe((c) => (this.communities = c.filter(c => c.isOpen)));
     }
   }
 

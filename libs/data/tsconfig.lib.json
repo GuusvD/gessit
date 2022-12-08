@@ -13,5 +13,5 @@
     "jest.config.ts",
     "**/*.test.ts"
   ],
-  "include": ["**/*.ts", "../../apps/gessit-app/src/app/communities.service.spec.ts"]
+  "include": ["**/*.ts", "../../apps/gessit-app/src/app/pages/communities/communities/communities.service.spec.ts"]
 }
