@@ -15,11 +15,11 @@
     object-fit: cover;
 }
 
-.card-detail-img {
+.card-detail-img, .card-profile-img {
     height: 300px;
 }
 
-.detail-img {
+.detail-img, .profile-img {
     justify-self: center;
     height: 100%;
     width: 100%;
