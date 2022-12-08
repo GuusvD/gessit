@@ -1,19 +1,78 @@
 <div class="component">
     <div class="row">
-        <div class="col-6">
+        <div *ngIf="!loggedInProfile" class="col-12">
             <div class="card">
-                <img (error)="updateImgUrl()" src="{{ user?.image }}">
+                <div class="btn-group col-1">
+                    <button *ngIf="!following" (click)="follow()" class="btn btn-primary float-start"><i class="bi bi-plus"></i>Follow</button>
+                    <button *ngIf="following" (click)="unFollow()" class="btn btn-primary float-start"><i class="bi bi-dash"></i>Unfollow</button>
+                </div>
             </div>
         </div>
         <div class="col-6">
-            <div class="card">
+            <div class="card h-100">
                 <div class="card-body">
-                    <h1>{{ user?.username }}</h1>
+                    <h1>Profile</h1>
                     <hr>
-                    <p>Birth date: {{ user?.birthDate | date: 'dd-MM-yyyy on HH:mm' }}</p>
+                    <p>Username: {{ user?.username }}</p>
                     <p>Email address: {{ user?.emailAddress }}</p>
                     <p>Phone number: {{ user?.phoneNumber }}</p>
-                    <p>Register date: {{ user?.registerDate | date: 'dd-MM-yyyy on HH:mm' }}</p>
+                    <p>Birth date: {{ user?.birthDate | date: 'dd-MM-yyyy on HH:mm' }}</p>
+                    <p>Registered on: {{ user?.registerDate | date: 'dd-MM-yyyy on HH:mm' }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="card h-100">
+                <div class="card-body card-profile-img">
+                    <img (error)="updateImgUrl()" src="{{ user?.image }}" class="profile-img">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6" style="padding-top: 15px;">
+            <div class="card">
+                <div class="card-body">
+                    <h1>Followers</h1>
+                    <hr>
+
+                    <div class="col-6" *ngFor="let follower of user?.followers">
+                        <div class="card">
+                            <div class="avatar mx-auto bg-white">
+                                <img src="{{ follower.image }}" class="rounded-circle img-fluid" style="width: 150px; border: 3px solid #dddddd;">
+                            </div>
+                            <div class="card-body">
+                                <a routerLink="/profile/{{ follower._id.toString() }}">
+                                    <h5 class="card-title">{{ follower.username }}</h5>
+                                </a>
+                                <p>{{ follower.username }}</p>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6" style="padding-top: 15px;">
+            <div class="card">
+                <div class="card-body">
+                    <h1>Following</h1>
+                    <hr>
+
+                    <div class="col-6" *ngFor="let following of user?.following">
+                        <div class="card">
+                            <div class="avatar mx-auto bg-white">
+                                <img src="{{ following.image }}" class="rounded-circle img-fluid" style="width: 150px; border: 3px solid #dddddd;">
+                            </div>
+                            <div class="card-body">
+                                <a routerLink="/profile/{{ following._id.toString() }}">
+                                    <h5 class="card-title">{{ following.username }}</h5>
+                                </a>
+                                <p>{{ following.username }}</p>
+                                
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

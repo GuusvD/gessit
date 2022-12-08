@@ -199,6 +199,22 @@ export class AuthService {
     }
   }
 
+  async following(userId: string): Promise<boolean> {
+    let loggedInUserId = '' as string | undefined;
+
+    this.currentUser$.subscribe((p) => {
+      loggedInUserId = p?._id.toString();
+    });
+
+    const loggedInUser = await this.getById(loggedInUserId!).toPromise();
+
+    if (loggedInUser!.following.filter(p => p._id.toString() === userId.toString()).length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   formHeaders(): object {
     let token;
     this.getUserFromLocalStorage().subscribe((p) => {
@@ -219,5 +235,13 @@ export class AuthService {
 
   getById(userId: string): Observable<User> {
     return this.httpClient.get<User>(environment.BASE_API_URL + `user/${userId}`, this.formHeaders()) as Observable<User>;
-  } 
+  }
+
+  follow(userId: string): Observable<User> {
+    return this.httpClient.post<User>(environment.BASE_API_URL + `user/${userId}/follow`, { null: null }, this.formHeaders()) as Observable<User>;
+  }
+
+  unfollow(userId: string): Observable<User> {
+    return this.httpClient.post<User>(environment.BASE_API_URL + `user/${userId}/unfollow`, { null: null }, this.formHeaders()) as Observable<User>;
+  }
 }

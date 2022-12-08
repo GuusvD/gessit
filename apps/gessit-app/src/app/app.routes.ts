@@ -18,7 +18,7 @@ export const appRoutes: Route[] = [
     //Other
     { path: 'homepage', pathMatch: 'full', component: HomepageComponent, title: 'Homepage' },
     { path: 'about', pathMatch: 'full', component: AboutComponent, title: 'About' },
-    { path: 'profile', pathMatch: 'full', canActivate: [LoggedInAuthGuard], component: ProfileComponent, title: 'Profile' },
+    { path: 'profile/:id', pathMatch: 'full', component: ProfileComponent, title: 'Profile' },
     //Communities
     { path: 'communities', pathMatch: 'full', component: CommunitiesComponent, data: { type: 'all', title: 'All communities' }, title: 'All Communities' },
     { path: 'communities/created', pathMatch: 'full', canActivate: [LoggedInAuthGuard], component: CommunitiesComponent, data: { type: 'created', title: 'Created communities' }, title: 'Created Communities' },

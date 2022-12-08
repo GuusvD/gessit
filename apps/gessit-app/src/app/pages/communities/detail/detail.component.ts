@@ -46,7 +46,8 @@ export class DetailComponent implements OnInit {
   join(): void {
     this.communitiesService.join(this.communityId!).subscribe((community) => {
       if (community) {
-        this.router.navigate(['/communities/joined']);
+        this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>
+        this.router.navigate(['/communities/' + this.communityId]));
       }
     });
   }
@@ -54,7 +55,8 @@ export class DetailComponent implements OnInit {
   leave(): void {
     this.communitiesService.leave(this.communityId!).subscribe((community) => {
       if (community) {
-        this.router.navigate(['/communities/joined']);
+        this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>
+        this.router.navigate(['/communities/' + this.communityId]));
       }
     });
   }

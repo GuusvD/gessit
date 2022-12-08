@@ -39,7 +39,7 @@ export class EditComponent implements OnInit, OnDestroy {
     this.themesService.getThemes().subscribe((p) => (this.themes = p));
 
     if(!this.createCommunity) {
-      this.subs = this.route.paramMap.subscribe((params) => {
+      this.subs = this.route.paramMap?.subscribe((params) => {
         this.communityId = params.get('id')?.toString()
       });
 
