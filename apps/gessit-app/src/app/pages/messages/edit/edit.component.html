@@ -1,0 +1,33 @@
+<div class="card" style="margin-top: 15px" *ngIf="partOfCommunity ||  authService.userMayEdit(threadCreatorId!)">
+    <div class="card-body">
+        <h5 id="form-title" class="card-title">{{ title }}</h5>
+
+        <form [formGroup]="messageForm" (ngSubmit)="onSubmit()" class="row g-3">
+            <div class="col-12">
+                <textarea type="text" class="form-control" formControlName="content" id="inputContent"
+                    aria-describedby="contentHelp" [ngClass]="{
+              'is-invalid':
+                messageForm.get('content')?.invalid &&
+                messageForm.get('content')?.touched
+            }"></textarea>
+                <span *ngIf="
+              !messageForm.get('content')?.valid && messageForm.get('content')?.touched
+            " class="invalid-feedback">
+                    <p id="description-invalid">Please enter a valid message!</p>
+                </span>
+            </div>
+
+            <div class="col-12">
+                <button *ngIf="createMessage" style="width: 100%" type="submit" class="btn btn-primary"
+                    [disabled]="!messageForm.valid">
+                    Send
+                </button>
+
+                <button *ngIf="!createMessage" style="margin-right: 5px" type="submit" class="btn btn-primary"
+                    [disabled]="!messageForm.valid">
+                    Update
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

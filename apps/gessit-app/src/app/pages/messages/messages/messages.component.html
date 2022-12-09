@@ -1,0 +1,44 @@
+<div class="card" style="margin-top: 15px"> <!--*ngIf="messages?.length > 0" -->
+    <div class="card-body">
+        <h5 class="card-title">Messages</h5>
+
+        <div class="d-flex flex-start comment position-relative" *ngFor="let message of messages as any">
+            <img class="rounded-circle shadow-1-strong me-3" src="{{message.creator.image}}"
+                alt="{{message.creator.username}}" width="60" height="60" />
+            <div>
+                <h6 class="fw-bold mb-1">{{message.creator.username}}</h6>
+                <div class="d-flex align-items-center mb-3">
+                    <p class="mb-0">
+                        {{convertDate(message.creationDate)}}
+                    </p>
+
+                    <div
+                        *ngIf="!(authService.isOwnerOfData(message.creator._id)) && !(authService.userMayEdit(message.creator._id)) && (loggedInUser$ | async)">
+                        <a (click)="like(message._id)" class="text-right position-absolute top-0 end-0"
+                            style="margin: 5px 5px 0 0; cursor:pointer;">
+                            <i *ngIf="true" class="bi bi-hand-thumbs-up"></i>
+                            <i *ngIf="false" class="bi bi-hand-thumbs-up-fill"></i>
+                        </a>
+                    </div>
+
+                    <div
+                        *ngIf="authService.isOwnerOfData(message.creator._id) || authService.userMayEdit(message.creator._id)">
+                        <a (click)="like(message._id)" class="text-right position-absolute top-0 end-0"
+                            style="margin: 6px 55px 0 0; cursor:pointer;">
+                            <i *ngIf="true" class="bi bi-hand-thumbs-up"></i>
+                            <i *ngIf="false" class="bi bi-hand-thumbs-up-fill"></i>
+                        </a>
+                        <a (click)="edit(message._id)" class="text-right position-absolute top-0 end-0"
+                            style="margin: 6px 30px 0 0; cursor:pointer;"><i class="bi bi-pencil"></i></a>
+                        <a (click)="delete(message._id)" class="text-right position-absolute top-0 end-0"
+                            style="margin: 5px 5px 0 0; cursor:pointer;"><i class="bi bi-trash3"></i></a>
+                    </div>
+                </div>
+                <p class="mb-0">
+                    {{message.content}}
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>

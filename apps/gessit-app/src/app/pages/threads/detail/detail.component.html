@@ -5,7 +5,7 @@
                 <div class="card">
                     <div class="card-body">
                         <p class="float-start">Posted on {{ thread?.creationDate | date: 'dd-MM-yyyy on HH:mm' }}</p>
-                        <p style="padding-left: 5px;" class="float-end">{{ thread.likes.length }}</p>
+                        <p style="padding-left: 5px;" class="float-end">{{ thread?.likes?.length }}</p>
 
                         <div *ngIf="loggedInUser$ | async as user">
                             <a *ngIf="liked" (click)="like()" style="padding-left: 30px;" class="float-end"><i class="bi bi-hand-thumbs-up-fill"></i></a>
@@ -39,18 +39,8 @@
 
                 <hr>
 
-                <div class="card">
-                    <div class="card-body">
-                        <h3>Write a response</h3>
-                        <br>
-                        <textarea class="form-control" placeholder="Type a comment"></textarea>
-                        <br>
-                        <button class="btn btn-primary">Send</button>
-                        <br>
-                        <hr>
-                        <br>
-                    </div>
-                </div>
+                <gessit-edit-message></gessit-edit-message>
+                <gessit-messages></gessit-messages>
             </div>
         </div>
     </div>
