@@ -118,7 +118,6 @@ export class MessagesService {
             .pipe(
                 map((message) => {
                     console.dir(message);
-                    this.alertService.success('Liked/unliked message');
                     return message;
                 }),
                 catchError((error: any) => {
