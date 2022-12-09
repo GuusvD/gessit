@@ -18,10 +18,10 @@
                     <p>{{ community.description }}</p>
                     <br>
                     <p>Themes: {{ themesString }}</p>
-                    <br>
                     <hr>
                     <p>Public community: {{ community.isOpen }}</p>
                     <p>Created on: {{ community.creationDate | date: 'dd-MM-yyyy on HH:mm' }}</p>
+                    <p>Created by: <a routerLink="/profile/{{ community.owner._id.toString() }}" style="text-decoration: none;">{{ community.owner.username }}</a></p>
                     <hr>
                     <div class="btn-group">
                         <div *ngIf="authService.userMayEdit(community.owner._id.toString())">
