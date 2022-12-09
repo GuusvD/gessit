@@ -67,3 +67,8 @@ nav {
 .gessit-alert {
     margin-top: 10px;
 }
+
+.link-profile-message {
+    text-decoration: none;
+    color: black;
+}
