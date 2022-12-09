@@ -31,20 +31,14 @@ jobs:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_SECRET }}
 
 
-name: 'Deploy to Netlify'
-on:
-  push:
-    branches: [main]
+deploy:
+  runs-on: ubuntu-latest
+  
+  steps:
+    - uses: jsmrcaga/action-netlify-deploy@v1.1.0
+      with:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.MY_TOKEN_SECRET }}
+        NETLIFY_DEPLOY_TO_PROD: true
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: jsmrcaga/action-netlify-deploy@v1.1.0
-        with:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.MY_TOKEN_SECRET }}
-          NETLIFY_DEPLOY_TO_PROD: true
-
-      - name: Voer testen uit
-        run: npm t
+    - name: Voer testen uit
+      run: npm t
