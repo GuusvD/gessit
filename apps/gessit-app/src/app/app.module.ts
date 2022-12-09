@@ -20,6 +20,7 @@ import * as CommunitiesDetailComponent from './pages/communities/detail/detail.c
 import * as ThreadsDetailComponent from './pages/threads/detail/detail.component';
 import * as CommunitiesEditComponent from './pages/communities/edit/edit.component';
 import * as ThreadsEditComponent from './pages/threads/edit/edit.component';
+import * as MessagesEditComponent from './pages/messages/edit/edit.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ThreadsComponent } from './pages/threads/threads/threads.component';
 import { LoginComponent } from './auth/login/login.component';
@@ -28,6 +29,7 @@ import { AlertModule } from './shared/alert/alert.module';
 import { AuthModule } from './auth/auth.module';
 import { CommunitiesListComponent } from './pages/communities/communities-list/communities-list.component';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { MessagesComponent } from './pages/messages/messages/messages.component';
 
 @Injectable({ providedIn: 'root' })
 export class TemplatePageTitleStrategy extends TitleStrategy {
@@ -61,6 +63,8 @@ export class TemplatePageTitleStrategy extends TitleStrategy {
     ThreadsEditComponent.EditComponent,
     CommunitiesListComponent,
     ProfileComponent,
+    MessagesComponent,
+    MessagesEditComponent.EditComponent
   ],
   imports: [
     BrowserModule,

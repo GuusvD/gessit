@@ -76,11 +76,11 @@ export class AuthService {
 
     const anyDate = userData.birthDate as any;
 
-    if(anyDate.month.toString().length === 1) {
+    if (anyDate.month.toString().length === 1) {
       anyDate.month = '0' + anyDate.month;
     }
 
-    if(anyDate.day.toString().length === 1) {
+    if (anyDate.day.toString().length === 1) {
       anyDate.day = '0' + anyDate.day;
     }
 
@@ -183,6 +183,16 @@ export class AuthService {
     return (isAdmin || isOwnerOfData) ? true : false;
   }
 
+  isOwnerOfData(itemUserId: string): boolean {
+    let isOwnerOfData;
+
+    this.getUserFromLocalStorage().subscribe((user) => {
+      isOwnerOfData = user?._id.toString() === itemUserId;
+    }).unsubscribe();
+
+    return (isOwnerOfData) ? true : false;
+  }
+
   async partOfCommunity(communityId: string): Promise<boolean> {
     let userId = '' as string | undefined;
 
@@ -223,9 +233,11 @@ export class AuthService {
       }
     }).unsubscribe();
 
-    return { headers: new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + token})
+    return {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token
+      })
     }
   }
 

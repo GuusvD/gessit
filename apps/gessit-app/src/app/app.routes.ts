@@ -26,10 +26,11 @@ export const appRoutes: Route[] = [
     { path: 'communities/create', pathMatch: 'full', canActivate: [LoggedInAuthGuard], component: CommunitiesEditComponent.EditComponent, data: { createCommunity: true, title: 'Create community' }, title: 'Create Community'},  
     { path: 'communities/:id', pathMatch: 'full', component: CommunitiesDetailComponent.DetailComponent, title: 'Community Detail' },
     { path: 'communities/:id/edit', pathMatch: 'full', canActivate: [LoggedInAuthGuard], component: CommunitiesEditComponent.EditComponent , data: { createCommunity: false, title: 'Edit community' }, title: 'Edit Community'},
-    //Threads
+    //Threads & Messages
     { path: 'communities/:c-id/threads/create', pathMatch: 'full', canActivate: [LoggedInAuthGuard], component: ThreadsEditComponent.EditComponent, data: { createThread: true, title: 'Create thread' }, title: 'Create Thread'},
-    { path: 'communities/:c-id/threads/:id', pathMatch: 'full', component: ThreadsDetailComponent.DetailComponent, title: 'Thread Detail' },
+    { path: 'communities/:c-id/threads/:id', pathMatch: 'full', component: ThreadsDetailComponent.DetailComponent, title: 'Thread Detail', data: { createMessage: true, title: 'Create Message' } },
     { path: 'communities/:c-id/threads/:id/edit', pathMatch: 'full', canActivate: [LoggedInAuthGuard], component: ThreadsEditComponent.EditComponent, data: { createThread: false, title: 'Edit thread' }, title: 'Edit Thread'},
+    { path: 'communities/:c-id/threads/:id/messages/:m-id/edit', component: ThreadsDetailComponent.DetailComponent, title: 'Thread details', data: { createMessage: false, title: 'Edit Message' } },
     //Redirect
     { path: '**', redirectTo: 'homepage' }
 ];
