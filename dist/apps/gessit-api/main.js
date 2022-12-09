@@ -2433,9 +2433,7 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:type", typeof (_a = typeof mongoose_2.Types !== "undefined" && mongoose_2.Types.ObjectId) === "function" ? _a : Object)
 ], User.prototype, "_id", void 0);
 tslib_1.__decorate([
-    (0, mongoose_1.Prop)({
-        unique: true
-    }),
+    (0, mongoose_1.Prop)(),
     tslib_1.__metadata("design:type", String)
 ], User.prototype, "username", void 0);
 tslib_1.__decorate([
