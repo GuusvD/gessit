@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Patch, Post, Req } from "@nestjs/common";
+import { Public } from "../app.module";
 import { Roles } from "../auth/roles.decorator";
 import { ObjectIdPipe } from "../shared/pipes/object.id.pipe";
 import { CreateUserDto } from "./create-user.dto";
@@ -11,11 +12,13 @@ import { UsersService } from "./users.service";
 export class UsersController {
     constructor(private readonly userService: UsersService) {}
 
+    @Public()
     @Get()
     async getUsers(): Promise<User[]> {
         return await this.userService.getUsers();
     }
 
+    @Public()
     @Get(':id')
     async getUserById(@Param('id', ObjectIdPipe) id: string): Promise<User> {
         return await this.userService.getUserById(id);
