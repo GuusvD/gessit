@@ -12,15 +12,15 @@
             <p>
                 De casus die ik heb gemaakt/gekozen is het maken van een forumapplicatie genaamd Gessit. De applicatie is
                 te vergelijken met bijvoorbeeld Reddit (vandaar de naam ;) ). Bezoekers kunnen namelijk binnen mijn site communiceren en discussiëren 
-                over allerlei verschillende soorten onderwerpen. Om deze communicatie gescheiden te houden en de app geordend te 
-                laten maak ik gebruik van zogenoemde "communities" die nu al in deze ontwikkelstage van de app te zien zijn 
-                en waarop al verschillende operaties op uitgevoerd kunnen worden. Gebruikers kunnen dus in de toekomst berichten 
-                plaatsen binnen deze "communities" die ook weer gemaakt kunnen worden door de gebruikers zelf om zo discussies 
+                over allerlei verschillende soorten onderwerpen wanneer zij zich registeren als gebruiker binnen mijn app. 
+                Om deze communicatie gescheiden te houden en de app geordend te 
+                laten maak ik gebruik van zogenoemde Communities. Gebruikers kunnen dus berichten 
+                plaatsen binnen deze Communities die ook weer gemaakt kunnen worden door de gebruikers zelf om zo discussies 
                 die over hetzelfde onderwerp gaan bij elkaar te houden, zodat de applicatie geordend blijft en het voor de 
-                gebruiker overzichtelijker word. Binnen deze "communities" kunnen ook weer "threads" aangemaakt worden om zo
-                een "community" nog verder op te delen en georganiseerd te houden. Binnen deze "threads" kunnen gebruikers in 
-                de toekomst berichten sturen en met elkaar communiceren. Op het "thread" object kunnen al verscheidene operaties
-                uitgevoerd worden binnen mijn app op dit moment. Met deze site hoop ik uiteindelijk het stellen van vragen en het 
+                gebruiker overzichtelijker word. Binnen deze Communities kunnen ook weer Threads aangemaakt worden om zo
+                een Community nog verder op te delen en georganiseerd te houden. Binnen deze Threads kunnen gebruikers 
+                berichten sturen en met elkaar communiceren. Op al deze verschillende entiteiten kunnen verscheidene operaties
+                uitgevoerd worden binnen mijn app. Met deze site hoop ik uiteindelijk het stellen van vragen en het 
                 starten van communicatie te bevorderen tussen mensen over de gehele wereld om hen zo dichter bij elkaar te brengen, 
                 zodat ze altijd hulp kunnen vragen en nieuwe connecties kunnen maken binnen mijn app.
 
@@ -29,57 +29,65 @@
             </p>
             <h5>Entiteitbeschrijving</h5>
             <p>
-                Één van de entiteiten die ik tot nu toe dus heb verwerkt is het zogenoemde "community" object. Dit is eigenlijk een soort
-                van groep waar gebruikers in de toekomst lid van kunnen worden als zij bijvoorbeeld geinteresseerd zijn in een
-                bepaald onderwerp waar dan die "community" de nadruk op legt en dat deze dus vol staat met discussies en vragen over
-                dat specifieke onderwerp waar een gebruiker nou juist zo geinteresseerd in is. Zo kunnen mensen makkelijk en snel meedoen
-                aan de communicatie online en nieuws ontvangen over onderwerpen wat hun ook echt interessant vinden. Door gebruik
-                te maken van "communities" blijven online gesprekken binnen mijn app ook goed gescheiden van elkaar op basis van
-                onderwerp, wat de overzichtelijkheid en bruikbaarheid van mijn app verbeterd.
-
-                <br>
-                <br>
-
-                Naast het "community" object heb ik ook nog een "thread" entiteit verwerkt binnen mijn applicatie. Een "thread" kan eigenlijk
-                gezien worden als een groep in een "community" waarin daadwerkelijk berichten gestuurd kunnen worden door ingelogde gebruikers.
-                Iedere gebruiker binnen een "community" kan een "thread" aanmaken en het wat inhoud geven zoals bijvoorbeeld een afbeelding of
-                een titel om onder andere een discussie te starten of een vraag te stellen aan de andere gebruikers binnen de "community". Gebruikers
-                kunnen dan in de toekomst dus binnen de aangemaakte "thread" berichten sturen als reactie op de inhoud van de "thread" om zo vragen
-                te beantwoorden of mee te doen aan discussies. Door een "community" op te delen in "threads" hou ik iedere community overzichtelijk
-                en zorg ik ervoor dat meerdere gebruikers bijvoorbeeld hun vragen kwijt kunnen in een "community", omdat er dus dankzij de "threads"
-                meerdere soort van tekstkanalen zijn waar gebruikers met elkaar kunnen chatten in de toekomst doormiddel van de "message" entiteit.
-                Deze entiteit word in de toekomst uiteraard gerealiseerd om dus de gebruikers daadwerkelijk de mogelijkheid te geven om met elkaar in
-                gesprek te gaan.
-
-                <br>
-                <br>
-
-                Hieronder geef ik de verschillende attributen die het "community" object en het "thread" object tot nu toe hebben (met een in-memory database)
-                en benoem ik de datatypes ervan en geef ik een korte beschrijving.
+                De entiteiten die ik heb gebruikt binnen mijn applicatie zijn de volgende: 
             </p>
 
-            <h6>Het "community" object:</h6>
             <ul>
-                <li>_id: string (de unieke identificator)</li>
-                <li>name: string (een naam)</li>
-                <li>description: string (een beschrijving)</li>
-                <li>image: string (de url)</li>
-                <li>creationDate: Date (wanneer hij gemaakt is)</li>
-                <li>isOpen: boolean (of hij publiek is)</li>
+                <li>User</li>
+                <li>Community</li>
+                <li>Theme</li>
+                <li>Thread</li>
+                <li>Message</li>
             </ul>
-            
-            <h6>Het "thread" object:</h6>
-            <ul>
-                <li>_id: string (de unieke identificator)</li>
-                <li>communityId: string (de unieke identificator van de gelinkte community)</li>
-                <li>title: string (de titel)</li>
-                <li>content: string (de inhoud)</li>
-                <li>views: number (hoe vaak hij bekeken is)</li>
-                <li>likes: number (hoe vaak hij "geliked" is)</li>
-                <li>dislikes: number (hoe vaak hij "gedisliked" is)</li>
-                <li>creationDate: Date (wanneer hij gemaakt is)</li>
-                <li>image: string (de url)</li>
-            </ul>
+
+            <p>
+                Hieronder beschrijf ik alle verschillende bovenstaande entiteiten en hoe zij verband houden met elkaar.
+
+                <br>
+                <br>
+
+                De User entiteit weerspiegeld de geregistreerde gebruiker. Doormiddel van de User entiteit
+                kunnen er nieuwe accounts gemaakt worden binnen de app en kan er authenticatie en authorizatie plaatsvinden.
+                Daarnaast zijn vrijwel alle andere entiteiten gekoppeld aan de User entiteit, waardoor deze entiteit dus 
+                echt de fundering is van mijn applicatie en dus het belangrijkste is.
+
+                <br>
+                <br>
+
+                De Community entiteit weerspiegelen de verschillende "groepen" die je aan kan maken als geregistreerde gebruiker 
+                binnen de applicatie. Deze entiteit bevat ook weer andere entiteiten, zoals de Message en Thread entiteiten. De 
+                Community entiteit zorgt ervoor dat deze andere entiteiten gegroepeerd kunnen worden en dus gesplitst kunnen worden 
+                op onder andere basis van het thema en het onderwerp, hier komt de Theme entiteit bij kijken. Ook zorgt de Community 
+                entiteit er voor dat de applicatie gestructureerd en overzichtelijk blijft, omdat dus alle gerelateerde discussies en 
+                gesprekken gegroepeerd zijn binnen Communities. Een Community kan gemaakt worden door een geregistreerde gebruiker, maar 
+                er kan ook aan deel worden genomen door een ingelogde gebruiker wanneer deze Community gemaakt is door een andere gebruiker.
+                Binnen een Community kunnen ook weer zogenoemde Thread entiteiten toegevoegd worden, wat eigenlijk een soort tekstkanaal is.
+
+                <br>
+                <br>
+
+                De Theme entiteit zorgt ervoor dat iedere Community entiteit over een bepaald thema kan beschikken, om zo deze entiteit meer 
+                een eigen "smaak" te geven. Gebruikers krijgen door het Theme entiteit nu namelijk een beter beeld van waar een bepaalde Community 
+                om draaid en wat de gespreksonderwerpen vooral gaan zijn, zodat zij zo een keuze kunnen maken of zij deel willen nemen aan een Community. 
+                De Theme entiteit zorgt er dus echt voor dat de Community entiteit meer een eigen doel gaat krijgen wat de gebruiker ook weer meer een reden 
+                geeft om meer dan één Community aan te maken, waardoor gebruikers dus geinteresseerd en actief blijven in mijn app.
+
+                <br>
+                <br>
+
+                De Thread entiteit zorgt ervoor dat gebruikers berichten kan sturen binnen een Community entiteit. De Thread entiteit is als 
+                het ware de "groep" binnen een Community waarin berichten gestuurd kunnen worden. De Thread beschikt over een titel en inhoud,
+                waarmee de gebruiker een bepaalde vraag kan stellen of een discussie kan starten. Andere gebruikers kunnen hier dan weer op reageren 
+                door zogenoemde Message entiteiten aan te maken binnen die Thread. De Thread is dus eigenlijk het soort van tekstkanaal binnen een Community waar
+                gebruikers berichten in aanmaken om zo hun mening te delen.
+
+                <br>
+                <br>
+
+                De Message entiteit zorgt ervoor dat gebruikers hun mening kunnen delen en vragen kunnen beantwoorden binnen een Thread. Message entiteiten 
+                zijn eigenlijk onderdeel van de fundatie van mijn app, omdat gebruikers doormiddel van deze Messages te maken dus kunnen communiceren met 
+                andere gebruikers om zo allerlei vragen te kunnen beantwoorden of discussies te starten wat uiteindelijk uiteraard het einddoel is van mijn site.
+            </p>
         </div>
         <div class="col-sm-6 col-md-4 col-lg-3">
             <div class="card">
@@ -120,19 +128,29 @@
             <p>User (de gebruiker zelf die berichten kan sturen, communities aan kan maken etc.)</p>
             <ul>
                 <li>id: ObjectId (“autogenerated” door mongodb)</li>
-                <li>name: String</li>
+                <li>joinedCommunities: ObjectId Array (verwijzingen naar Community entiteit)</li>
+                <li>createdCommunities: ObjectId Array (verwijzingen naar Community entiteit)</li>
+                <li>followers: ObjectId Array (verwijzingen naar User entiteit)</li>
+                <li>following: ObjectId Array (verwijzingen naar User entiteit)</li>
+                <li>roles: Role Array (enum: user/admin)</li>
+                <li>username: String</li>
                 <li>birthDate: Date</li>
-                <li>emailaddress: String</li>
-                <li>phonenumber: String</li>
+                <li>emailAddress: String</li>
+                <li>phoneNumber: String</li>
                 <li>password: String</li>
+                <li>isActive: Boolean</li>
                 <li>registerDate: Date</li>
                 <li>image: String</li>
             </ul>
         </div>
         <div class="col-sm-12 col-md-4">
-            <p>Community (de "groep" waarin "threads" worden aangemaakt waarin berichten worden verstuurd)</p>
+            <p>Community (de "groep" waarin Threads worden aangemaakt waarin berichten worden verstuurd)</p>
             <ul>
                 <li>id: ObjectId (“autogenerated” door mongodb)</li>
+                <li>owner: User (User entiteit)</li>
+                <li>members: ObjectId Array (verwijzingen naar User entiteiten)</li>
+                <li>threads: Thread Array (Thread entiteiten)</li>
+                <li>themes: Theme Array (Theme entiteiten)</li>
                 <li>name: String</li>
                 <li>description: String</li>
                 <li>ranking: Number</li>
@@ -142,21 +160,23 @@
             </ul>
         </div>
         <div class="col-sm-12 col-md-4">
-            <p>Theme (het thema van een "thread" of "community")</p>
+            <p>Theme (het thema van een Community)</p>
             <ul>
                 <li>id: ObjectId (“autogenerated” door mongodb)</li>
                 <li>name: String</li>
             </ul>
         </div>
         <div class="col-sm-12 col-md-4">
-            <p>Thread (een "chat" binnen een "community" waar gebruikers berichten in kunnen sturen)</p>
+            <p>Thread (een "chat" binnen een Community waar gebruikers berichten in kunnen sturen)</p>
             <ul>
                 <li>id: ObjectId (“autogenerated” door mongodb)</li>
+                <li>creator: ObjectId (verwijzing naar User entiteit)</li>
+                <li>messages: Message Array (Message entiteiten)</li>
+                <li>likes: ObjectId Array (verwijzingen naar User entiteit)</li>
                 <li>title: String</li>
                 <li>content: String</li>
                 <li>views: Number</li>
                 <li>likes: Number</li>
-                <li>dislikes: Number</li>
                 <li>creationDate: Date</li>
                 <li>image: String</li>
             </ul>
@@ -165,10 +185,11 @@
             <p>Message (een bericht wat een gebruiker maakt en verstuurd)</p>
             <ul>
                 <li>id: ObjectId (“autogenerated” door mongodb)</li>
+                <li>creator: ObjectId (verwijzing naar User entiteit)</li>
+                <li>likes: ObjectId Array (verwijzingen naar User entiteit)</li>
                 <li>content: String</li>
-                <li>likes: Number</li>
-                <li>dislikes: Number</li>
-                <li>sendDate: Date</li>
+                <li>creationDate: Date</li>
+                <li>hasLikes: Boolean</li>
             </ul>
         </div>
     </div>
@@ -180,7 +201,8 @@
             <h3>Userstories</h3>
             <p>
                 Hieronder beschrijf ik al mijn user stories in de vorm van een lijst om een duidelijk overzicht te bieden
-                van alle functionaliteiten die mijn applicatie moet gaan bevatten.
+                van alle functionaliteiten die mijn applicatie zou kunnen gaan bevatten. Uiteindelijk heb ik deze niet 
+                allemaal kunnen realiseren vanwege een gebrek aan tijd.
             </p>
     
             <table class="table table-bordered">
