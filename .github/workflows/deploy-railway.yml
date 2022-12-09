@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: 18.x
 
-      - name: Installeer alle benodigde packages 
+      - name: Installeer alle packages 
         run: npm i
 
       - name: Voer testen uit
