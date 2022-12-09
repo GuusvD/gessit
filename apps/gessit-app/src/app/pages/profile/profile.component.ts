@@ -28,19 +28,20 @@ export class ProfileComponent implements OnInit, OnDestroy {
     
       this.route.paramMap.subscribe(async params => {
         this.userId = params.get('id');
-
         if (this.userId) {
           if (this.users.filter(p => p._id.toString() === this.userId?.toString()).length > 0) {
             this.user = await this.authService.getById(this.userId).toPromise();
 
-            this.loggedInUser$.subscribe(async (p) => {
-              if (p?._id.toString() === this.userId?.toString()) {
-                this.loggedInProfile = true;
-              } else {
-                this.loggedInProfile = false;
-                await this.isFollowing();
-              }
-            })
+            if (this.loggedInUser$) {
+              this.loggedInUser$.subscribe(async (p) => {
+                if (p?._id.toString() === this.userId?.toString()) {
+                  this.loggedInProfile = true;
+                } else {
+                  this.loggedInProfile = false;
+                  await this.isFollowing();
+                }
+              })
+            }
           } else {
             this.router.navigate(['/homepage']);
           }
