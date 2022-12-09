@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Thread } from 'libs/data/src/entities/thread';
 import { Subscription } from 'rxjs';
-import { ThreadsImService } from '../../../../../../../libs/data/src/services/threads.service';
+import { ThreadsService } from '../../../../../../../libs/data/src/services/threads.service';
 
 @Component({
   selector: 'gessit-threads',
@@ -14,20 +14,18 @@ export class ThreadsComponent implements OnInit {
   communityId: string | null = null;
   subscription: Subscription | undefined;
 
-  constructor(private threadsImService: ThreadsImService, private route: ActivatedRoute, private router: Router) {}
-
-  fetch() {
-    if (this.communityId) {
-      this.threads = this.threadsImService.getAllByCommunity(this.communityId);
-    }
-  }
+  constructor(private threadsService: ThreadsService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
     this.subscription = this.route.paramMap.subscribe(params => {
       this.communityId = params.get('id');
     });
 
-    this.fetch();
+    if (this.communityId) {
+      this.threadsService.getList(this.communityId).subscribe((p) => {
+        this.threads = p;
+      });
+    }
   }
 
   ngOnDestroy(): void {
@@ -36,14 +34,14 @@ export class ThreadsComponent implements OnInit {
 
   delete(id: string): void {
     if (id) {
-      this.threadsImService.delete(id);
+      this.threadsService.delete(this.communityId?.toString()!, id.toString()!);
       this.router.routeReuseStrategy.shouldReuseRoute = () => false;
       this.router.onSameUrlNavigation = 'reload';
       this.router.navigate([`/communities/${this.communityId}`]);
     }
   }
 
-  increaseViews(id: string): void {
-    this.threadsImService.increaseViews(id);
+  view(id: string): void {
+    this.threadsService.view(this.communityId!, id.toString()).subscribe();
   }
 }

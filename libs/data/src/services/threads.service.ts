@@ -1,54 +1,128 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { AlertService } from '../../../../apps/gessit-app/src/app/shared/alert/alert.service';
+import { catchError, map, Observable, of } from "rxjs";
+import { AuthService } from "../../../../apps/gessit-app/src/app/auth/auth.service";
 import { Thread } from "../entities/thread";
-import { environment } from "../environments/environment";
+import { environment } from "../../../../apps/gessit-app/src/environments/environment";
 
 @Injectable({providedIn: 'root',})
-export class ThreadsImService {
-    private thread?: Thread;
-    private threads: Thread[] | undefined;
+export class ThreadsService {
 
-    constructor(private httpClient: HttpClient) {}
-
-    getAll(): Observable<Thread[]> {
-        return this.httpClient.get<Thread[]>(environment.BASE_API_URL + 'thread') as Observable<Thread[]>;
+    constructor(private http : HttpClient,
+      private alertService : AlertService,
+      private authService : AuthService) {}
+  
+    getList(communityId : string): Observable<Thread[]> {
+      return this.http.get(environment.BASE_API_URL + 'community/' + communityId + '/thread') as Observable<Thread[]>;
     }
 
-    getAllByCommunity(communityId: string): Thread[] {
-        this.getAll().subscribe((t) => (this.threads = t)).unsubscribe;
-        return this.threads!.filter(thread => thread.communityId === communityId);
+    getById(communityId :string, threadId: string): Observable<Thread> {
+      return this.http.get(`${environment.BASE_API_URL}community/${communityId}/thread/${threadId}`) as Observable<Thread>;
     }
 
-    getById(threadId: string): Observable<Thread> {
-        return this.httpClient.get<Thread>(environment.BASE_API_URL + `thread/${threadId}`) as Observable<Thread>;
+    create(threadData: Thread, communityId : string): Observable<Thread | undefined> {
+      console.log(`creating thread at ${environment.BASE_API_URL}community/${communityId}/thread`);
+  
+      return this.http
+        .post<Thread>(`${environment.BASE_API_URL}community/${communityId}/thread`, threadData,
+          this.authService.formHeaders())
+        .pipe(
+          map((thread) => {
+            console.dir(thread);
+            this.alertService.success('Thread has been created');
+            return thread;
+          }),
+          catchError((error: any) => {
+            console.log('error:', error);
+            console.log('error.message:', error.message);
+            console.log('error.error.message:', error.error.message);
+            this.alertService.error(error.error.message || error.message);
+            return of(undefined); 
+          })
+        );
     }
 
-    create(thread: Thread) {
-        this.thread = new Thread();
-
-        this.thread = { ...thread }
-
-        this.httpClient.post<Thread>(environment.BASE_API_URL + 'thread', this.thread).subscribe();
+    update(threadData: Thread, communityId : string, threadId : string): Observable<Thread | undefined> {
+      console.log(`updating thread at ${environment.BASE_API_URL}community/${communityId}/thread/${threadId}`);
+        console.log(threadData)
+      return this.http
+        .patch<Thread>(`${environment.BASE_API_URL}community/${communityId}/thread/${threadId}`, threadData,
+          this.authService.formHeaders())
+        .pipe(
+          map((thread) => {
+            console.dir(thread);
+            this.alertService.success('Thread has been updated');
+            return thread;
+          }),
+          catchError((error: any) => {
+            console.log('error:', error);
+            console.log('error.message:', error.message);
+            console.log('error.error.message:', error.error.message);
+            this.alertService.error(error.error.message || error.message);
+            return of(undefined); 
+          })
+        );
     }
 
-    update(thread: Thread) {
-        this.thread = new Thread();
+    delete(communityId : string, threadId : string): Observable<Thread | undefined> {
+      console.log(`deleting thread at ${environment.BASE_API_URL}community/${communityId}/thread/${threadId}`);
 
-        this.thread = { ...thread };
-
-        this.httpClient.patch<Thread>(environment.BASE_API_URL + `thread/${thread._id}`, this.thread).subscribe();
+      return this.http
+        .delete<Thread>(`${environment.BASE_API_URL}community/${communityId}/thread/${threadId}`, this.authService.formHeaders())
+        .pipe(
+          map((community) => {
+            console.dir(community);
+            this.alertService.error('Thread has been deleted');
+            return community;
+          }),
+          catchError((error: any) => {
+            console.log('error:', error);
+            console.log('error.message:', error.message);
+            console.log('error.error.message:', error.error.message);
+            this.alertService.error(error.error.message || error.message);
+            return of(undefined); 
+          })
+        );
     }
 
-    delete(threadId: string) {
-        this.httpClient.delete<Thread>(environment.BASE_API_URL + `thread/${threadId}`).subscribe();
+    view(communityId: string, threadId: string): Observable<Thread | undefined> {
+        return this.http
+        .post<Thread>(`${environment.BASE_API_URL}community/${communityId}/thread/${threadId}/view`, 
+        { null: null },
+        this.authService.formHeaders())
+        .pipe(
+          map((thread) => {
+            console.dir(thread);
+            return thread;
+          }),
+          catchError((error: any) => {
+            console.log('error:', error);
+            console.log('error.message:', error.message);
+            console.log('error.error.message:', error.error.message);
+            this.alertService.error(error.error.message || error.message);
+            return of(undefined); 
+          })
+        );
     }
 
-    increaseViews(threadId: string) {
-        this.getById(threadId).subscribe((t) => (this.thread = t)).unsubscribe;
-
-        this.thread!.views++;
-
-        this.update(this.thread!);
+    like(communityId: string, threadId: string): Observable<Thread | undefined> {
+        return this.http
+        .post<Thread>(`${environment.BASE_API_URL}community/${communityId}/thread/${threadId}/like`, 
+        { null: null },
+        this.authService.formHeaders())
+        .pipe(
+          map((thread) => {
+            console.dir(thread);
+            return thread;
+          }),
+          catchError((error: any) => {
+            console.log('error:', error);
+            console.log('error.message:', error.message);
+            console.log('error.error.message:', error.error.message);
+            this.alertService.error(error.error.message || error.message);
+            return of(undefined); 
+          })
+        );
     }
 }

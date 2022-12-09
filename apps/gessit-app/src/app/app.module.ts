@@ -1,11 +1,15 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { Injectable, NgModule } from '@angular/core';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from './app.component';
 import { NxWelcomeComponent } from './nx-welcome.component';
-import { RouterModule } from '@angular/router';
+import {
+  RouterModule,
+  RouterStateSnapshot,
+  TitleStrategy,
+} from '@angular/router';
 import { appRoutes } from './app.routes';
 import { NavComponent } from './shared/nav/nav.component';
 import { HomepageComponent } from './pages/homepage/homepage.component';
@@ -16,8 +20,28 @@ import * as CommunitiesDetailComponent from './pages/communities/detail/detail.c
 import * as ThreadsDetailComponent from './pages/threads/detail/detail.component';
 import * as CommunitiesEditComponent from './pages/communities/edit/edit.component';
 import * as ThreadsEditComponent from './pages/threads/edit/edit.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ThreadsComponent } from './pages/threads/threads/threads.component';
+import { LoginComponent } from './auth/login/login.component';
+import { RegisterComponent } from './auth/register/register.component';
+import { AlertModule } from './shared/alert/alert.module';
+import { AuthModule } from './auth/auth.module';
+import { CommunitiesListComponent } from './pages/communities/communities-list/communities-list.component';
+import { ProfileComponent } from './pages/profile/profile.component';
+
+@Injectable({ providedIn: 'root' })
+export class TemplatePageTitleStrategy extends TitleStrategy {
+  constructor(private readonly title: Title) {
+    super();
+  }
+
+  override updateTitle(routerState: RouterStateSnapshot) {
+    const title = this.buildTitle(routerState);
+    if (title !== undefined) {
+      this.title.setTitle(`Gessit | ${title}`);
+    }
+  }
+}
 
 @NgModule({
   declarations: [
@@ -29,10 +53,14 @@ import { ThreadsComponent } from './pages/threads/threads/threads.component';
     CommunitiesComponent,
     AboutComponent,
     ThreadsComponent,
+    LoginComponent,
+    RegisterComponent,
     CommunitiesDetailComponent.DetailComponent,
     ThreadsDetailComponent.DetailComponent,
     CommunitiesEditComponent.EditComponent,
-    ThreadsEditComponent.EditComponent
+    ThreadsEditComponent.EditComponent,
+    CommunitiesListComponent,
+    ProfileComponent,
   ],
   imports: [
     BrowserModule,
@@ -40,8 +68,17 @@ import { ThreadsComponent } from './pages/threads/threads/threads.component';
     NgbModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
+    AlertModule,
+    AuthModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: TitleStrategy,
+      useClass: TemplatePageTitleStrategy,
+    },
+  ],
   bootstrap: [AppComponent],
+  exports: [],
 })
 export class AppModule {}

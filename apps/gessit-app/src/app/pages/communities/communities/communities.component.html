@@ -1,14 +1,35 @@
 <div class="component">
     <div class="row">
-        <div class="col-6">
-            <h1>Communities</h1>
+        <div class="col-6" *ngIf="loggedInUser$ | async">
+            <h1>{{ title }}</h1>
         </div>
-        <div class="col-6 ">
+
+        <div class="col-12" *ngIf="!(loggedInUser$ | async)">
+            <h1>{{ title }}</h1>
+        </div>
+
+        <div class="col-6" *ngIf="loggedInUser$ | async">
             <button routerLink="/communities/create" class="btn btn-primary float-end"><i class="bi bi-plus"></i>Create</button>
         </div>
+
+        <div *ngIf="communities?.length === 0">
+            <p *ngIf="type === 'all'">
+              No communities have been created yet. Please come back at a later time.
+            </p>
+          
+            <div *ngIf="type === 'created'">
+              <p>You haven't created any communities yet.</p>
+            </div>
+          
+            <div *ngIf="type === 'joined'">
+              <p>You haven't joined any communities yet.</p>
+              <a class="btn btn-primary" routerLink="/communities">All communities</a>
+            </div>
+        </div>
+
         <div *ngFor="let community of communities" class="col-3">
             <div class="card">
-                <img class="card-img-top" src="{{ community.image }}">
+                <img (error)="updateImgUrl(community._id.toString())" class="card-img-top" src="{{ community.image }}">
                 <div class="card-body">
                     <p class="card-text">
                         {{ community.name }}
@@ -19,7 +40,6 @@
                     </p>
                     <hr />
                     <button type="button" class="btn btn-primary" routerLink="/communities/{{ community._id }}">Details</button>
-                    <button type="button" class="btn btn-danger" (click)="delete(community._id.toString())"><i class="bi bi-trash3"></i></button>
                 </div>
             </div>
         </div>

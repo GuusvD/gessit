@@ -32,6 +32,7 @@ export class ThreadsController {
     return await this.threadService.likeThread(req, communityId, threadId);
   }
 
+  @Public()
   @Post(':communityId/thread/:threadId/view')
   async viewThread(@Param('communityId', ObjectIdPipe) communityId: string, @Param('threadId', ObjectIdPipe) threadId: string) {
     return await this.threadService.viewThread(communityId, threadId);
@@ -39,11 +40,11 @@ export class ThreadsController {
 
   @Patch(':communityId/thread/:threadId')
   async updateThread(@Req() req, @Param('communityId', ObjectIdPipe) communityId: string, @Param('threadId', ObjectIdPipe) threadId: string, @Body() updateThreadDto: UpdateThreadDto): Promise<Thread> {
-    return await this.threadService.updateThread(req, communityId, threadId, updateThreadDto);
+    return await this.threadService.updateThread(communityId, threadId, req, updateThreadDto);
   }
 
   @Delete(':communityId/thread/:threadId')
   async deleteThread(@Req() req, @Param('communityId', ObjectIdPipe) communityId: string, @Param('threadId', ObjectIdPipe) threadId: string): Promise<Thread> {
-    return await this.threadService.deleteThread(req, communityId, threadId);
+    return await this.threadService.deleteThread(communityId, threadId, req);
   }
 }

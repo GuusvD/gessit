@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Public } from '../app.module';
 import { Roles } from '../auth/roles.decorator';
 import { ObjectIdPipe } from '../shared/pipes/object.id.pipe';
 import { Role } from '../users/role.enum';
@@ -10,11 +11,13 @@ import { ThemesService } from './themes.service';
 export class ThemesController {
   constructor(private readonly themeService: ThemesService) {}
 
+  @Public()
   @Get()
   async getThemes(): Promise<Theme[]> {
     return await this.themeService.getThemes();
   }
 
+  @Public()
   @Get(':id')
   async getThemeById(@Param('id', ObjectIdPipe) id: string): Promise<Theme> {
     return await this.themeService.getThemeById(id);

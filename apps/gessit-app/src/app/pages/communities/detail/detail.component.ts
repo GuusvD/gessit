@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Community } from 'libs/data/src/entities/community';
 import { Subscription } from 'rxjs';
-import { CommunitiesImService } from '../../../../../../../libs/data/src/services/communities.service';
+import { CommunitiesService } from '../../../../../../../libs/data/src/services/communities.service';
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
   selector: 'gessit-detail',
@@ -12,15 +13,18 @@ import { CommunitiesImService } from '../../../../../../../libs/data/src/service
 export class DetailComponent implements OnInit {
   communityId: string | null = null;
   subscription: Subscription | undefined;
-  community: Community | undefined;
+  community: Community = new Community();
+  themesString: string | undefined;
+  partOfCommunity: boolean = false;
 
-  constructor(private route: ActivatedRoute, private communitiesImService: CommunitiesImService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private communitiesService: CommunitiesService, private router: Router, public authService: AuthService) {}
 
   ngOnInit(): void {
     this.subscription = this.route.paramMap.subscribe(params => {
       this.communityId = params.get('id');
       if (this.communityId) {
-        this.communitiesImService.getById(this.communityId).subscribe((c) => (this.community = c)).unsubscribe;
+        this.communitiesService.getById(this.communityId).subscribe((c) => (this.community = c, this.themesString = c.themes.map((theme) => theme.name).join(', '))).unsubscribe;
+        this.isPartOfCommunity();
       }
     });
   }
@@ -29,10 +33,39 @@ export class DetailComponent implements OnInit {
     this.subscription?.unsubscribe;
   }
 
-  delete(id: string | undefined): void {
-    if (id) {
-      this.communitiesImService.delete(id);
-      this.router.navigate(['/communities']);
-    } 
+  delete() : void {
+    if(this.communityId) {
+      this.communitiesService.delete(this.communityId).subscribe((community) => {
+        if (community) {
+          this.router.navigate(['/communities']);
+        }
+      });
+    }
+  }
+
+  join(): void {
+    this.communitiesService.join(this.communityId!).subscribe((community) => {
+      if (community) {
+        this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>
+        this.router.navigate(['/communities/' + this.communityId]));
+      }
+    });
+  }
+
+  leave(): void {
+    this.communitiesService.leave(this.communityId!).subscribe((community) => {
+      if (community) {
+        this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>
+        this.router.navigate(['/communities/' + this.communityId]));
+      }
+    });
+  }
+
+  async isPartOfCommunity() {
+    this.partOfCommunity = await this.authService.partOfCommunity(this.communityId!);
+  }
+
+  updateImgUrl() {
+    this.community!.image = 'https://cdn-icons-png.flaticon.com/512/33/33308.png';
   }
 }

@@ -6,8 +6,7 @@
                 <p class="float-end">{{ thread.creationDate | date: 'dd-MM-yyyy on HH:mm' }}</p>
                 <p class="clear-both">{{ thread.content }}</p>
                 <hr>
-                <button class="btn btn-primary float-start clear-both" (click)="increaseViews(thread._id)" routerLink="/communities/{{ thread.communityId }}/threads/{{ thread._id }}">Details</button>
-                <button class="btn btn-danger" (click)="delete(thread._id)"><i class="bi bi-trash3"></i></button>
+                <button class="btn btn-primary float-start clear-both" routerLink="/communities/{{ communityId }}/threads/{{ thread._id }}" (click)="view(thread._id.toString())">Details</button>
                 <p class="float-end">{{ thread.views }} views</p>
             </div>
         </div>

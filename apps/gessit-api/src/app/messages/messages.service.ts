@@ -2,7 +2,6 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { Community, CommunityDocument } from "../communities/community.schema";
-import { ValidationException } from "../shared/filters/validation.exception";
 import { Role } from "../users/role.enum";
 import { CreateMessageDto } from "./create-message.dto";
 import { Message, MessageDocument } from "./message.schema";
@@ -120,18 +119,18 @@ export class MessagesService {
         const community = await this.communityModel.findOne({ _id: new Types.ObjectId(communityId) });
 
         if (!community) {
-            throw new ValidationException([`Community with id ${communityId} does not exist!`]);
+            throw new HttpException(`Community with id ${communityId} does not exist!`, HttpStatus.BAD_REQUEST);
         }
 
         if(threadId) {
             if(!(community.threads.filter(p => p._id.equals(new Types.ObjectId(threadId))).length > 0)) {
-                throw new ValidationException([`Thread with id ${threadId} doesn't exist in the community with id ${communityId}!`]);
+                throw new HttpException(`Thread with id ${threadId} doesn't exist in the community with id ${communityId}!`, HttpStatus.BAD_REQUEST);
             }
         }
 
         if (messageId) {
             if (!(community.threads.filter(p => p._id.equals(new Types.ObjectId(threadId)))[0].messages.filter(p => p._id.equals(new Types.ObjectId(messageId))).length > 0)) {
-                throw new ValidationException([`Message with id ${messageId} doesn't exist in the thread with id ${threadId} in the community with id ${communityId}!`]);
+                throw new HttpException(`Message with id ${messageId} doesn't exist in the thread with id ${threadId} in the community with id ${communityId}!`, HttpStatus.BAD_REQUEST);
             }
         }
     }
