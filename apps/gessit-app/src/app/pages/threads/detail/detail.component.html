@@ -5,7 +5,19 @@
                 <div class="card">
                     <div class="card-body">
                         <p class="float-start">Posted on {{ thread?.creationDate | date: 'dd-MM-yyyy on HH:mm' }}</p>
+                        <p style="padding-left: 5px;" class="float-end">{{ thread.likes.length }}</p>
+
+                        <div *ngIf="loggedInUser$ | async as user">
+                            <a *ngIf="liked" (click)="like()" style="padding-left: 30px;" class="float-end"><i class="bi bi-hand-thumbs-up-fill"></i></a>
+                            <a *ngIf="!liked" (click)="like()" style="padding-left: 30px;" class="float-end"><i class="bi bi-hand-thumbs-up"></i></a>
+                        </div>
+
+                        <div *ngIf="!(loggedInUser$ | async) as user">
+                            <a style="padding-left: 30px;" class="float-end"><i class="bi bi-hand-thumbs-up"></i></a>
+                        </div>
+
                         <p class="float-end">views: {{ thread?.views }}</p>
+
                         <hr class="clear-both">
                         <h2>{{  thread?.title }}</h2>
                         <br>
