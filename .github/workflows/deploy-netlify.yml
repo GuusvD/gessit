@@ -25,8 +25,11 @@ jobs:
     - name: Deploy to Netlify
       uses: netlify/actions/cli@master
       env:
-        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_SECRET }}
-        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_ID }}
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
       with:
         args: deploy --dir=dist/apps/gessit-app
-        secrets: '["NETLIFY_SECRET", "NETLIFY_ID"]'
+        secrets: '["NETLIFY_AUTH_TOKEN", "NETLIFY_SITE_ID"]'
+
+
+        name: "Deploy to Netlify"
