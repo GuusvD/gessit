@@ -218,7 +218,9 @@ export class AuthService {
   formHeaders(): object {
     let token;
     this.getUserFromLocalStorage().subscribe((p) => {
-      token = p.access_token;
+      if (p) {
+        token = p.access_token;
+      }
     }).unsubscribe();
 
     return { headers: new HttpHeaders({
