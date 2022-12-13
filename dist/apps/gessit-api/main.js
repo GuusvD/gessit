@@ -2433,9 +2433,7 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:type", typeof (_a = typeof mongoose_2.Types !== "undefined" && mongoose_2.Types.ObjectId) === "function" ? _a : Object)
 ], User.prototype, "_id", void 0);
 tslib_1.__decorate([
-    (0, mongoose_1.Prop)({
-        unique: true
-    }),
+    (0, mongoose_1.Prop)(),
     tslib_1.__metadata("design:type", String)
 ], User.prototype, "username", void 0);
 tslib_1.__decorate([
@@ -2514,6 +2512,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UsersController = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
+const app_module_1 = __webpack_require__("./apps/gessit-api/src/app/app.module.ts");
 const roles_decorator_1 = __webpack_require__("./apps/gessit-api/src/app/auth/roles.decorator.ts");
 const object_id_pipe_1 = __webpack_require__("./apps/gessit-api/src/app/shared/pipes/object.id.pipe.ts");
 const create_user_dto_1 = __webpack_require__("./apps/gessit-api/src/app/users/create-user.dto.ts");
@@ -2561,12 +2560,14 @@ let UsersController = class UsersController {
     }
 };
 tslib_1.__decorate([
+    (0, app_module_1.Public)(),
     (0, common_1.Get)(),
     tslib_1.__metadata("design:type", Function),
     tslib_1.__metadata("design:paramtypes", []),
     tslib_1.__metadata("design:returntype", typeof (_b = typeof Promise !== "undefined" && Promise) === "function" ? _b : Object)
 ], UsersController.prototype, "getUsers", null);
 tslib_1.__decorate([
+    (0, app_module_1.Public)(),
     (0, common_1.Get)(':id'),
     tslib_1.__param(0, (0, common_1.Param)('id', object_id_pipe_1.ObjectIdPipe)),
     tslib_1.__metadata("design:type", Function),

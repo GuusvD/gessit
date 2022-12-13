@@ -105,4 +105,24 @@ export class ThreadsService {
           })
         );
     }
+
+    like(communityId: string, threadId: string): Observable<Thread | undefined> {
+        return this.http
+        .post<Thread>(`${environment.BASE_API_URL}community/${communityId}/thread/${threadId}/like`, 
+        { null: null },
+        this.authService.formHeaders())
+        .pipe(
+          map((thread) => {
+            console.dir(thread);
+            return thread;
+          }),
+          catchError((error: any) => {
+            console.log('error:', error);
+            console.log('error.message:', error.message);
+            console.log('error.error.message:', error.error.message);
+            this.alertService.error(error.error.message || error.message);
+            return of(undefined); 
+          })
+        );
+    }
 }
