@@ -1,4 +1,15 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import {
+    isDate,
+    IsDate,
+    IsDefined,
+    isEmail,
+    IsEmail,
+    IsMobilePhone,
+    isMobilePhone,
+    IsNotEmpty,
+    IsString
+} from 'class-validator';
 import { Document, Types, Schema as MongooseSchema } from "mongoose";
 import { Role } from "./role.enum";
 
@@ -9,40 +20,85 @@ export class User {
     @Prop()
     _id: Types.ObjectId;
 
-    @Prop()
+    @IsString()
+    @IsNotEmpty()
+    @IsDefined()
+    @Prop({
+        required: true,
+        unique: true
+    })
     username: string;
 
-    @Prop()
+    @IsDate()
+    @IsNotEmpty()
+    @IsDefined()
+    @Prop({
+        required: true,
+        validate: {
+            validator: isDate
+        }
+    })
     birthDate: Date;
 
-    @Prop()
+    @IsEmail()
+    @IsNotEmpty()
+    @IsDefined()
+    @Prop({
+        required: true,
+        unique: true,
+        validate: {
+            validator: isEmail
+        }
+    })
     emailAddress: string;
 
-    @Prop()
+    @IsMobilePhone()
+    @IsNotEmpty()
+    @IsDefined()
+    @Prop({
+        required: true,
+        validate: {
+            validator: isMobilePhone
+        }
+    })
     phoneNumber: string;
 
-    @Prop()
+    @IsString()
+    @IsNotEmpty()
+    @IsDefined()
+    @Prop({
+        required: true
+    })
     password: string;
 
     @Prop()
     registerDate: Date;
 
-    @Prop()
+    @IsString()
+    @Prop({
+        default: ''
+    })
     image: string;
 
-    @Prop()
+    @Prop({
+        default: false
+    })
     isActive: boolean;
 
-    @Prop()
+    @Prop({
+        default: [Role.User]
+    })
     roles: Role[];
 
     @Prop({
-        ref: 'User'
+        ref: 'User',
+        default: []
     })
     following: [Types.ObjectId];
 
     @Prop({
-        ref: 'User'
+        ref: 'User',
+        default: []
     })
     followers: [Types.ObjectId];
 
