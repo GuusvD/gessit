@@ -137,7 +137,7 @@ describe('User controller - Integration tests', () => {
         expect(result).toHaveProperty('isActive', exampleUser.isActive);
     });
 
-    it('should call create on the service', async () => {
+    it('should call createUser on the service', async () => {
         const exampleUser: User = {
             _id: new Types.ObjectId(),
             username: 'John Doe',
@@ -175,7 +175,7 @@ describe('User controller - Integration tests', () => {
         expect(result).toHaveProperty('isActive', exampleUser.isActive);
     });
 
-    it('should call create on the service', async () => {
+    it('should call updateUser on the service', async () => {
         const exampleUser: User = {
             _id: new Types.ObjectId(),
             username: 'John Doe',
