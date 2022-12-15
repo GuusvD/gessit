@@ -2425,7 +2425,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UserSchema = exports.User = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const mongoose_1 = __webpack_require__("@nestjs/mongoose");
+const class_validator_1 = __webpack_require__("class-validator");
 const mongoose_2 = __webpack_require__("mongoose");
+const role_enum_1 = __webpack_require__("./apps/gessit-api/src/app/users/role.enum.ts");
 let User = class User {
 };
 tslib_1.__decorate([
@@ -2433,23 +2435,59 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:type", typeof (_a = typeof mongoose_2.Types !== "undefined" && mongoose_2.Types.ObjectId) === "function" ? _a : Object)
 ], User.prototype, "_id", void 0);
 tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    (0, mongoose_1.Prop)({
+        required: true,
+        unique: true
+    }),
     tslib_1.__metadata("design:type", String)
 ], User.prototype, "username", void 0);
 tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
+    (0, class_validator_1.IsDate)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    (0, mongoose_1.Prop)({
+        required: true,
+        validate: {
+            validator: class_validator_1.isDate
+        }
+    }),
     tslib_1.__metadata("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
 ], User.prototype, "birthDate", void 0);
 tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    (0, mongoose_1.Prop)({
+        required: true,
+        unique: true,
+        validate: {
+            validator: class_validator_1.isEmail
+        }
+    }),
     tslib_1.__metadata("design:type", String)
 ], User.prototype, "emailAddress", void 0);
 tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
+    (0, class_validator_1.IsMobilePhone)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    (0, mongoose_1.Prop)({
+        required: true,
+        validate: {
+            validator: class_validator_1.isMobilePhone
+        }
+    }),
     tslib_1.__metadata("design:type", String)
 ], User.prototype, "phoneNumber", void 0);
 tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsDefined)(),
+    (0, mongoose_1.Prop)({
+        required: true
+    }),
     tslib_1.__metadata("design:type", String)
 ], User.prototype, "password", void 0);
 tslib_1.__decorate([
@@ -2457,26 +2495,35 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:type", typeof (_c = typeof Date !== "undefined" && Date) === "function" ? _c : Object)
 ], User.prototype, "registerDate", void 0);
 tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
+    (0, class_validator_1.IsString)(),
+    (0, mongoose_1.Prop)({
+        default: ''
+    }),
     tslib_1.__metadata("design:type", String)
 ], User.prototype, "image", void 0);
 tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
+    (0, mongoose_1.Prop)({
+        default: false
+    }),
     tslib_1.__metadata("design:type", Boolean)
 ], User.prototype, "isActive", void 0);
 tslib_1.__decorate([
-    (0, mongoose_1.Prop)(),
+    (0, mongoose_1.Prop)({
+        default: [role_enum_1.Role.User]
+    }),
     tslib_1.__metadata("design:type", Array)
 ], User.prototype, "roles", void 0);
 tslib_1.__decorate([
     (0, mongoose_1.Prop)({
-        ref: 'User'
+        ref: 'User',
+        default: []
     }),
     tslib_1.__metadata("design:type", Array)
 ], User.prototype, "following", void 0);
 tslib_1.__decorate([
     (0, mongoose_1.Prop)({
-        ref: 'User'
+        ref: 'User',
+        default: []
     }),
     tslib_1.__metadata("design:type", Array)
 ], User.prototype, "followers", void 0);
