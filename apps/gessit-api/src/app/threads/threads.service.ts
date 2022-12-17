@@ -155,7 +155,7 @@ export class ThreadsService {
                     creator: req.user.id
                 });
         
-                return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$push: {threads: newThread}});
+                return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$push: {threads: newThread}}, {new: true});
             } else {
                 throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
             }
@@ -168,7 +168,7 @@ export class ThreadsService {
                 creator: req.user.id
             });
     
-            return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$push: {threads: newThread}});
+            return await this.communityModel.findOneAndUpdate({_id: new Types.ObjectId(communityId)}, {$push: {threads: newThread}}, {new: true});
         }
     }
 

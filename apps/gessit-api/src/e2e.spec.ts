@@ -368,7 +368,7 @@ describe('end-to-end tests of Gessit API', () => {
             .set('Authorization', 'bearer ' + token)
             .send(thread)
 
-        expect(createCommunity.status).toBe(201);
+        expect(createThread.status).toBe(201);
 
         expect(createThread.body).toHaveProperty('_id')
         expect(createThread.body).toHaveProperty('name')
@@ -381,5 +381,153 @@ describe('end-to-end tests of Gessit API', () => {
         expect(createThread.body).toHaveProperty('members')
         expect(createThread.body).toHaveProperty('owner')
         expect(createThread.body).toHaveProperty('threads')
+
+        expect(createThread.body.threads[0]).toHaveProperty('_id')
+        expect(createThread.body.threads[0]).toHaveProperty('title')
+        expect(createThread.body.threads[0]).toHaveProperty('content')
+        expect(createThread.body.threads[0]).toHaveProperty('image')
+        expect(createThread.body.threads[0]).toHaveProperty('views')
+        expect(createThread.body.threads[0]).toHaveProperty('likes')
+        expect(createThread.body.threads[0]).toHaveProperty('creationDate')
+        expect(createThread.body.threads[0]).toHaveProperty('messages')
+        expect(createThread.body.threads[0]).toHaveProperty('creator')
+    });
+
+    it('a user registers, logs in, and creates a new theme, gets the new theme and creates a new community, creates a new thread and creates a new message', async () => {
+        const registerCredentials = {
+            username: 'John',
+            birthDate: new Date('2000-01-01'),
+            password: '12345',
+            phoneNumber: '06 12345678',
+            emailAddress: 'john.doe@gmail.com',
+            image: 'test.png'
+        };
+
+        const register = await request(server)
+            .post('/auth/register')
+            .send(registerCredentials);
+
+        expect(register.body).toHaveProperty('_id')
+        expect(register.body).toHaveProperty('access_token')
+        expect(register.body).toHaveProperty('emailAddress')
+        expect(register.body).toHaveProperty('image')
+        expect(register.body).toHaveProperty('roles')
+        expect(register.body).toHaveProperty('username')
+
+        expect(register.status).toBe(201);
+
+        const loginCredentials = {
+            username: 'John',
+            password: '12345'
+        }
+
+        const login = await request(server)
+            .post('/auth/login')
+            .send(loginCredentials);
+
+        expect(login.status).toBe(201);
+
+        expect(login.body).toHaveProperty('_id')
+        expect(login.body).toHaveProperty('access_token')
+        expect(login.body).toHaveProperty('emailAddress')
+        expect(login.body).toHaveProperty('image')
+        expect(login.body).toHaveProperty('roles')
+        expect(login.body).toHaveProperty('username')
+
+        const token = login.body.access_token;
+
+        const newTheme = {
+            name: "Test theme"
+        };
+
+        const theme = await request(server)
+            .post('/theme')
+            .send(newTheme)
+            .set('Authorization', 'bearer ' + token)
+
+        expect(theme.body).toHaveProperty('_id')
+        expect(theme.body).toHaveProperty('name')
+
+        expect(theme.status).toBe(201);
+
+        const community = {
+            name: "Test community",
+            description: "A test community",
+            image: "test.png",
+            isOpen: true,
+            themes: [theme._body._id.toString()]
+        }
+
+        const createCommunity = await request(server)
+            .post('/community')
+            .set('Authorization', 'bearer ' + token)
+            .send(community);
+
+        expect(createCommunity.status).toBe(201);
+
+        expect(createCommunity.body).toHaveProperty('_id')
+        expect(createCommunity.body).toHaveProperty('name')
+        expect(createCommunity.body).toHaveProperty('description')
+        expect(createCommunity.body).toHaveProperty('ranking')
+        expect(createCommunity.body).toHaveProperty('creationDate')
+        expect(createCommunity.body).toHaveProperty('image')
+        expect(createCommunity.body).toHaveProperty('isOpen')
+        expect(createCommunity.body).toHaveProperty('themes')
+        expect(createCommunity.body).toHaveProperty('members')
+        expect(createCommunity.body).toHaveProperty('owner')
+        expect(createCommunity.body).toHaveProperty('threads')
+
+        const thread = {
+            title: "Test thread",
+            content: "A test thread",
+            image: "test.png"
+        }
+
+        const createThread = await request(server)
+            .post(`/community/${createCommunity._body._id}/thread`)
+            .set('Authorization', 'bearer ' + token)
+            .send(thread)
+
+        expect(createThread.status).toBe(201);
+
+        expect(createThread.body).toHaveProperty('_id')
+        expect(createThread.body).toHaveProperty('name')
+        expect(createThread.body).toHaveProperty('description')
+        expect(createThread.body).toHaveProperty('ranking')
+        expect(createThread.body).toHaveProperty('creationDate')
+        expect(createThread.body).toHaveProperty('image')
+        expect(createThread.body).toHaveProperty('isOpen')
+        expect(createThread.body).toHaveProperty('themes')
+        expect(createThread.body).toHaveProperty('members')
+        expect(createThread.body).toHaveProperty('owner')
+        expect(createThread.body).toHaveProperty('threads')
+
+        expect(createThread.body.threads[0]).toHaveProperty('_id')
+        expect(createThread.body.threads[0]).toHaveProperty('title')
+        expect(createThread.body.threads[0]).toHaveProperty('content')
+        expect(createThread.body.threads[0]).toHaveProperty('image')
+        expect(createThread.body.threads[0]).toHaveProperty('views')
+        expect(createThread.body.threads[0]).toHaveProperty('likes')
+        expect(createThread.body.threads[0]).toHaveProperty('creationDate')
+        expect(createThread.body.threads[0]).toHaveProperty('messages')
+        expect(createThread.body.threads[0]).toHaveProperty('creator')
+
+        const message = {
+            content: "New message"
+        }
+
+        const createMessage = await request(server)
+            .post(`/community/${createThread._body._id}/thread/${createThread._body.threads[0]._id}/message`)
+            .set('Authorization', 'bearer ' + token)
+            .send(message)
+
+        expect(createMessage.status).toBe(201);
+
+        expect(createMessage.body).toHaveProperty('_id')
+        expect(createMessage.body).toHaveProperty('creator')
+        expect(createMessage.body).toHaveProperty('content')
+        expect(createMessage.body).toHaveProperty('likes')
+        expect(createMessage.body).toHaveProperty('creationDate')
+        expect(createMessage.body).toHaveProperty('hasLikes')
     });
 });

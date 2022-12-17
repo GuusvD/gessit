@@ -1188,13 +1188,17 @@ const communities_module_1 = __webpack_require__("./apps/gessit-api/src/app/comm
 const message_schema_1 = __webpack_require__("./apps/gessit-api/src/app/messages/message.schema.ts");
 const messages_controller_1 = __webpack_require__("./apps/gessit-api/src/app/messages/messages.controller.ts");
 const messages_service_1 = __webpack_require__("./apps/gessit-api/src/app/messages/messages.service.ts");
+const common_2 = __webpack_require__("@nestjs/common");
 let MessagesModule = class MessagesModule {
 };
 MessagesModule = tslib_1.__decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: message_schema_1.Message.name, schema: message_schema_1.MessageSchema }]), communities_module_1.CommunitiesModule],
+        imports: [
+            mongoose_1.MongooseModule.forFeature([{ name: message_schema_1.Message.name, schema: message_schema_1.MessageSchema }]),
+            (0, common_2.forwardRef)(() => communities_module_1.CommunitiesModule),
+        ],
         controllers: [messages_controller_1.MessagesController],
-        providers: [messages_service_1.MessagesService]
+        providers: [messages_service_1.MessagesService],
     })
 ], MessagesModule);
 exports.MessagesModule = MessagesModule;
@@ -2014,20 +2018,25 @@ exports.ThreadsController = ThreadsController;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ThreadsModule = void 0;
 const tslib_1 = __webpack_require__("tslib");
-const mongoose_1 = __webpack_require__("@nestjs/mongoose");
 const common_1 = __webpack_require__("@nestjs/common");
+const mongoose_1 = __webpack_require__("@nestjs/mongoose");
+const communities_module_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.module.ts");
+const users_module_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.module.ts");
 const thread_schema_1 = __webpack_require__("./apps/gessit-api/src/app/threads/thread.schema.ts");
 const threads_controller_1 = __webpack_require__("./apps/gessit-api/src/app/threads/threads.controller.ts");
 const threads_service_1 = __webpack_require__("./apps/gessit-api/src/app/threads/threads.service.ts");
-const users_module_1 = __webpack_require__("./apps/gessit-api/src/app/users/users.module.ts");
-const communities_module_1 = __webpack_require__("./apps/gessit-api/src/app/communities/communities.module.ts");
+const common_2 = __webpack_require__("@nestjs/common");
 let ThreadsModule = class ThreadsModule {
 };
 ThreadsModule = tslib_1.__decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: thread_schema_1.Thread.name, schema: thread_schema_1.ThreadSchema }]), users_module_1.UsersModule, communities_module_1.CommunitiesModule],
+        imports: [
+            mongoose_1.MongooseModule.forFeature([{ name: thread_schema_1.Thread.name, schema: thread_schema_1.ThreadSchema }]),
+            (0, common_2.forwardRef)(() => users_module_1.UsersModule),
+            (0, common_2.forwardRef)(() => communities_module_1.CommunitiesModule),
+        ],
         controllers: [threads_controller_1.ThreadsController],
-        providers: [threads_service_1.ThreadsService]
+        providers: [threads_service_1.ThreadsService],
     })
 ], ThreadsModule);
 exports.ThreadsModule = ThreadsModule;
