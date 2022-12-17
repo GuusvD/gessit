@@ -1677,7 +1677,6 @@ tslib_1.__decorate([
     tslib_1.__metadata("design:returntype", typeof (_c = typeof Promise !== "undefined" && Promise) === "function" ? _c : Object)
 ], ThemesController.prototype, "getThemeById", null);
 tslib_1.__decorate([
-    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
     (0, common_1.Post)(),
     tslib_1.__param(0, (0, common_1.Body)()),
     tslib_1.__metadata("design:type", Function),
@@ -2771,7 +2770,7 @@ let UsersService = class UsersService {
                         foreignField: "_id",
                         as: "followers"
                     } },
-                { $unset: ["password", "__v"] }
+                { $unset: ["__v"] }
             ]))[0];
         });
     }

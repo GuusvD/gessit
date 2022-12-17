@@ -51,7 +51,7 @@ export class UsersService {
         foreignField: "_id",
         as: "followers"
       }},
-      {$unset: ["password", "__v"]}
+      {$unset: ["__v"]}
     ]))[0];
   }
 

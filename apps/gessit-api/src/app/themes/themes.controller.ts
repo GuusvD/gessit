@@ -23,7 +23,6 @@ export class ThemesController {
     return await this.themeService.getThemeById(id);
   }
 
-  @Roles(Role.Admin)
   @Post()
   async createTheme(@Body() createThemeDto: CreateThemeDto): Promise<Theme> {
     return await this.themeService.createTheme(createThemeDto.name);
